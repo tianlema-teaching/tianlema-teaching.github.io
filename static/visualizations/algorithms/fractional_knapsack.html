@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fractional Knapsack Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .items-panel {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-width: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-card.selected {
+            border-color: #51cf66;
+        }
+
+        .item-card.partial {
+            border-color: #ffd43b;
+        }
+
+        .item-card.considering {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .item-card h4 {
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .item-card .ratio {
+            font-size: 0.8rem;
+            color: #51cf66;
+            margin-top: 8px;
+        }
+
+        /* On the green fill the green ratio text disappears; use the card's text colour there. */
+        .item-card.selected .ratio,
+        .item-card.partial .ratio {
+            color: inherit;
+        }
+
+        .fill-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #51cf66, #2f9e44);
+            transition: height 0.3s;
+        }
+
+        .knapsack {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .capacity-bar {
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            transition: width 0.3s;
+        }
+
+        .knapsack-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .value {
+            font-size: 1.5rem;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">💰</span> Fractional Knapsack (Greedy)</h1>
+
+        <div class="explanation">
+            <h3>Problem</h3>
+            <p>Maximize value in knapsack. Unlike 0/1, you can take <strong>fractions</strong> of items!</p>
+            <p style="margin-top: 10px;"><strong>Greedy Strategy:</strong> Sort by value/weight ratio. Take items
+                greedily until knapsack is full.</p>
+        </div>
+
+        <h3 style="text-align: center;">Items (sorted by value/weight ratio)</h3>
+        <div class="items-panel" id="itemsPanel"></div>
+
+        <div class="knapsack">
+            <h3 style="text-align: center;">Knapsack (Capacity: 50)</h3>
+            <div class="capacity-bar">
+                <div class="capacity-fill" id="capacityFill" style="width: 0%"></div>
+            </div>
+            <div class="knapsack-stats">
+                <div class="stat">
+                    <div>Weight Used</div>
+                    <div class="value" id="weightUsed">0</div>
+                </div>
+                <div class="stat">
+                    <div>Total Value</div>
+                    <div class="value" id="totalValue">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Click "Start" to fill knapsack greedily</div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const items = [
+            { name: 'A', weight: 10, value: 60 },
+            { name: 'B', weight: 20, value: 100 },
+            { name: 'C', weight: 30, value: 120 }
+        ].map(i => ({ ...i, ratio: i.value / i.weight })).sort((a, b) => b.ratio - a.ratio);
+
+        const capacity = 50;
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const taken = items.map(() => 0);
+            let weightUsed = 0, totalValue = 0;
+
+            steps.push({ taken: [...taken], weightUsed, totalValue, considering: -1, status: "Items sorted by value/weight ratio (highest first)" });
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const remaining = capacity - weightUsed;
+
+                steps.push({ taken: [...taken], weightUsed, totalValue, considering: i, status: `Consider ${item.name}: ratio=${item.ratio.toFixed(1)}, weight=${item.weight}, remaining capacity=${remaining}` });
+
+                if (remaining >= item.weight) {
+                    taken[i] = 1;
+                    weightUsed += item.weight;
+                    totalValue += item.value;
+                    steps.push({ taken: [...taken], weightUsed, totalValue, considering: -1, status: `Take all of ${item.name}. +${item.value} value, +${item.weight} weight` });
+                } else if (remaining > 0) {
+                    const fraction = remaining / item.weight;
+                    taken[i] = fraction;
+                    const addedValue = item.value * fraction;
+                    weightUsed += remaining;
+                    totalValue += addedValue;
+                    steps.push({ taken: [...taken], weightUsed, totalValue, considering: -1, status: `Take ${remaining}/${item.weight} of ${item.name} (≈${(fraction * 100).toFixed(1)}%). +${addedValue.toFixed(1)} value, +${remaining} weight` });
+                } else {
+                    steps.push({ taken: [...taken], weightUsed, totalValue, considering: -1, status: `Skip ${item.name} (knapsack full)` });
+                }
+            }
+
+            steps.push({ taken: [...taken], weightUsed, totalValue, considering: -1, status: `✓ Done! Total value = ${totalValue.toFixed(1)}` });
+        }
+
+        function renderItems(step) {
+            document.getElementById('itemsPanel').innerHTML = items.map((item, i) => {
+                let cls = '';
+                if (step.considering === i) cls = 'considering';
+                else if (step.taken[i] === 1) cls = 'selected';
+                else if (step.taken[i] > 0) cls = 'partial';
+
+                return `
+                    <div class="item-card ${cls}">
+                        <div class="fill-bar" style="height: ${step.taken[i] * 100}%"></div>
+                        <h4 style="position: relative;">${item.name}</h4>
+                        <div style="position: relative;">Weight: ${item.weight}</div>
+                        <div style="position: relative;">Value: ${item.value}</div>
+                        <div class="ratio" style="position: relative;">Ratio: ${item.ratio.toFixed(1)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('capacityFill').style.width = (step.weightUsed / capacity * 100) + '%';
+            document.getElementById('weightUsed').textContent = step.weightUsed.toFixed(1);
+            document.getElementById('totalValue').textContent = step.totalValue.toFixed(1);
+            document.getElementById('status').textContent = step.status;
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderItems(steps[0]); }
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderItems(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderItems(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderItems(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderItems(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 1000);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderItems(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

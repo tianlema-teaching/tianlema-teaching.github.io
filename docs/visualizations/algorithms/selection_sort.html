@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Selection Sort Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 30px 0;
+            min-height: 120px;
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 60px;
+            background: linear-gradient(180deg, #00d4ff, #0077b6);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bar.current {
+            background: linear-gradient(180deg, #ff6b6b, #c92a2a);
+            transform: translateY(-10px);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(180deg, #51cf66, #2f9e44);
+        }
+
+        .bar.comparing {
+            background: linear-gradient(180deg, #ffd43b, #fab005);
+        }
+
+        .bar span {
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .bar .index {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .step-counter {
+            text-align: center;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .code-panel {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .code-line {
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .code-line.active {
+            background: rgba(0, 212, 255, 0.3);
+            border-left: 3px solid #00d4ff;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">👆</span> Selection Sort</h1>
+
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <p>Selection Sort divides the array into a sorted part (left) and an unsorted part (right).
+                In each pass it scans the unsorted part to find the minimum element, then swaps it into place
+                at the front of the unsorted part. Unlike Bubble and Insertion Sort, it always performs the
+                same number of comparisons regardless of the input order.</p>
+        </div>
+
+        <div class="visualization">
+            <div class="step-counter">Step: <span id="stepNum">0</span> / <span id="totalSteps">0</span></div>
+            <div class="array-container" id="arrayContainer"></div>
+            <div class="status" id="status">Click "Start" to begin the visualization</div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(180deg, #ff6b6b, #c92a2a);"></div>
+                    <span>Current Minimum</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(180deg, #ffd43b, #fab005);"></div>
+                    <span>Comparing</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(180deg, #51cf66, #2f9e44);"></div>
+                    <span>Sorted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startSort()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()" id="stepBtn">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+
+        <div class="speed-control">
+            <span>Speed:</span>
+            <input type="range" id="speedSlider" min="100" max="1000" value="500">
+            <span id="speedValue">500ms</span>
+        </div>
+
+        <div class="code-panel">
+            <div class="code-line" id="line1">SELECTION-SORT(A):</div>
+            <div class="code-line" id="line2">&nbsp;&nbsp;&nbsp;&nbsp;for i = 1 to n - 1:</div>
+            <div class="code-line" id="line3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;min = i</div>
+            <div class="code-line" id="line4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for j = i + 1 to n:</div>
+            <div class="code-line" id="line5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if A[j] &lt; A[min]: min = j</div>
+            <div class="code-line" id="line6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap A[i], A[min]</div>
+        </div>
+
+        <div class="explanation">
+            <h3>Complexity Analysis</h3>
+            <p><strong>Time Complexity:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Best Case:</strong> O(n²) — Still scans everything, even if sorted</li>
+                <li><strong>Average Case:</strong> O(n²)</li>
+                <li><strong>Worst Case:</strong> O(n²)</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Space Complexity:</strong> O(1) — In-place sorting</p>
+            <p style="margin-top: 15px;"><strong>Stable:</strong> No — Swapping can reorder equal elements</p>
+        </div>
+    </div>
+
+    <script>
+        let array = [64, 34, 25, 12, 22, 11, 90];
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        const speedSlider = document.getElementById('speedSlider');
+        speedSlider.oninput = function () {
+            document.getElementById('speedValue').textContent = this.value + 'ms';
+            // A new speed takes effect immediately while playing.
+            if (isPlaying) {
+                clearInterval(playInterval);
+                playInterval = setInterval(playTick, parseInt(this.value));
+            }
+        };
+        // Give focus back to the page after dragging, so the arrow keys step again.
+        speedSlider.addEventListener('pointerup', () => speedSlider.blur());
+
+        function generateSteps() {
+            steps = [];
+            const arr = [...array];
+            const n = arr.length;
+
+            // Initial state
+            steps.push({
+                array: [...arr],
+                current: -1,
+                comparing: -1,
+                sorted: [],
+                status: "Starting Selection Sort. Each pass selects the minimum of the unsorted part.",
+                line: 1
+            });
+
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+
+                steps.push({
+                    array: [...arr],
+                    current: minIdx,
+                    comparing: -1,
+                    sorted: Array.from({ length: i }, (_, k) => k),
+                    status: `Pass ${i + 1}: assume A[${i}] = ${arr[i]} is the minimum of positions ${i}–${n - 1}.`,
+                    line: 3
+                });
+
+                for (let j = i + 1; j < n; j++) {
+                    steps.push({
+                        array: [...arr],
+                        current: minIdx,
+                        comparing: j,
+                        sorted: Array.from({ length: i }, (_, k) => k),
+                        status: `Comparing: A[${j}] = ${arr[j]} vs current minimum A[${minIdx}] = ${arr[minIdx]}. ${arr[j] < arr[minIdx] ? 'New minimum!' : 'Keep current minimum.'}`,
+                        line: 5
+                    });
+
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx = j;
+
+                        steps.push({
+                            array: [...arr],
+                            current: minIdx,
+                            comparing: -1,
+                            sorted: Array.from({ length: i }, (_, k) => k),
+                            status: `New minimum found: ${arr[minIdx]} at position ${minIdx}.`,
+                            line: 5
+                        });
+                    }
+                }
+
+                if (minIdx !== i) {
+                    [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+                }
+
+                steps.push({
+                    array: [...arr],
+                    current: i,
+                    comparing: -1,
+                    sorted: Array.from({ length: i + 1 }, (_, k) => k),
+                    status: minIdx !== i
+                        ? `Swapped minimum ${arr[i]} into position ${i}. ${i + 1} element(s) now sorted.`
+                        : `${arr[i]} was already the minimum — no swap needed. ${i + 1} element(s) now sorted.`,
+                    line: 6
+                });
+            }
+
+            steps.push({
+                array: [...arr],
+                current: -1,
+                comparing: -1,
+                sorted: Array.from({ length: n }, (_, k) => k),
+                status: "✓ Array is fully sorted!",
+                line: 1
+            });
+
+            document.getElementById('totalSteps').textContent = steps.length - 1;
+        }
+
+        function renderArray(step) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+            const maxVal = Math.max(...step.array);
+
+            step.array.forEach((val, idx) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (val / maxVal * 100) + 'px';
+
+                if (idx === step.current) bar.classList.add('current');
+                else if (idx === step.comparing) bar.classList.add('comparing');
+                else if (step.sorted.includes(idx)) bar.classList.add('sorted');
+
+                bar.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
+                container.appendChild(bar);
+            });
+
+            document.getElementById('status').textContent = step.status;
+            document.getElementById('stepNum').textContent = currentStep;
+
+            // Highlight code line
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById('line' + i).classList.remove('active');
+            }
+            document.getElementById('line' + step.line).classList.add('active');
+        }
+
+        function reset() {
+            stopSort();
+            array = [64, 34, 25, 12, 22, 11, 90];
+            currentStep = 0;
+            generateSteps();
+            renderArray(steps[0]);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        function stepForward() {
+            stopSort();
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderArray(steps[currentStep]);
+            }
+        }
+
+        function stepBack() {
+            stopSort();
+            if (currentStep > 0) {
+                currentStep--;
+                renderArray(steps[currentStep]);
+            }
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function playTick() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderArray(steps[currentStep]);
+            } else {
+                stopSort();
+            }
+        }
+
+        function startSort() {
+            if (isPlaying) {
+                stopSort();
+                return;
+            }
+            // At the last step, Start replays from the beginning.
+            if (currentStep >= steps.length - 1) {
+                currentStep = 0;
+                renderArray(steps[0]);
+            }
+
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+
+            playInterval = setInterval(playTick, parseInt(speedSlider.value));
+        }
+
+        function stopSort() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        // Initialize
+        generateSteps();
+        renderArray(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

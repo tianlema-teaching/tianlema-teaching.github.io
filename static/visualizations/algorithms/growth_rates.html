@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Growth Rates Visualization</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f1f5f9;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --accent: #8b5cf6;
+            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .control-group h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #cbd5e1;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 500px;
+            border: 1px solid #334155;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(30, 41, 59, 0.95);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #475569;
+            color: #fff;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            gap: 1rem;
+        }
+
+        .input-range {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        
+        button#reset {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        button#reset:hover {
+            opacity: 0.9;
+        }
+
+        a.back-link {
+            color: #60a5fa;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to All Algorithms</a>
+
+    <h1>Time Complexity Growth</h1>
+    <p class="subtitle">Visualizing algorithm performance as input size (N) increases</p>
+
+    <div class="container">
+        <div class="controls">
+            <div class="control-group">
+                <h3>Functions</h3>
+                <label class="toggle-row">
+                    <input type="checkbox" checked id="chk-O1" data-fn="O1">
+                    <div class="color-dot" style="background: #22c55e;"></div>
+                    <span>O(1) - Constant</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" checked id="chk-OlogN" data-fn="OlogN">
+                    <div class="color-dot" style="background: #38bdf8;"></div>
+                    <span>O(log n) - Logarithmic</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" checked id="chk-On" data-fn="On">
+                    <div class="color-dot" style="background: #fbbf24;"></div>
+                    <span>O(n) - Linear</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" checked id="chk-OnlogN" data-fn="OnlogN">
+                    <div class="color-dot" style="background: #f472b6;"></div>
+                    <span>O(n log n) - Linearithmic</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" checked id="chk-On2" data-fn="On2">
+                    <div class="color-dot" style="background: #f87171;"></div>
+                    <span>O(n²) - Quadratic</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" id="chk-O2n" data-fn="O2n">
+                    <div class="color-dot" style="background: #a855f7;"></div>
+                    <span>O(2ⁿ) - Exponential</span>
+                </label>
+            </div>
+
+            <div class="control-group">
+                <h3>X-Axis Range (Max N)</h3>
+                <input type="range" class="input-range" id="range-max-n" min="10" max="100" value="50">
+                <div style="text-align: right; color: #94a3b8; font-size: 0.8rem; margin-top: 0.5rem;">Max N: <span id="val-max-n">50</span></div>
+            </div>
+             <button id="reset">Reset View</button>
+        </div>
+
+        <div class="chart-container" id="chart-container">
+            <canvas id="graph" role="img" aria-label="Line chart of operation counts against input size n for the growth rates chosen with the checkboxes (constant, logarithmic, linear, n log n, quadratic, exponential). Faster-growing functions rise more steeply as n increases."></canvas>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graph');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('chart-container');
+        const tooltip = document.getElementById('tooltip');
+        const maxNControl = document.getElementById('range-max-n');
+        const maxNVal = document.getElementById('val-max-n');
+
+        let width, height;
+        let maxN = 50;
+        let maxY = 0; // Dynamic based on active functions
+
+        // Function Definitions
+        const functions = {
+            'O1': { label: 'O(1)', color: '#22c55e', fn: (n) => 1 },
+            'OlogN': { label: 'O(log n)', color: '#38bdf8', fn: (n) => Math.log2(Math.max(1, n)) },
+            'On': { label: 'O(n)', color: '#fbbf24', fn: (n) => n },
+            'OnlogN': { label: 'O(n log n)', color: '#f472b6', fn: (n) => n * Math.log2(Math.max(1, n)) },
+            'On2': { label: 'O(n²)', color: '#f87171', fn: (n) => n * n },
+            'O2n': { label: 'O(2ⁿ)', color: '#a855f7', fn: (n) => Math.pow(2, n) }
+        };
+
+        const activeFunctions = new Set(['O1', 'OlogN', 'On', 'OnlogN', 'On2']);
+
+        function resize() {
+            width = container.clientWidth;
+            height = container.clientHeight;
+            // Scale for retina
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+            draw();
+        }
+
+        function getMaxY() {
+            // Find appropriate Y max based on visible functions at maxN
+            let maxVal = 0;
+            activeFunctions.forEach(key => {
+                const val = functions[key].fn(maxN);
+                if (key === 'O2n' && val > 5000) return; // Don't let exponential blow up the scale too much if selected
+                if (val > maxVal) maxVal = val;
+            });
+            // Cap exponential impact or others to keep chart readable
+            // If O(n^2) is on, it usually dictates the scale.
+            // If only O(1) is on, scale is small.
+            return maxVal || 10;
+        }
+
+        function coordToPixel(n, val) {
+            const x = (n / maxN) * (width - 60) + 40; // 40px padding left
+            const y = height - 40 - (val / maxY) * (height - 60); // 40px padding bottom
+            return { x, y };
+        }
+
+        function pixelToCoord(x, y) {
+             const n = ((x - 40) / (width - 60)) * maxN;
+             return Math.max(0, Math.min(maxN, n));
+        }
+
+        function draw() {
+            maxY = getMaxY() * 1.1; // Add 10% padding
+            
+            // Clear
+            ctx.clearRect(0, 0, width, height);
+
+            // Axes
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // Y Axis
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 40);
+            // X Axis
+            ctx.lineTo(width - 20, height - 40);
+            ctx.stroke();
+
+            // Grid lines & Labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = '10px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'right';
+            
+            // Y Grid
+            const ySteps = 5;
+            for (let i = 0; i <= ySteps; i++) {
+                const val = (maxY / ySteps) * i;
+                const y = height - 40 - (i / ySteps) * (height - 60);
+                if (i > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(40, y);
+                    ctx.lineTo(width - 20, y);
+                    ctx.strokeStyle = 'rgba(51, 65, 85, 0.5)';
+                    ctx.stroke();
+                }
+                // Small ranges have fractional ticks (e.g. 1.24, 2.48): keep 2 decimals there
+                ctx.fillText(maxY / ySteps < 10 ? +val.toFixed(2) : Math.round(val), 35, y + 3);
+            }
+
+            // X Grid
+            ctx.textAlign = 'center';
+            const xSteps = 5;
+            for (let i = 0; i <= xSteps; i++) {
+                const val = (maxN / xSteps) * i;
+                const x = 40 + (i / xSteps) * (width - 60);
+                if (i > 0) {
+                     ctx.beginPath();
+                    ctx.moveTo(x, height - 40);
+                    ctx.lineTo(x, 20);
+                    ctx.strokeStyle = 'rgba(51, 65, 85, 0.5)';
+                    ctx.stroke();
+                }
+                ctx.fillText(Math.round(val), x, height - 25);
+            }
+            
+            // Axis Titles
+            ctx.save();
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px Inter, system-ui, sans-serif';
+            ctx.fillText("Input Size (N)", width / 2 + 20, height - 5);
+            ctx.translate(15, height / 2 - 20);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText("Operations / Time", 0, 0);
+            ctx.restore();
+
+
+            // Draw Functions
+            activeFunctions.forEach(key => {
+                const func = functions[key];
+                ctx.beginPath();
+                ctx.strokeStyle = func.color;
+                ctx.lineWidth = 3;
+                
+                // Draw curve
+                ctx.moveTo(coordToPixel(0, 0).x, coordToPixel(0, 0).y); // Start at 0,0 conceptually
+                for (let i = 0; i <= 100; i++) {
+                    const n = (i / 100) * maxN;   // integer counter, so the last sample is exactly maxN
+                    const val = func.fn(n);
+                    const pos = coordToPixel(n, val);
+                    if (n === 0) ctx.moveTo(pos.x, pos.y);
+                    else ctx.lineTo(pos.x, pos.y);
+                    // Clip visually: stop after the segment that leaves the top of the plot
+                    if (pos.y < 20) break;
+                }
+                ctx.stroke();
+            });
+        }
+
+        // Interaction
+        document.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+            chk.addEventListener('change', (e) => {
+                if (e.target.checked) activeFunctions.add(e.target.dataset.fn);
+                else activeFunctions.delete(e.target.dataset.fn);
+                draw();
+            });
+        });
+
+        maxNControl.addEventListener('input', (e) => {
+            maxN = parseInt(e.target.value);
+            maxNVal.textContent = maxN;
+            draw();
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+             maxNControl.value = 50;
+             maxN = 50;
+             maxNVal.textContent = 50;
+             
+             // Reset checkboxes to default
+             activeFunctions.clear();
+             ['O1', 'OlogN', 'On', 'OnlogN', 'On2'].forEach(k => activeFunctions.add(k));
+             document.querySelectorAll('input[type="checkbox"]').forEach(c => {
+                 c.checked = activeFunctions.has(c.dataset.fn);
+             });
+             
+             draw();
+        });
+
+        // Hover Effect
+        container.addEventListener('mousemove', (e) => {
+             const rect = canvas.getBoundingClientRect();
+             const x = e.clientX - rect.left; // CSS pixels, the units of width and coordToPixel
+             // Convert back to N
+             const nVal = Math.round(pixelToCoord(x, 0));
+             
+             if (x > 40 && nVal >= 0 && nVal <= maxN) {
+                 draw(); // Redraw to clear previous line
+                 
+                 // Draw vertical indicator line
+                 const lineX = coordToPixel(nVal, 0).x;
+                 ctx.beginPath();
+                 ctx.moveTo(lineX, 20);
+                 ctx.lineTo(lineX, height - 40);
+                 ctx.strokeStyle = '#fff';
+                 ctx.setLineDash([5, 5]);
+                 ctx.lineWidth = 1;
+                 ctx.stroke();
+                 ctx.setLineDash([]);
+                 
+                 // Show Tooltip
+                 tooltip.style.display = 'block';
+                 
+                 let html = `<strong>N = ${nVal}</strong><hr style="border:0; border-top:1px solid #334155; margin:0.5rem 0;">`;
+                 activeFunctions.forEach(key => {
+                     const val = functions[key].fn(nVal);
+                     html += `
+                        <div class="tooltip-row">
+                            <span style="color:${functions[key].color}">● ${functions[key].label}</span>
+                            <span>${val.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                        </div>
+                     `;
+                 });
+                 tooltip.innerHTML = html;
+                 // Keep the tooltip inside the chart (it clips overflow): left of the pointer near the right edge
+                 const tipX = e.clientX - rect.left, tipY = e.clientY - rect.top;
+                 const left = tipX + 20 + tooltip.offsetWidth > width ? tipX - 20 - tooltip.offsetWidth : tipX + 20;
+                 tooltip.style.left = Math.max(0, left) + 'px';
+                 tooltip.style.top = Math.max(0, Math.min(tipY, height - tooltip.offsetHeight)) + 'px';
+             } else {
+                 tooltip.style.display = 'none';
+                 draw();
+             }
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+            draw();
+        });
+
+        window.addEventListener('resize', resize);
+        resize(); // Init
+
+    </script>
+    <script src="presenter.js"></script>
+</body>
+</html>

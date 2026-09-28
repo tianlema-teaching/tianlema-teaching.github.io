@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kruskal's Algorithm Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .edge {
+            position: absolute;
+            height: 3px;
+            transform-origin: left center;
+            transition: all 0.3s;
+        }
+
+        .edge.pending {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .edge.considering {
+            background: #ffd43b;
+            height: 5px;
+        }
+
+        .edge.selected {
+            background: #51cf66;
+            height: 4px;
+        }
+
+        .edge.rejected {
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        .edge-label {
+            position: absolute;
+            font-size: 0.75rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ffd43b;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .edge-list {
+            font-size: 0.9rem;
+        }
+
+        .edge-item {
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .edge-item.pending {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .edge-item.selected {
+            background: rgba(81, 207, 102, 0.3);
+        }
+
+        .edge-item.rejected {
+            background: rgba(255, 107, 107, 0.2);
+            text-decoration: line-through;
+        }
+
+        .edge-item.considering {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .mst-weight {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(81, 207, 102, 0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🌲</span> Kruskal's MST Algorithm</h1>
+
+        <div class="explanation">
+            <h3>How It Works (Greedy)</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Sort all edges by weight (ascending)</li>
+                <li>For each edge, check if it creates a cycle (using Union-Find)</li>
+                <li>If no cycle, add edge to MST</li>
+                <li>If cycle, reject edge</li>
+                <li>Stop when MST has V-1 edges</li>
+            </ol>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to find Minimum Spanning Tree</div>
+            </div>
+
+            <div class="sidebar">
+                <h3>Edges (Sorted)</h3>
+                <div class="edge-list" id="edgeList"></div>
+                <div class="mst-weight">MST Weight: <span id="mstWeight">0</span></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = {
+            A: { x: 50, y: 100 },
+            B: { x: 200, y: 30 },
+            C: { x: 350, y: 100 },
+            D: { x: 50, y: 250 },
+            E: { x: 200, y: 180 },
+            F: { x: 350, y: 250 }
+        };
+
+        const edges = [
+            { from: 'A', to: 'B', weight: 4 },
+            { from: 'A', to: 'D', weight: 2 },
+            { from: 'B', to: 'C', weight: 6 },
+            { from: 'B', to: 'E', weight: 5 },
+            { from: 'C', to: 'E', weight: 3 },
+            { from: 'C', to: 'F', weight: 8 },
+            { from: 'D', to: 'E', weight: 1 },
+            { from: 'E', to: 'F', weight: 7 }
+        ];
+
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const sortedEdges = [...edges].sort((a, b) => a.weight - b.weight);
+            const parent = {};
+            const rank = {};
+            Object.keys(nodes).forEach(n => { parent[n] = n; rank[n] = 0; });
+
+            function find(x) {
+                if (parent[x] !== x) parent[x] = find(parent[x]);
+                return parent[x];
+            }
+
+            function union(x, y) {
+                const px = find(x), py = find(y);
+                if (px === py) return false;
+                if (rank[px] < rank[py]) parent[px] = py;
+                else if (rank[px] > rank[py]) parent[py] = px;
+                else { parent[py] = px; rank[px]++; }
+                return true;
+            }
+
+            const edgeStatus = sortedEdges.map(e => ({ ...e, status: 'pending' }));
+            const needed = Object.keys(nodes).length - 1;
+            let mstWeight = 0, mstCount = 0;
+
+            steps.push({
+                edges: edgeStatus.map(e => ({ ...e })),
+                considering: null,
+                mstWeight: 0,
+                status: "Edges sorted by weight. Ready to build MST."
+            });
+
+            for (let i = 0; i < sortedEdges.length && mstCount < needed; i++) {
+                const edge = sortedEdges[i];
+                edgeStatus[i].status = 'considering';
+
+                steps.push({
+                    edges: edgeStatus.map(e => ({ ...e })),
+                    considering: i,
+                    mstWeight: mstWeight,
+                    status: `Consider edge ${edge.from}-${edge.to} (weight ${edge.weight})`
+                });
+
+                if (union(edge.from, edge.to)) {
+                    edgeStatus[i].status = 'selected';
+                    mstWeight += edge.weight;
+                    mstCount++;
+                    steps.push({
+                        edges: edgeStatus.map(e => ({ ...e })),
+                        considering: null,
+                        mstWeight: mstWeight,
+                        status: `✓ Add ${edge.from}-${edge.to}. No cycle formed. MST weight = ${mstWeight}`
+                    });
+                } else {
+                    edgeStatus[i].status = 'rejected';
+                    steps.push({
+                        edges: edgeStatus.map(e => ({ ...e })),
+                        considering: null,
+                        mstWeight: mstWeight,
+                        status: `✗ Reject ${edge.from}-${edge.to}. Would create a cycle!`
+                    });
+                }
+            }
+
+            const unchecked = edgeStatus.filter(e => e.status === 'pending').map(e => `${e.from}-${e.to}`);
+            steps.push({
+                edges: edgeStatus.map(e => ({ ...e })),
+                considering: null,
+                mstWeight: mstWeight,
+                status: `✓ MST Complete! It has V-1 = ${needed} edges` +
+                    (unchecked.length ? `, so ${unchecked.join(', ')} ${unchecked.length > 1 ? 'are' : 'is'} never checked` : '') +
+                    `. Total weight = ${mstWeight}`
+            });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            step.edges.forEach((edge, idx) => {
+                const from = nodes[edge.from];
+                const to = nodes[edge.to];
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge ' + edge.status;
+                if (step.considering === idx) edgeEl.classList.add('considering');
+                edgeEl.style.left = (from.x + 20) + 'px';
+                edgeEl.style.top = (from.y + 20) + 'px';
+                edgeEl.style.width = length + 'px';   // centre to centre; the nodes, drawn on top, hide the ends
+                edgeEl.style.transform = `rotate(${angle}deg)`;
+                canvas.appendChild(edgeEl);
+
+                const label = document.createElement('div');
+                label.className = 'edge-label';
+                label.textContent = edge.weight;
+                label.style.left = (from.x + dx / 2 + 5) + 'px';
+                label.style.top = (from.y + dy / 2 - 5) + 'px';
+                canvas.appendChild(label);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                nodeEl.style.left = pos.x + 'px';
+                nodeEl.style.top = pos.y + 'px';
+                nodeEl.textContent = name;
+                canvas.appendChild(nodeEl);
+            });
+
+            const edgeList = document.getElementById('edgeList');
+            edgeList.innerHTML = step.edges.map((e, i) => `
+                <div class="edge-item ${e.status} ${step.considering === i ? 'considering' : ''}">
+                    <span>${e.from}-${e.to}</span><span>${e.weight}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('status').textContent = step.status;
+            document.getElementById('mstWeight').textContent = step.mstWeight;
+        }
+
+        function reset() {
+            stopAlgo();
+            currentStep = 0;
+            generateSteps();
+            renderGraph(steps[0]);
+        }
+
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+        }
+
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderGraph(steps[currentStep]); }
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+
+        function stopAlgo() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        generateSteps();
+        renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

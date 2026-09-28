@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Algorithm Visualizations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Quick Start Section */
+        .quick-start {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .quick-start h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quick-start p {
+            text-align: center;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .study-paths {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .path-btn {
+            display: block;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .path-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+        }
+
+        .path-btn .path-icon {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .path-btn .path-label {
+            display: block;
+            font-weight: 600;
+        }
+
+        .path-btn .path-desc {
+            display: block;
+            font-size: 0.75em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        /* Category Styling */
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h2 {
+            color: #00d4ff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .card h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .card .complexity {
+            margin-top: 15px;
+            padding: 8px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #00d4ff;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .toc h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+
+        .toc-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toc-link {
+            padding: 8px 16px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 20px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .toc-link:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+
+        footer .presenter-hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        footer kbd {
+            font-family: monospace;
+            padding: 0 5px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Algorithm Visualizations</h1>
+    <p class="intro">Interactive tools to master algorithms. Click any card to start!</p>
+
+    <!-- Quick Start Guide -->
+    <div class="quick-start">
+        <h2>🚀 Quick Start - Where Should I Begin?</h2>
+        <p>Choose a learning path based on what you want to study:</p>
+        <div class="study-paths">
+            <a href="#fundamentals" class="path-btn">
+                <span class="path-icon">📚</span>
+                <span class="path-label">Fundamentals</span>
+                <span class="path-desc">Start here if new to algorithms</span>
+            </a>
+            <a href="#sorting" class="path-btn">
+                <span class="path-icon">📊</span>
+                <span class="path-label">Sorting</span>
+                <span class="path-desc">Bubble, Selection, Insertion, Merge, Quick, Heap</span>
+            </a>
+            <a href="#graphs" class="path-btn">
+                <span class="path-icon">🕸️</span>
+                <span class="path-label">Graphs</span>
+                <span class="path-desc">BFS, DFS, MST, Shortest Paths</span>
+            </a>
+            <a href="#dp" class="path-btn">
+                <span class="path-icon">🧩</span>
+                <span class="path-label">Dynamic Programming</span>
+                <span class="path-desc">Fibonacci, Knapsack, LCS</span>
+            </a>
+            <a href="#theory" class="path-btn">
+                <span class="path-icon">🧠</span>
+                <span class="path-label">Complexity Theory</span>
+                <span class="path-desc">P, NP, NP-complete</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc">
+        <h3>📑 Jump to Section</h3>
+        <div class="toc-grid">
+            <a href="#fundamentals" class="toc-link">Fundamentals</a>
+            <a href="#sorting" class="toc-link">Sorting</a>
+            <a href="#data-structures" class="toc-link">Data Structures</a>
+            <a href="#greedy" class="toc-link">Greedy</a>
+            <a href="#graphs" class="toc-link">Graph Traversal</a>
+            <a href="#mst" class="toc-link">MST</a>
+            <a href="#shortest-paths" class="toc-link">Shortest Paths</a>
+            <a href="#dp" class="toc-link">Dynamic Programming</a>
+            <a href="#theory" class="toc-link">Complexity Theory</a>
+            <a href="#randomized" class="toc-link">Randomized</a>
+            <a href="#approximation" class="toc-link">Approximation</a>
+        </div>
+    </div>
+
+    <!-- FUNDAMENTALS -->
+    <div class="category" id="fundamentals">
+        <h2>🌟 Fundamentals (Start Here!)</h2>
+        <div class="grid">
+            <a href="linear_search.html" class="card">
+                <h3>Linear Search</h3>
+                <p>Search by checking each element one by one. The simplest search algorithm.</p>
+                <div class="complexity">Time: O(n) | Space: O(1)</div>
+            </a>
+            <a href="binary_search.html" class="card">
+                <h3>Binary Search</h3>
+                <p>Repeatedly halve a sorted array — discard the losing half each step.</p>
+                <div class="complexity">Time: O(log n) | Space: O(1)</div>
+            </a>
+            <a href="efficiency_comparison.html" class="card">
+                <h3>Why Efficiency Matters</h3>
+                <p>Compare O(n) vs O(log n) — see why algorithm choice matters as n grows!</p>
+                <div class="complexity">Interactive comparison tool</div>
+            </a>
+            <a href="growth_rates.html" class="card">
+                <h3>Growth Rates & Big-O</h3>
+                <p>Visualize how O(1), O(log n), O(n), O(n²), O(2ⁿ) grow with input size.</p>
+                <div class="complexity">Interactive chart</div>
+            </a>
+            <a href="master_theorem.html" class="card">
+                <h3>Master Theorem Calculator</h3>
+                <p>Solve recurrences T(n) = aT(n/b) + Θ(n<sup>d</sup>) automatically.</p>
+                <div class="complexity">Cases 1, 2, 3</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- SORTING -->
+    <div class="category" id="sorting">
+        <h2>📊 Sorting Algorithms</h2>
+        <div class="grid">
+            <a href="bubble_sort.html" class="card">
+                <h3>Bubble Sort</h3>
+                <p>Repeatedly swap adjacent out-of-order pairs; the largest values bubble to the end.</p>
+                <div class="complexity">Time: O(n²) avg | Space: O(1)</div>
+            </a>
+            <a href="selection_sort.html" class="card">
+                <h3>Selection Sort</h3>
+                <p>Repeatedly find the minimum of the unsorted part and place it at the front.</p>
+                <div class="complexity">Time: O(n²) | Space: O(1)</div>
+            </a>
+            <a href="insertion_sort.html" class="card">
+                <h3>Insertion Sort</h3>
+                <p>Build sorted array one element at a time by inserting into correct position.</p>
+                <div class="complexity">Time: O(n²) avg | Space: O(1)</div>
+            </a>
+            <a href="merge_sort.html" class="card">
+                <h3>Merge Sort</h3>
+                <p>Level-by-level divide down to single values, then step-by-step merge — shown as a recursion tree.</p>
+                <div class="complexity">Time: O(n log n) | Space: O(n)</div>
+            </a>
+            <a href="quicksort.html" class="card">
+                <h3>Quicksort</h3>
+                <p>Full divide-and-conquer trace: partitions lock pivots in place, recursion tree, step by step.</p>
+                <div class="complexity">Time: O(n log n) avg | Space: O(log n) avg</div>
+            </a>
+            <a href="quicksort_partition_lomuto.html" class="card">
+                <h3>Quicksort Partition (Lomuto)</h3>
+                <p>Step-by-step visualization of the Lomuto partition scheme.</p>
+                <div class="complexity">Time: O(n)</div>
+            </a>
+            <a href="quicksort_partition_hoare.html" class="card">
+                <h3>Quicksort Partition (Hoare)</h3>
+                <p>Step-by-step visualization of the Hoare partition scheme.</p>
+                <div class="complexity">Time: O(n)</div>
+            </a>
+            <a href="heapsort.html" class="card">
+                <h3>Heapsort</h3>
+                <p>Build max-heap, repeatedly extract maximum to build sorted array.</p>
+                <div class="complexity">Time: O(n log n) | Space: O(1)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- DATA STRUCTURES -->
+    <div class="category" id="data-structures">
+        <h2>🏗️ Data Structures</h2>
+        <div class="grid">
+            <a href="binary_heap.html" class="card">
+                <h3>Binary Heap</h3>
+                <p>Complete binary tree with heap property. Foundation for priority queues.</p>
+                <div class="complexity">Insert/Extract: O(log n) | Build: O(n)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- GREEDY -->
+    <div class="category" id="greedy">
+        <h2>🎯 Greedy Algorithms</h2>
+        <div class="grid">
+            <a href="activity_selection.html" class="card">
+                <h3>Activity Selection</h3>
+                <p>Select maximum number of non-overlapping activities by earliest finish time.</p>
+                <div class="complexity">Time: O(n log n) | Space: O(1)</div>
+            </a>
+            <a href="huffman.html" class="card">
+                <h3>Huffman Coding</h3>
+                <p>Build optimal prefix-free binary codes for data compression.</p>
+                <div class="complexity">Time: O(n log n) | Space: O(n)</div>
+            </a>
+            <a href="fractional_knapsack.html" class="card">
+                <h3>Fractional Knapsack</h3>
+                <p>Maximize value by taking fractions of items (greedy by value/weight).</p>
+                <div class="complexity">Time: O(n log n) | Space: O(1)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- GRAPH TRAVERSAL -->
+    <div class="category" id="graphs">
+        <h2>🕸️ Graph Traversal</h2>
+        <div class="grid">
+            <a href="bfs.html" class="card">
+                <h3>Breadth-First Search (BFS)</h3>
+                <p>Explore neighbors level by level. Finds shortest path in unweighted graphs.</p>
+                <div class="complexity">Time: O(V + E) | Space: O(V)</div>
+            </a>
+            <a href="dfs.html" class="card">
+                <h3>Depth-First Search (DFS)</h3>
+                <p>Explore as deep as possible before backtracking. Used for connectivity, cycles.</p>
+                <div class="complexity">Time: O(V + E) | Space: O(V)</div>
+            </a>
+            <a href="bfs_dfs_comparison.html" class="card">
+                <h3>BFS vs DFS Comparison</h3>
+                <p>Switch between BFS (queue) and DFS (stack) on the same graph and compare visit orders.</p>
+                <div class="complexity">Time: O(V + E)</div>
+            </a>
+            <a href="topological_sort.html" class="card">
+                <h3>Topological Sort</h3>
+                <p>Linear ordering of vertices in DAG where u comes before v for edge (u,v).</p>
+                <div class="complexity">Time: O(V + E) | Space: O(V)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- MST -->
+    <div class="category" id="mst">
+        <h2>🌲 Minimum Spanning Trees</h2>
+        <div class="grid">
+            <a href="kruskal.html" class="card">
+                <h3>Kruskal's Algorithm</h3>
+                <p>Build MST by adding edges in order of weight, avoiding cycles (Union-Find).</p>
+                <div class="complexity">Time: O(E log E) | Space: O(V)</div>
+            </a>
+            <a href="prim.html" class="card">
+                <h3>Prim's Algorithm</h3>
+                <p>Build MST by growing tree from a start vertex, always adding minimum edge.</p>
+                <div class="complexity">Time: O(E log V) | Space: O(V)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- SHORTEST PATHS -->
+    <div class="category" id="shortest-paths">
+        <h2>🛤️ Shortest Path Algorithms</h2>
+        <div class="grid">
+            <a href="dijkstra.html" class="card">
+                <h3>Dijkstra's Algorithm</h3>
+                <p>Find shortest paths from source to all vertices (non-negative weights).</p>
+                <div class="complexity">Time: O(E log V) | Space: O(V)</div>
+            </a>
+            <a href="bellman_ford.html" class="card">
+                <h3>Bellman-Ford Algorithm</h3>
+                <p>Find shortest paths even with negative edges. Detects negative cycles.</p>
+                <div class="complexity">Time: O(VE) | Space: O(V)</div>
+            </a>
+            <a href="floyd_warshall.html" class="card">
+                <h3>Floyd-Warshall Algorithm</h3>
+                <p>Find all-pairs shortest paths using dynamic programming.</p>
+                <div class="complexity">Time: O(V³) | Space: O(V²)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- DYNAMIC PROGRAMMING -->
+    <div class="category" id="dp">
+        <h2>🧩 Dynamic Programming</h2>
+        <div class="grid">
+            <a href="fibonacci.html" class="card">
+                <h3>Fibonacci (DP Intro)</h3>
+                <p>Classic example comparing naive recursion with bottom-up tabulation.</p>
+                <div class="complexity">Time: O(n) | Space: O(n)</div>
+            </a>
+            <a href="dp_fibonacci.html" class="card">
+                <h3>DP Fibonacci (Memoization Viz)</h3>
+                <p>See how memoization avoids redundant calls compared to naive recursion.</p>
+                <div class="complexity">Naive O(2ⁿ) vs DP O(n)</div>
+            </a>
+            <a href="coin_change.html" class="card">
+                <h3>Coin Change</h3>
+                <p>Find minimum coins to make a target amount.</p>
+                <div class="complexity">Time: O(n × amount) | Space: O(amount)</div>
+            </a>
+            <a href="knapsack.html" class="card">
+                <h3>0/1 Knapsack</h3>
+                <p>Maximize value with weight constraint. Each item taken or left entirely.</p>
+                <div class="complexity">Time: O(nW) | Space: O(nW)</div>
+            </a>
+            <a href="lcs.html" class="card">
+                <h3>Longest Common Subsequence</h3>
+                <p>Find longest sequence appearing in both strings in same order.</p>
+                <div class="complexity">Time: O(mn) | Space: O(mn)</div>
+            </a>
+            <a href="edit_distance.html" class="card">
+                <h3>Edit Distance</h3>
+                <p>Minimum insertions, deletions, substitutions to transform one string to another.</p>
+                <div class="complexity">Time: O(mn) | Space: O(mn)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- COMPLEXITY THEORY -->
+    <div class="category" id="theory">
+        <h2>🧠 Complexity Theory</h2>
+        <div class="grid">
+            <a href="p_vs_np.html" class="card">
+                <h3>P vs NP Visualization</h3>
+                <p>Understand complexity classes P, NP, and NP-Complete with visual diagrams.</p>
+                <div class="complexity">The $1M Question</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- RANDOMIZED -->
+    <div class="category" id="randomized">
+        <h2>🎲 Randomized Algorithms</h2>
+        <div class="grid">
+            <a href="quicksort_randomized.html" class="card">
+                <h3>Randomized Quicksort</h3>
+                <p>Random pivots make the worst case unlikely on any input — full trace with recursion tree, fresh pivots each reset.</p>
+                <div class="complexity">Expected: O(n log n) | Space: O(log n)</div>
+            </a>
+            <a href="quickselect.html" class="card">
+                <h3>Quickselect</h3>
+                <p>Find k-th smallest element in expected linear time.</p>
+                <div class="complexity">Expected: O(n) | Worst: O(n²)</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- APPROXIMATION -->
+    <div class="category" id="approximation">
+        <h2>📐 Approximation Algorithms</h2>
+        <div class="grid">
+            <a href="vertex_cover.html" class="card">
+                <h3>Vertex Cover (2-Approx)</h3>
+                <p>Find approximate minimum vertex cover using edge matching.</p>
+                <div class="complexity">Ratio: 2 | Time: O(V + E)</div>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Interactive visualizations for learning algorithm concepts</p>
+        <p class="presenter-hint">Presenting? Open any page with <kbd>?present</kbd> at the end of its address, then press
+            <kbd>T</kbd> for the laser, spotlight, pen and marker, and <kbd>?</kbd> for every key.
+            <kbd>?present=off</kbd> turns the tools off again.</p>
+    </footer>
+    <script src="presenter.js"></script>
+</body>
+
+</html>

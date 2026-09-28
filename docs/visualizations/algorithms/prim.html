@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Prim's Algorithm Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .node.in-tree {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+        }
+
+        .node.current {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+            transform: scale(1.2);
+        }
+
+        .node .key {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.7rem;
+            color: #00d4ff;
+        }
+
+        .node.label-above .key {
+            bottom: auto;
+            top: -20px;
+        }
+
+        .edge {
+            position: absolute;
+            height: 3px;
+            transform-origin: left center;
+            transition: all 0.3s;
+        }
+
+        .edge.available {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .edge.considering {
+            background: #ffd43b;
+            height: 5px;
+        }
+
+        .edge.in-mst {
+            background: #51cf66;
+            height: 4px;
+        }
+
+        .edge-label {
+            position: absolute;
+            font-size: 0.75rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ffd43b;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .pq-item {
+            padding: 6px 10px;
+            margin: 4px 0;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pq-item.min {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .mst-weight {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(81, 207, 102, 0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🌲</span> Prim's MST Algorithm</h1>
+
+        <div class="explanation">
+            <h3>How It Works (Greedy)</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Start from any vertex, add to tree</li>
+                <li>Find minimum weight edge connecting tree to non-tree vertex</li>
+                <li>Add that edge and vertex to tree</li>
+                <li>Repeat until all vertices are in tree</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Key:</strong> Uses priority queue with key[v] = weight of the lightest
+                edge connecting v to the tree</p>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to find MST starting from A</div>
+            </div>
+            <div class="sidebar">
+                <h3>Priority Queue (by key)</h3>
+                <div id="pqDisplay"></div>
+                <div class="mst-weight">MST Weight: <span id="mstWeight">0</span></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = { A: { x: 50, y: 100, labelAbove: true }, B: { x: 200, y: 30, labelAbove: true }, C: { x: 350, y: 100, labelAbove: true }, D: { x: 50, y: 250 }, E: { x: 200, y: 180 }, F: { x: 350, y: 250 } };
+        const edges = [
+            { from: 'A', to: 'B', weight: 4 }, { from: 'A', to: 'D', weight: 2 }, { from: 'B', to: 'C', weight: 6 },
+            { from: 'B', to: 'E', weight: 5 }, { from: 'C', to: 'E', weight: 3 }, { from: 'C', to: 'F', weight: 8 },
+            { from: 'D', to: 'E', weight: 1 }, { from: 'E', to: 'F', weight: 7 }
+        ];
+
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function getEdge(u, v) {
+            return edges.find(e => (e.from === u && e.to === v) || (e.from === v && e.to === u));
+        }
+
+        function generateSteps() {
+            steps = [];
+            const key = {}, parent = {}, inTree = new Set();
+            const mstEdges = [];
+            Object.keys(nodes).forEach(n => { key[n] = Infinity; parent[n] = null; });
+            key['A'] = 0;
+
+            steps.push({ key: { ...key }, inTree: [...inTree], mstEdges: [...mstEdges], current: null, status: "Initialize: key[A]=0, all others=∞" });
+
+            while (inTree.size < Object.keys(nodes).length) {
+                let minNode = null, minKey = Infinity;
+                Object.keys(nodes).forEach(n => {
+                    if (!inTree.has(n) && key[n] < minKey) { minKey = key[n]; minNode = n; }
+                });
+
+                if (!minNode) break;
+                inTree.add(minNode);
+                if (parent[minNode]) mstEdges.push({ from: parent[minNode], to: minNode });
+
+                steps.push({
+                    key: { ...key }, inTree: [...inTree], mstEdges: [...mstEdges], current: minNode,
+                    status: `Extract ${minNode} (key=${minKey}). Add to MST.`
+                });
+
+                const changed = [], kept = [];
+                edges.filter(e => e.from === minNode || e.to === minNode).forEach(e => {
+                    const neighbor = e.from === minNode ? e.to : e.from;
+                    if (inTree.has(neighbor)) return;
+                    if (e.weight < key[neighbor]) {
+                        changed.push(`key[${neighbor}] ${key[neighbor] === Infinity ? '∞' : key[neighbor]}→${e.weight}`);
+                        key[neighbor] = e.weight;
+                        parent[neighbor] = minNode;
+                    } else {
+                        kept.push(`key[${neighbor}] stays ${key[neighbor]} (${e.from}-${e.to} = ${e.weight} ≥ ${key[neighbor]})`);
+                    }
+                });
+
+                steps.push({
+                    key: { ...key }, inTree: [...inTree], mstEdges: [...mstEdges], current: minNode,
+                    status: changed.length ? `Update keys of neighbors of ${minNode}: ${changed.join(', ')}` + (kept.length ? `; ${kept.join(', ')}` : '')
+                        : kept.length ? `Neighbors of ${minNode}: no key improves — ${kept.join(', ')}`
+                        : `All neighbors of ${minNode} are already in the tree: no key changes`
+                });
+            }
+
+            const totalWeight = mstEdges.reduce((sum, e) => sum + getEdge(e.from, e.to).weight, 0);
+            steps.push({
+                key: { ...key }, inTree: [...inTree], mstEdges: [...mstEdges], current: null,
+                status: `✓ MST Complete! Total weight = ${totalWeight}`
+            });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            edges.forEach(edge => {
+                const from = nodes[edge.from], to = nodes[edge.to];
+                const dx = to.x - from.x, dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge available';
+                if (step.mstEdges.some(e => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from))) {
+                    edgeEl.className = 'edge in-mst';
+                }
+                edgeEl.style.cssText = `left:${from.x + 20}px;top:${from.y + 20}px;width:${length}px;transform:rotate(${angle}deg)`;   // centre to centre; nodes drawn on top hide the ends
+                canvas.appendChild(edgeEl);
+
+                const label = document.createElement('div');
+                label.className = 'edge-label';
+                label.textContent = edge.weight;
+                label.style.cssText = `left:${from.x + dx / 2 + 5}px;top:${from.y + dy / 2 - 5}px`;
+                canvas.appendChild(label);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                if (step.current === name) nodeEl.classList.add('current');
+                else if (step.inTree.includes(name)) nodeEl.classList.add('in-tree');
+                if (pos.labelAbove) nodeEl.classList.add('label-above');
+                nodeEl.style.cssText = `left:${pos.x}px;top:${pos.y}px`;
+                nodeEl.innerHTML = `${name}<span class="key">${step.key[name] === Infinity ? '∞' : step.key[name]}</span>`;
+                canvas.appendChild(nodeEl);
+            });
+
+            const pq = Object.entries(step.key).filter(([n]) => !step.inTree.includes(n)).sort((a, b) => a[1] - b[1]);
+            document.getElementById('pqDisplay').innerHTML = pq.map(([n, k], i) =>
+                `<div class="pq-item ${i === 0 ? 'min' : ''}"><span>${n}</span><span>${k === Infinity ? '∞' : k}</span></div>`
+            ).join('');
+
+            document.getElementById('status').textContent = step.status;
+            const totalWeight = step.mstEdges.reduce((sum, e) => sum + getEdge(e.from, e.to).weight, 0);
+            document.getElementById('mstWeight').textContent = totalWeight;
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderGraph(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderGraph(steps[currentStep]); } }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+/* Teaching site. Light and dark themes follow the visitor's system setting. */
+:root {
+  --bg: #ffffff; --fg: #1c1b1a; --muted: #57534e; --line: #e7e5e4; --soft: #f5f5f4;
+  --accent: #9a3412; --accent-strong: #7c2d12; --focus: #c2410c;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171412; --fg: #f5f5f4; --muted: #b8b2ad; --line: #3a3532; --soft: #221e1b;
+    --accent: #fdba74; --accent-strong: #fed7aa; --focus: #fb923c;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+a { color: var(--accent); text-underline-offset: 0.15em; }
+a:hover { color: var(--accent-strong); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--bg); padding: 0.5rem 1rem; }
+.skip:focus { left: 1rem; }
+header.site, main, footer.site { max-width: 60rem; margin: 0 auto; padding: 0 1rem; }
+header.site { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; padding-top: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
+.brand { font-weight: 700; color: var(--fg); text-decoration: none; }
+header.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.95rem; }
+header.site nav a { text-decoration: none; }
+header.site nav a[aria-current="page"] { text-decoration: underline; font-weight: 600; }
+main { padding-top: 1.5rem; padding-bottom: 3rem; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0.5rem 0 1rem; }
+h2 { font-size: 1.35rem; margin: 2.25rem 0 0.75rem; }
+p, ul, ol { max-width: 46rem; }
+li + li { margin-top: 0.25rem; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--soft); padding: 0.1em 0.3em; border-radius: 4px; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+table { border-collapse: collapse; font-size: 0.95rem; min-width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--line); }
+th { background: var(--soft); }
+footer.site { border-top: 1px solid var(--line); padding-top: 1rem; padding-bottom: 2rem; color: var(--muted); font-size: 0.9rem; }

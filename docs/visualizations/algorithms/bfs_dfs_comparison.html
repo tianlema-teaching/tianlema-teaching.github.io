@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS vs DFS Visualization</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.6em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            border: 2px solid #6366f1;
+            background: white;
+            color: #6366f1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .mode-btn.active {
+            background: #6366f1;
+            color: white;
+        }
+
+        .mode-btn.bfs.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .mode-btn.dfs.active {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .info-box {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .info-card.bfs {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .info-card.dfs {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .info-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .graph-area {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            min-height: 300px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform: translate(-50%, -50%);
+            border: 3px solid #94a3b8;
+            background: white;
+            color: #475569;
+        }
+
+        .node.visited {
+            background: #fbbf24;
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        .node.current {
+            background: #ef4444;
+            border-color: #dc2626;
+            color: white;
+            animation: pulse 0.5s infinite;
+        }
+
+        .node.done {
+            background: #22c55e;
+            border-color: #16a34a;
+            color: white;
+        }
+
+        @keyframes pulse {
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .edge {
+            position: absolute;
+            background: #cbd5e1;
+            height: 3px;
+            transform-origin: left center;
+        }
+
+        .edge.visited {
+            background: #fbbf24;
+        }
+
+        .queue-stack {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ds-label {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .ds-container {
+            display: flex;
+            gap: 5px;
+            min-width: 200px;
+            min-height: 40px;
+            padding: 5px 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .ds-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #6366f1;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        a.back-link {
+            color: #4f46e5;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1>🔍 BFS vs DFS</h1>
+        <p class="subtitle">Compare Breadth-First and Depth-First Search</p>
+
+        <div class="mode-toggle">
+            <button class="mode-btn bfs active" onclick="setMode('bfs')">BFS (Queue)</button>
+            <button class="mode-btn dfs" onclick="setMode('dfs')">DFS (Stack)</button>
+        </div>
+
+        <div class="info-box">
+            <div class="info-card bfs">
+                <strong>🌊 BFS - Breadth-First</strong>
+                Uses a Queue (FIFO). Explores level by level. Finds shortest path in unweighted graphs.
+            </div>
+            <div class="info-card dfs">
+                <strong>🌲 DFS - Depth-First</strong>
+                Uses a Stack (LIFO). Goes deep before backtracking. Good for topological sort, cycle detection.
+            </div>
+        </div>
+
+        <div class="status" id="status">Click a node to start the search from that node, or click "Next Step".</div>
+
+        <div class="graph-area" id="graph"></div>
+
+        <div class="queue-stack">
+            <span class="ds-label" id="ds-label">Queue:</span>
+            <div class="ds-container" id="ds"></div>
+            <span class="ds-label">Visited:</span>
+            <div class="ds-container" id="visited"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="reset()">🔄 Reset</button>
+            <button onclick="play()" id="btn-play">⏩ Auto Play</button>
+            <button onclick="stepBack()">← Prev</button>
+            <button onclick="step()" id="btn-next">▶️ Next Step</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        // Simple graph: adjacency list
+        const graph = {
+            'A': ['B', 'C'],
+            'B': ['A', 'D', 'E'],
+            'C': ['A', 'F'],
+            'D': ['B'],
+            'E': ['B', 'F'],
+            'F': ['C', 'E', 'G'],
+            'G': ['F']
+        };
+
+        // Node positions (relative to container)
+        const positions = {
+            'A': { x: 0.5, y: 0.12 },
+            'B': { x: 0.3, y: 0.35 },
+            'C': { x: 0.7, y: 0.35 },
+            'D': { x: 0.15, y: 0.65 },
+            'E': { x: 0.45, y: 0.65 },
+            'F': { x: 0.75, y: 0.65 },
+            'G': { x: 0.85, y: 0.9 }
+        };
+
+        let mode = 'bfs';
+        let startNode = 'A';
+        let dataStructure = [];  // Queue for BFS, Stack for DFS
+        let visited = new Set();
+        let current = null;
+        let done = false;
+        let playInterval = null;
+        let steps = [];          // every state of the current search, so Prev can go back
+        let currentStep = 0;
+
+        function setMode(m) {
+            mode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.mode-btn.${m}`).classList.add('active');
+            document.getElementById('ds-label').textContent = m === 'bfs' ? 'Queue:' : 'Stack:';
+            reset();
+        }
+
+        function render() {
+            const area = document.getElementById('graph');
+            area.innerHTML = '';
+            const width = area.offsetWidth;
+            const height = area.offsetHeight;
+
+            // Draw edges
+            const drawnEdges = new Set();
+            for (const node in graph) {
+                for (const neighbor of graph[node]) {
+                    const edgeKey = [node, neighbor].sort().join('-');
+                    if (!drawnEdges.has(edgeKey)) {
+                        drawnEdges.add(edgeKey);
+                        const x1 = positions[node].x * width;
+                        const y1 = positions[node].y * height;
+                        const x2 = positions[neighbor].x * width;
+                        const y2 = positions[neighbor].y * height;
+
+                        const edge = document.createElement('div');
+                        edge.className = 'edge';
+                        if (visited.has(node) && visited.has(neighbor)) edge.classList.add('visited');
+
+                        const dx = x2 - x1, dy = y2 - y1;
+                        const len = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                        edge.style.left = x1 + 'px';
+                        edge.style.top = y1 + 'px';
+                        edge.style.width = len + 'px';
+                        edge.style.transform = `rotate(${angle}deg)`;
+                        area.appendChild(edge);
+                    }
+                }
+            }
+
+            // Draw nodes
+            for (const node in graph) {
+                const el = document.createElement('div');
+                el.className = 'node';
+                el.textContent = node;
+                el.style.left = (positions[node].x * width) + 'px';
+                el.style.top = (positions[node].y * height) + 'px';
+
+                if (node === current) el.classList.add('current');
+                else if (visited.has(node)) el.classList.add(done ? 'done' : 'visited');
+
+                el.onclick = () => startFrom(node);
+                area.appendChild(el);
+            }
+
+            // Update data structure display
+            const dsContainer = document.getElementById('ds');
+            dsContainer.innerHTML = '';
+            dataStructure.forEach(n => {
+                const item = document.createElement('div');
+                item.className = 'ds-item';
+                item.textContent = n;
+                dsContainer.appendChild(item);
+            });
+
+            const visitedContainer = document.getElementById('visited');
+            visitedContainer.innerHTML = '';
+            [...visited].forEach(n => {
+                const item = document.createElement('div');
+                item.className = 'ds-item';
+                item.style.background = '#22c55e';
+                item.textContent = n;
+                visitedContainer.appendChild(item);
+            });
+        }
+
+        // Record every state of the search from startNode. Both searches take neighbors in the
+        // adjacency-list order above (BFS enqueues them in that order; DFS pushes them in reverse,
+        // so the first neighbor is on top and is explored first).
+        function generateSteps(firstStatus) {
+            const ds = [startNode];
+            const seen = new Set();
+            steps = [{ ds: [...ds], visited: [], current: null, done: false, status: firstStatus }];
+            while (ds.length > 0) {
+                const node = mode === 'bfs' ? ds.shift() : ds.pop();
+                if (seen.has(node)) {
+                    // DFS only: an older copy of a vertex that was pushed again and visited since
+                    steps.push({ ds: [...ds], visited: [...seen], current: null, done: false, status: `Pop ${node} — already visited, skip.` });
+                    continue;
+                }
+                seen.add(node);
+                let status;
+                if (mode === 'bfs') {
+                    // Enqueue neighbors that are neither visited nor already waiting in the queue
+                    const added = graph[node].filter(n => !seen.has(n) && !ds.includes(n));
+                    const waiting = graph[node].filter(n => !seen.has(n) && ds.includes(n));
+                    ds.push(...added);
+                    const w = waiting.join(', ') + (waiting.length === 1 ? ' is' : ' are') + ' already in the queue';
+                    if (added.length > 0) status = `Visit ${node}. Add neighbors [${added.join(', ')}] to queue` + (waiting.length ? `; ${w}.` : '.');
+                    else status = `Visit ${node}. No new neighbors` + (waiting.length ? `: ${w}.` : ' (all visited).');
+                } else {
+                    // Push every unvisited neighbor, even one already in the stack: DFS must go on
+                    // from this vertex. The older copy is skipped when it is popped.
+                    const pushed = graph[node].filter(n => !seen.has(n)).reverse();
+                    ds.push(...pushed);
+                    status = pushed.length > 0
+                        ? `Visit ${node}. Push neighbors [${pushed.join(', ')}] to stack (${pushed[pushed.length - 1]} on top).`
+                        : `Visit ${node}. No unvisited neighbors to push.`;
+                }
+                steps.push({ ds: [...ds], visited: [...seen], current: node, done: false, status });
+            }
+            steps.push({ ds: [], visited: [...seen], current: null, done: true, status: `✅ ${mode.toUpperCase()} complete! Visited all reachable nodes.` });
+        }
+
+        function showStep(i) {
+            const s = steps[i];
+            dataStructure = [...s.ds];
+            visited = new Set(s.visited);
+            current = s.current;
+            done = s.done;
+            document.getElementById('status').textContent = s.status;
+            document.getElementById('btn-next').disabled = i === steps.length - 1;
+            render();
+        }
+
+        function startFrom(node) {
+            stopPlay();
+            startNode = node;
+            generateSteps(`Starting ${mode.toUpperCase()} from node ${node}.`);
+            currentStep = 0;
+            showStep(0);
+        }
+
+        function step() {
+            stopPlay();
+            if (currentStep < steps.length - 1) { currentStep++; showStep(currentStep); }
+        }
+
+        function stepBack() {
+            stopPlay();
+            if (currentStep > 0) { currentStep--; showStep(currentStep); }
+        }
+
+        function reset() {
+            stopPlay();
+            startNode = 'A';
+            generateSteps('Click "Next Step" to start.');
+            currentStep = 0;
+            showStep(0);
+        }
+
+        function play() {
+            if (playInterval) { stopPlay(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; showStep(0); }
+            document.getElementById('btn-play').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; showStep(currentStep); }
+                if (currentStep >= steps.length - 1) stopPlay();
+            }, 1000);
+        }
+
+        function stopPlay() {
+            if (playInterval) { clearInterval(playInterval); playInterval = null; }
+            document.getElementById('btn-play').textContent = '⏩ Auto Play';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                step();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        generateSteps(document.getElementById('status').textContent);
+        showStep(0);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

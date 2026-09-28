@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quicksort Partition (Hoare)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.6em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            min-height: 55px;
+        }
+
+        .viz-area {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 30px 10px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .bar {
+            width: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .bar.unsorted {
+            background: linear-gradient(180deg, #94a3b8, #64748b);
+        }
+
+        .bar.pivot {
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+        }
+
+        .bar.less {
+            background: linear-gradient(180deg, #4ade80, #22c55e);
+        }
+
+        .bar.greater {
+            background: linear-gradient(180deg, #f87171, #ef4444);
+        }
+
+        .bar.scanning {
+            background: linear-gradient(180deg, #60a5fa, #3b82f6);
+        }
+
+        .bar.scanning-right {
+            background: linear-gradient(180deg, #2dd4bf, #0d9488);
+        }
+
+        .bar.swapping {
+            animation: pulse 0.3s;
+        }
+
+        @keyframes pulse {
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .bar .idx {
+            position: absolute;
+            bottom: -20px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: normal;
+        }
+
+        .pointers {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pointer-info {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .pointer-info.i {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .pointer-info.j {
+            background: #ccfbf1;
+            color: #115e59;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        a.back-link {
+            color: #ea580c;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="nav-row">
+            <a href="index.html" class="back-link">← Back to All Algorithms</a>
+            <span>
+                <a href="quicksort.html" class="back-link">Quicksort overview</a>
+                &nbsp;·&nbsp;
+                <a href="quicksort_partition_lomuto.html" class="back-link">← Lomuto scheme</a>
+            </span>
+        </div>
+        <h1>⚡ Quicksort Partition (Hoare)</h1>
+        <p class="subtitle">Hoare Partition Scheme: Pivot is the first element</p>
+
+        <div class="info-box">
+            <strong>How Partition Works:</strong>
+            Two pointers move toward each other. Pointer <strong>i</strong> moves right while
+            elements are &lt; pivot; pointer <strong>j</strong> moves left while elements are
+            &gt; pivot. When both stop and i &lt; j, swap them and repeat.
+            When i ≥ j (the pointers have met or crossed), return j as the split point, with A[lo..j] ≤ pivot
+            and A[j+1..hi] ≥ pivot (quicksort then recurses on both parts). Unlike Lomuto, the pivot
+            is not necessarily in its final position.
+        </div>
+
+        <div class="status" id="status">Click "Step →" to start partitioning.</div>
+
+        <div class="pointers" id="pointers">
+            <div class="pointer-info i">i = -1 (left pointer)</div>
+            <div class="pointer-info j">j = 8 (right pointer)</div>
+        </div>
+
+        <div class="viz-area" id="viz"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(180deg, #fbbf24, #f59e0b);"></div> Pivot
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(180deg, #60a5fa, #3b82f6);"></div> Left pointer (i)
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(180deg, #2dd4bf, #0d9488);"></div> Right pointer (j)
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(180deg, #4ade80, #22c55e);"></div> ≤ Pivot (after partition)
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(180deg, #f87171, #ef4444);"></div> ≥ Pivot (after partition)
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="reset()">🔄 Reset</button>
+            <button onclick="play()" id="btn-play">▶ Start</button>
+            <button onclick="stepBack()">← Prev</button>
+            <button onclick="stepForward()" id="btn-next">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const INITIAL = [8, 2, 10, 3, 7, 1, 5, 4];
+        const LO = 0;
+        let arr = [...INITIAL];
+        const MAX_H = 150;
+
+        let i = LO - 1;        // left pointer (moves right)
+        let j = arr.length;    // right pointer (moves left)
+        let pivot = arr[LO];
+        let pivotPos = LO;     // current position of the pivot value
+        let splitIdx = -1;
+        let phase = 'i';       // 'i', 'j', 'check', 'done'
+        let playInterval = null;
+        let history = [];      // state before each step, so ← Prev restores it exactly
+
+        function render() {
+            const viz = document.getElementById('viz');
+            viz.innerHTML = '';
+            const maxVal = Math.max(...arr);
+
+            arr.forEach((val, idx) => {
+                const h = (val / maxVal) * MAX_H + 30;
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${h}px`;
+                bar.textContent = val;
+
+                if (phase === 'done') {
+                    if (idx === pivotPos) bar.classList.add('pivot');
+                    else if (idx <= splitIdx) bar.classList.add('less');
+                    else bar.classList.add('greater');
+                } else if (idx === pivotPos) {
+                    bar.classList.add('pivot');
+                } else if (idx === i && idx === j) {
+                    bar.classList.add('scanning');
+                } else if (idx === i) {
+                    bar.classList.add('scanning');
+                } else if (idx === j) {
+                    bar.classList.add('scanning-right');
+                } else {
+                    bar.classList.add('unsorted');
+                }
+
+                const idxLabel = document.createElement('span');
+                idxLabel.className = 'idx';
+                idxLabel.textContent = idx;
+                bar.appendChild(idxLabel);
+
+                viz.appendChild(bar);
+            });
+
+            document.getElementById('pointers').innerHTML = `
+                <div class="pointer-info i">i = ${i} (moves right while &lt; pivot)</div>
+                <div class="pointer-info j">j = ${j} (moves left while &gt; pivot)</div>
+            `;
+        }
+
+        function step() {
+            if (phase === 'done') return;
+            const status = document.getElementById('status');
+
+            if (phase === 'i') {
+                i++;
+                if (arr[i] < pivot) {
+                    status.innerHTML = `A[${i}] = ${arr[i]} &lt; pivot (${pivot}). Keep moving i right.`;
+                } else {
+                    status.innerHTML = `A[${i}] = ${arr[i]} ≥ pivot (${pivot}). Stop left pointer at i = ${i}.`;
+                    phase = 'j';
+                }
+            } else if (phase === 'j') {
+                j--;
+                if (arr[j] > pivot) {
+                    status.innerHTML = `A[${j}] = ${arr[j]} &gt; pivot (${pivot}). Keep moving j left.`;
+                } else {
+                    status.innerHTML = `A[${j}] = ${arr[j]} ≤ pivot (${pivot}). Stop right pointer at j = ${j}.`;
+                    phase = 'check';
+                }
+            } else if (phase === 'check') {
+                if (i < j) {
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    if (pivotPos === i) pivotPos = j;
+                    else if (pivotPos === j) pivotPos = i;
+                    status.innerHTML = `i (${i}) &lt; j (${j}). Swap A[${i}] and A[${j}], then keep scanning.`;
+                    phase = 'i';
+                } else {
+                    splitIdx = j;
+                    phase = 'done';
+                    status.innerHTML = `✅ Pointers crossed (i = ${i} ≥ j = ${j})! Return j = ${j}: A[${LO}..${j}] ≤ ${pivot} and A[${j + 1}..${arr.length - 1}] ≥ ${pivot}. Unlike Lomuto, the pivot is not necessarily in its final place (${pivot} is at index ${pivotPos}).`;
+                    document.getElementById('btn-next').disabled = true;
+                    stopPlay();
+                }
+            }
+
+            render();
+        }
+
+        function snapshot() {
+            return { arr: [...arr], i, j, pivotPos, splitIdx, phase, status: document.getElementById('status').innerHTML };
+        }
+
+        function advance() {
+            if (phase === 'done') return;
+            history.push(snapshot());
+            step();
+        }
+
+        function stepForward() {
+            stopPlay();
+            advance();
+        }
+
+        function stepBack() {
+            stopPlay();
+            if (!history.length) return;
+            const s = history.pop();
+            arr = s.arr; i = s.i; j = s.j; pivotPos = s.pivotPos; splitIdx = s.splitIdx; phase = s.phase;
+            document.getElementById('status').innerHTML = s.status;
+            document.getElementById('btn-next').disabled = false;
+            render();
+        }
+
+        function reset() {
+            arr = [...INITIAL];
+            i = LO - 1;
+            j = arr.length;
+            pivot = arr[LO];
+            pivotPos = LO;
+            splitIdx = -1;
+            phase = 'i';
+            history = [];
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('status').textContent = 'Click "Step →" to start partitioning. Pivot = ' + pivot;
+            stopPlay();
+            render();
+        }
+
+        function play() {
+            if (playInterval) { stopPlay(); return; }
+            if (phase === 'done') reset();   // Start at the last step replays from step 0
+            document.getElementById('btn-play').textContent = '⏸ Pause';
+            playInterval = setInterval(advance, 800);
+        }
+
+        function stopPlay() {
+            if (playInterval) { clearInterval(playInterval); playInterval = null; }
+            document.getElementById('btn-play').textContent = '▶ Start';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        reset();
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

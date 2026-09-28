@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Visualization</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        a.back-link {
+            color: #4f46e5;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .target-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .target-row label {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .target-row input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .target-display {
+            padding: 10px 20px;
+            background: #f97316;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            min-height: 55px;
+        }
+
+        .array-view {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 34px 10px 30px 10px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            min-height: 130px;
+            flex-wrap: wrap;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #e2e8f0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+            position: relative;
+            background: white;
+        }
+
+        .cell .idx {
+            position: absolute;
+            bottom: -20px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: normal;
+        }
+
+        .cell .marker {
+            position: absolute;
+            top: -24px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #4f46e5;
+            white-space: nowrap;
+        }
+
+        .cell.unchecked {
+            border-color: #a5b4fc;
+            color: #1e293b;
+        }
+
+        .cell.checking {
+            border-color: #3b82f6;
+            background: #dbeafe;
+            color: #1e40af;
+            animation: pulse 0.5s;
+        }
+
+        .cell.eliminated {
+            border-color: #e2e8f0;
+            color: #cbd5e1;
+            background: #f1f5f9;
+            opacity: 0.6;
+        }
+
+        .cell.found {
+            border-color: #22c55e;
+            background: #22c55e;
+            color: white;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button.btn-plain {
+            background: white;
+            color: #4f46e5;
+            border: 2px solid #c7d2fe;
+        }
+
+        button.btn-plain:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1>🔎 Binary Search</h1>
+        <p class="subtitle">Halve the search range on every step — O(log n) on a sorted array</p>
+
+        <div class="info-box">
+            <strong>How it works:</strong>
+            The array must be <strong>sorted</strong>. Compare the target with the middle element:
+            if it matches, done; if the target is smaller, discard the right half;
+            if larger, discard the left half. Repeat until found or the range is empty.
+            Time Complexity: O(log n) — doubling the input adds just one more step.
+        </div>
+
+        <div class="target-row">
+            <label>Search for:</label>
+            <input type="number" id="target-input" value="23">
+            <button onclick="setTarget()">Set Target</button>
+            <button class="btn-plain" onclick="newArray()">🎲 New Sorted Array</button>
+            <div class="target-display" id="target-display">Target: 23</div>
+        </div>
+
+        <div class="status" id="status">Click "Step →" to start searching for 23.</div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="stat-lo">0</div>
+                <div class="stat-label">lo</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-mid">–</div>
+                <div class="stat-label">mid</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-hi">10</div>
+                <div class="stat-label">hi</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="comparisons">0</div>
+                <div class="stat-label">Comparisons</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="border-color: #a5b4fc; background: white;"></div> In range
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="border-color: #3b82f6; background: #dbeafe;"></div> Checking (mid)
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="border-color: #e2e8f0; background: #f1f5f9;"></div> Eliminated
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="border-color: #22c55e; background: #22c55e;"></div> Found!
+            </div>
+        </div>
+
+        <div class="array-view" id="array"></div>
+
+        <div class="controls">
+            <button onclick="reset()">🔄 Reset</button>
+            <button onclick="play()" id="btn-play">▶ Start</button>
+            <button onclick="stepBack()">← Prev</button>
+            <button onclick="stepForward()" id="btn-next">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        let arr = [2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78];
+        let target = 23;
+        let lo = 0;
+        let hi = arr.length - 1;
+        let mid = -1;
+        let comparisons = 0;
+        let done = false;
+        let playInterval = null;
+        let eliminated = new Array(arr.length).fill(false);
+        let history = [];   // snapshots of earlier steps, for ← Prev
+
+        function setTarget() {
+            const raw = document.getElementById('target-input').value;   // '' when empty or not a number
+            if (raw === '' || !Number.isFinite(Number(raw))) {
+                reset();
+                document.getElementById('status').textContent = `⚠️ Enter a number to search for (still searching for ${target}).`;
+                return;
+            }
+            target = Number(raw);
+            document.getElementById('target-display').textContent = `Target: ${target}`;
+            reset();
+        }
+
+        function newArray() {
+            const vals = new Set();
+            while (vals.size < 11) {
+                vals.add(Math.floor(Math.random() * 99) + 1);
+            }
+            arr = [...vals].sort((a, b) => a - b);
+            eliminated = new Array(arr.length).fill(false);
+            reset();
+        }
+
+        function markerText(idx) {
+            const parts = [];
+            if (!done) {
+                if (idx === lo && lo <= hi) parts.push('lo');
+                if (idx === mid) parts.push('mid');
+                if (idx === hi && lo <= hi) parts.push('hi');
+            }
+            return parts.join(' · ');
+        }
+
+        function render() {
+            const container = document.getElementById('array');
+            container.innerHTML = '';
+
+            arr.forEach((val, idx) => {
+                const cell = document.createElement('div');
+                let cls = 'cell ';
+                if (eliminated[idx]) cls += 'eliminated';
+                else if (done && val === target && idx === mid) cls += 'found';
+                else if (idx === mid) cls += 'checking';
+                else cls += 'unchecked';
+                cell.className = cls;
+                cell.textContent = val;
+
+                const marker = markerText(idx);
+                if (marker) {
+                    const m = document.createElement('span');
+                    m.className = 'marker';
+                    m.textContent = marker;
+                    cell.appendChild(m);
+                }
+
+                const idxLabel = document.createElement('span');
+                idxLabel.className = 'idx';
+                idxLabel.textContent = idx;
+                cell.appendChild(idxLabel);
+
+                container.appendChild(cell);
+            });
+
+            document.getElementById('stat-lo').textContent = lo <= hi ? lo : '–';
+            document.getElementById('stat-mid').textContent = mid >= 0 ? mid : '–';
+            document.getElementById('stat-hi').textContent = lo <= hi ? hi : '–';
+            document.getElementById('comparisons').textContent = comparisons;
+        }
+
+        function finishNotFound(status) {
+            done = true;
+            mid = -1;
+            status.textContent = `❌ Not found! The search range is empty — ${target} is not in the array. Total comparisons: ${comparisons}.`;
+            document.getElementById('btn-next').disabled = true;
+            render();
+        }
+
+        // Two-phase stepping: first click picks mid and shows the comparison,
+        // second click discards the losing half (or finishes).
+        function step() {
+            if (done) return;
+            const status = document.getElementById('status');
+            history.push({ lo, hi, mid, comparisons, done, eliminated: eliminated.slice(), status: status.textContent });
+
+            if (mid === -1) {
+                if (lo > hi) {
+                    finishNotFound(status);
+                    return;
+                }
+                mid = Math.floor((lo + hi) / 2);
+                comparisons++;
+                status.textContent = `mid = ⌊(${lo} + ${hi}) / 2⌋ = ${mid}. Compare target ${target} with A[${mid}] = ${arr[mid]}. Next: stop if equal, else discard the losing half.`;
+                render();
+                return;
+            }
+
+            if (arr[mid] === target) {
+                done = true;
+                status.textContent = `✅ FOUND! Target ${target} is at index ${mid}. Total comparisons: ${comparisons}.`;
+                document.getElementById('btn-next').disabled = true;
+            } else if (arr[mid] < target) {
+                for (let i = lo; i <= mid; i++) eliminated[i] = true;
+                status.textContent = `${arr[mid]} < ${target}: discard indices ${lo}–${mid}, keep searching the right half (lo = ${mid + 1}).`;
+                lo = mid + 1;
+                mid = -1;
+                if (lo > hi) {
+                    render();
+                    finishNotFound(status);
+                    return;
+                }
+            } else {
+                for (let i = mid; i <= hi; i++) eliminated[i] = true;
+                status.textContent = `${arr[mid]} > ${target}: discard indices ${mid}–${hi}, keep searching the left half (hi = ${mid - 1}).`;
+                hi = mid - 1;
+                mid = -1;
+                if (lo > hi) {
+                    render();
+                    finishNotFound(status);
+                    return;
+                }
+            }
+
+            render();
+        }
+
+        function stepForward() {
+            stopPlay();
+            step();
+        }
+
+        function stepBack() {
+            stopPlay();
+            if (history.length === 0) return;
+            const s = history.pop();
+            lo = s.lo;
+            hi = s.hi;
+            mid = s.mid;
+            comparisons = s.comparisons;
+            done = s.done;
+            eliminated = s.eliminated;
+            document.getElementById('status').textContent = s.status;
+            document.getElementById('btn-next').disabled = done;
+            render();
+        }
+
+        function reset() {
+            lo = 0;
+            hi = arr.length - 1;
+            mid = -1;
+            comparisons = 0;
+            done = false;
+            eliminated = new Array(arr.length).fill(false);
+            history = [];
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('status').textContent = `Click "Step →" to start searching for ${target}.`;
+            stopPlay();
+            render();
+        }
+
+        function play() {
+            if (playInterval) { stopPlay(); return; }
+            if (done) reset();   // at the end: replay from the start (reset shows step 0 at once)
+            document.getElementById('btn-play').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                step();
+                if (done) stopPlay();
+            }, 900);
+        }
+
+        function stopPlay() {
+            if (playInterval) { clearInterval(playInterval); playInterval = null; }
+            document.getElementById('btn-play').textContent = '▶ Start';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        render();
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

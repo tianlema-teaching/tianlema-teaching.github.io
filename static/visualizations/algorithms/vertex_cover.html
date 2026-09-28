@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vertex Cover 2-Approximation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .node.in-cover {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+            box-shadow: 0 0 15px rgba(81, 207, 102, 0.5);
+        }
+
+        .node.considering {
+            background: linear-gradient(135deg, #ffd43b, #fab005);
+            transform: scale(1.1);
+        }
+
+        .edge {
+            position: absolute;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+            transition: all 0.3s;
+        }
+
+        .edge.selected {
+            background: #ff6b6b;
+            height: 5px;
+        }
+
+        .edge.covered {
+            background: #51cf66;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .cover-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+        }
+
+        .cover-item {
+            padding: 8px 14px;
+            background: rgba(81, 207, 102, 0.3);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .stats p {
+            margin: 5px 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🎯</span> Vertex Cover (2-Approximation)</h1>
+
+        <div class="explanation">
+            <h3>Problem (NP-Hard!)</h3>
+            <p>Find the smallest set of vertices that "covers" all edges (every edge has at least one endpoint in the
+                set).</p>
+            <p style="margin-top: 10px;"><strong>2-Approximation Algorithm:</strong></p>
+            <ol style="margin-left: 20px; margin-top: 5px;">
+                <li>Pick any uncovered edge (u, v)</li>
+                <li>Add BOTH u and v to the cover</li>
+                <li>Remove all edges incident to u or v</li>
+                <li>Repeat until no edges remain</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Guarantee:</strong> At most 2× optimal size!</p>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to find approximate vertex cover</div>
+            </div>
+            <div class="sidebar">
+                <h3>Vertex Cover</h3>
+                <div class="cover-list" id="coverList"></div>
+                <div class="stats">
+                    <p>Cover Size: <strong id="coverSize">0</strong></p>
+                    <p>Edges Covered: <strong id="edgesCovered">0</strong> / <span id="totalEdges">0</span></p>
+                    <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">Optimal for this graph: 4 (e.g. B, C, D, E)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = { A: { x: 50, y: 100 }, B: { x: 180, y: 40 }, C: { x: 180, y: 160 }, D: { x: 310, y: 100 }, E: { x: 440, y: 40 }, F: { x: 440, y: 160 } };
+        const edges = [
+            { u: 'A', v: 'B' }, { u: 'A', v: 'C' }, { u: 'B', v: 'C' }, { u: 'B', v: 'D' },
+            { u: 'C', v: 'D' }, { u: 'D', v: 'E' }, { u: 'D', v: 'F' }, { u: 'E', v: 'F' }
+        ];
+
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const cover = new Set();
+            const edgeStatus = edges.map(() => 'uncovered');
+
+            steps.push({ cover: [...cover], edgeStatus: [...edgeStatus], selected: null, status: "Find edges and add both endpoints to cover" });
+
+            let uncovered = edges.map((e, i) => i);
+
+            while (uncovered.length > 0) {
+                const idx = uncovered[0];
+                const edge = edges[idx];
+
+                steps.push({ cover: [...cover], edgeStatus: [...edgeStatus], selected: idx, status: `Pick edge ${edge.u}-${edge.v}` });
+
+                cover.add(edge.u);
+                cover.add(edge.v);
+
+                // Mark all edges incident to u or v as covered
+                edges.forEach((e, i) => {
+                    if (e.u === edge.u || e.v === edge.u || e.u === edge.v || e.v === edge.v) {
+                        edgeStatus[i] = 'covered';
+                    }
+                });
+
+                uncovered = edges.map((e, i) => i).filter(i => edgeStatus[i] === 'uncovered');
+
+                steps.push({ cover: [...cover], edgeStatus: [...edgeStatus], selected: null, status: `Add ${edge.u} and ${edge.v} to cover. ${uncovered.length} edge${uncovered.length === 1 ? '' : 's'} remain${uncovered.length === 1 ? 's' : ''}.` });
+            }
+
+            steps.push({ cover: [...cover], edgeStatus: [...edgeStatus], selected: null, status: `✓ Vertex Cover found! Size = ${cover.size} (optimal ≥ ${Math.ceil(cover.size / 2)})` });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            edges.forEach((edge, idx) => {
+                const from = nodes[edge.u], to = nodes[edge.v];
+                const dx = to.x - from.x, dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge';
+                if (step.selected === idx) edgeEl.classList.add('selected');
+                else if (step.edgeStatus[idx] === 'covered') edgeEl.classList.add('covered');
+                // Centre to centre (nodes are drawn on top), so each edge meets both node rims.
+                edgeEl.style.cssText = `left:${from.x + 22.5}px;top:${from.y + 22.5}px;width:${length}px;transform:translateY(-50%) rotate(${angle}deg)`;
+                canvas.appendChild(edgeEl);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                if (step.cover.includes(name)) nodeEl.classList.add('in-cover');
+                else if (step.selected !== null && (edges[step.selected].u === name || edges[step.selected].v === name)) {
+                    nodeEl.classList.add('considering');
+                }
+                nodeEl.style.cssText = `left:${pos.x}px;top:${pos.y}px`;
+                nodeEl.textContent = name;
+                canvas.appendChild(nodeEl);
+            });
+
+            document.getElementById('coverList').innerHTML = step.cover.map(n => `<span class="cover-item">${n}</span>`).join('');
+            document.getElementById('coverSize').textContent = step.cover.length;
+            document.getElementById('edgesCovered').textContent = step.edgeStatus.filter(s => s === 'covered').length;
+            document.getElementById('totalEdges').textContent = edges.length;
+            document.getElementById('status').textContent = step.status;
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderGraph(steps[0]); }
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderGraph(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 1000);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

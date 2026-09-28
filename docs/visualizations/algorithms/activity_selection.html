@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Activity Selection Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .timeline {
+            position: relative;
+            height: 250px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .time-axis {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .time-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: #888;
+            transform: translateX(-50%);
+        }
+
+        .activity {
+            position: absolute;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .activity.available {
+            background: linear-gradient(90deg, #00d4ff, #0077b6);
+        }
+
+        .activity.considering {
+            background: linear-gradient(90deg, #ffd43b, #fab005);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 212, 59, 0.4);
+        }
+
+        .activity.selected {
+            background: linear-gradient(90deg, #51cf66, #2f9e44);
+        }
+
+        .activity.rejected {
+            background: rgba(255, 107, 107, 0.3);
+            opacity: 0.5;
+        }
+
+        .activity-list {
+            margin-top: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .activity-item.selected {
+            background: rgba(81, 207, 102, 0.3);
+        }
+
+        .activity-item.rejected {
+            background: rgba(255, 107, 107, 0.2);
+            text-decoration: line-through;
+        }
+
+        .activity-item.considering {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 15px;
+            background: rgba(81, 207, 102, 0.2);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">📅</span> Activity Selection (Greedy)</h1>
+
+        <div class="explanation">
+            <h3>Problem</h3>
+            <p>Select the maximum number of non-overlapping activities. An activity may start exactly when the
+                previous one finishes (C ends at 6, D starts at 6).</p>
+            <p style="margin-top: 10px;"><strong>Greedy Choice:</strong> Always pick the activity that finishes
+                earliest!</p>
+            <p style="margin-top: 5px;">This leaves maximum room for remaining activities.</p>
+        </div>
+
+        <div class="timeline-container">
+            <h3 style="text-align: center;">Activity Timeline</h3>
+            <div class="timeline" id="timeline"></div>
+            <div class="status" id="status">Activities sorted by finish time. Click "Start" to select!</div>
+        </div>
+
+        <div class="result-box" id="resultBox" style="display: none;">
+            Selected <span id="selectedCount">0</span> activities
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const activities = [
+            { id: 'A', start: 1, finish: 3 },
+            { id: 'B', start: 2, finish: 5 },
+            { id: 'C', start: 4, finish: 6 },
+            { id: 'D', start: 6, finish: 8 },
+            { id: 'E', start: 5, finish: 9 },
+            { id: 'F', start: 8, finish: 10 }
+        ].sort((a, b) => a.finish - b.finish);
+
+        const maxTime = 11;
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const status = activities.map(() => 'available');
+            const selected = [];
+            let lastFinish = 0;
+
+            steps.push({ status: [...status], selected: [...selected], lastFinish, considering: -1, msg: "Activities sorted by finish time. Ready to select." });
+
+            for (let i = 0; i < activities.length; i++) {
+                const act = activities[i];
+                steps.push({ status: [...status], selected: [...selected], lastFinish, considering: i, msg: `Consider ${act.id} [${act.start}-${act.finish}]. Start=${act.start} >= lastFinish=${lastFinish}?` });
+
+                if (act.start >= lastFinish) {
+                    status[i] = 'selected';
+                    selected.push(act.id);
+                    lastFinish = act.finish;
+                    steps.push({ status: [...status], selected: [...selected], lastFinish, considering: -1, msg: `✓ Select ${act.id}! Update lastFinish = ${lastFinish}` });
+                } else {
+                    status[i] = 'rejected';
+                    steps.push({ status: [...status], selected: [...selected], lastFinish, considering: -1, msg: `✗ Reject ${act.id} (overlaps with previous)` });
+                }
+            }
+
+            steps.push({ status: [...status], selected: [...selected], lastFinish, considering: -1, msg: `✓ Done! Selected ${selected.length} activities: ${selected.join(', ')}` });
+        }
+
+        function renderTimeline(step) {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '<div class="time-axis"></div>';
+
+            // Time labels
+            for (let t = 0; t <= maxTime; t++) {
+                const label = document.createElement('div');
+                label.className = 'time-label';
+                label.style.left = (t / maxTime * 100) + '%';
+                label.textContent = t;
+                timeline.appendChild(label);
+            }
+
+            // Activities
+            activities.forEach((act, i) => {
+                const el = document.createElement('div');
+                el.className = 'activity';
+                if (step.considering === i) el.classList.add('considering');
+                else el.classList.add(step.status[i]);
+
+                const left = (act.start / maxTime * 100);
+                const width = ((act.finish - act.start) / maxTime * 100);
+                el.style.cssText = `left:${left}%;width:${width}%;bottom:${40 + i * 35}px`;
+                el.textContent = `${act.id} [${act.start}-${act.finish}]`;
+                timeline.appendChild(el);
+            });
+
+            document.getElementById('status').textContent = step.msg;
+
+            if (step.selected.length > 0 && step.considering === -1 && currentStep === steps.length - 1) {
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('selectedCount').textContent = step.selected.length;
+            } else {
+                document.getElementById('resultBox').style.display = 'none';
+            }
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderTimeline(steps[0]); }
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderTimeline(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderTimeline(steps[currentStep]); }
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderTimeline(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderTimeline(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderTimeline(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

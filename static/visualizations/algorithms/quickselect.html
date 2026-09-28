@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quickselect Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 30px 0;
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 55px;
+            background: linear-gradient(180deg, #00d4ff, #0077b6);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .bar span {
+            color: white;
+            font-weight: bold;
+        }
+
+        .bar .index {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .bar.pivot {
+            background: linear-gradient(180deg, #ff6b6b, #c92a2a);
+        }
+
+        .bar.active {
+            background: linear-gradient(180deg, #ffd43b, #fab005);
+        }
+
+        .bar.found {
+            background: linear-gradient(180deg, #51cf66, #2f9e44);
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(81, 207, 102, 0.5);
+        }
+
+        .bar.inactive {
+            opacity: 0.3;
+        }
+
+        .k-display {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .range-display {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 15px 0;
+        }
+
+        .range-display span {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🎯</span> Quickselect</h1>
+
+        <div class="explanation">
+            <h3>Find k-th Smallest Element</h3>
+            <p>Uses Quicksort-style partitioning but only recurses on ONE side:</p>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Partition array around pivot</li>
+                <li>If pivot position = k, done!</li>
+                <li>If k < pivot position, search left</li>
+                <li>If k > pivot position, search right</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Expected:</strong> O(n) with a random pivot (this demo always uses the
+                last element, so every run is the same) | <strong>Worst:</strong> O(n²)</p>
+        </div>
+
+        <div class="visualization">
+            <div class="k-display">Find <strong id="kthDisplay">3rd</strong> smallest element (k = <span
+                    id="kValue">2</span>, a 0-based index)</div>
+            <div class="range-display">
+                <span>Low: <strong id="lowIdx">0</strong></span>
+                <span>High: <strong id="highIdx">7</strong></span>
+                <span>Pivot Position: <strong id="pivotPos">-</strong></span>
+            </div>
+            <div class="array-container" id="arrayContainer"></div>
+            <div class="status" id="status">Click "Start" to find the k-th smallest</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        let array = [7, 2, 1, 6, 8, 5, 3, 4];
+        const k = 2; // 0-indexed, so 3rd smallest
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        // 1 → "1st", 2 → "2nd", 3 → "3rd", 4 → "4th", 11 → "11th"
+        function ordinal(n) {
+            const s = { 1: 'st', 2: 'nd', 3: 'rd' }[n % 10];
+            return n + (s && Math.floor(n / 10) % 10 !== 1 ? s : 'th');
+        }
+
+        function generateSteps() {
+            steps = [];
+            const arr = [...array];
+
+            steps.push({ array: [...arr], low: 0, high: arr.length - 1, pivot: -1, pivotPos: -1, found: -1, status: `Find ${ordinal(k + 1)} smallest (index ${k})` });
+
+            quickselect(arr, 0, arr.length - 1, k);
+        }
+
+        function quickselect(arr, lo, hi, k) {
+            if (lo === hi) {
+                steps.push({ array: [...arr], low: lo, high: hi, pivot: -1, pivotPos: lo, found: lo, status: `✓ Found! The ${ordinal(k + 1)} smallest is ${arr[lo]}` });
+                return;
+            }
+
+            const pivotIdx = hi;
+            steps.push({ array: [...arr], low: lo, high: hi, pivot: pivotIdx, pivotPos: -1, found: -1, status: `Partition [${lo}..${hi}] with pivot = ${arr[pivotIdx]}` });
+
+            // Lomuto partition
+            let i = lo - 1;
+            for (let j = lo; j < hi; j++) {
+                if (arr[j] <= arr[hi]) {
+                    i++;
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+            [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];
+            const p = i + 1;
+
+            steps.push({ array: [...arr], low: lo, high: hi, pivot: -1, pivotPos: p, found: -1, status: `Pivot ${arr[p]} at position ${p}` });
+
+            if (k === p) {
+                steps.push({ array: [...arr], low: lo, high: hi, pivot: -1, pivotPos: p, found: p, status: `✓ Found! The ${ordinal(k + 1)} smallest is ${arr[p]}` });
+            } else if (k < p) {
+                steps.push({ array: [...arr], low: lo, high: p - 1, pivot: -1, pivotPos: p, found: -1, status: `k=${k} < pivot position ${p}. Search left.` });
+                quickselect(arr, lo, p - 1, k);
+            } else {
+                steps.push({ array: [...arr], low: p + 1, high: hi, pivot: -1, pivotPos: p, found: -1, status: `k=${k} > pivot position ${p}. Search right.` });
+                quickselect(arr, p + 1, hi, k);
+            }
+        }
+
+        function renderArray(step) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+            const maxVal = Math.max(...step.array);
+
+            step.array.forEach((val, idx) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (val / maxVal * 120) + 'px';
+
+                if (step.found === idx) bar.classList.add('found');
+                else if (idx === step.pivot) bar.classList.add('pivot');
+                else if (idx === step.pivotPos) bar.classList.add('active');
+                else if (idx < step.low || idx > step.high) bar.classList.add('inactive');
+
+                bar.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
+                container.appendChild(bar);
+            });
+
+            document.getElementById('status').textContent = step.status;
+            document.getElementById('lowIdx').textContent = step.low;
+            document.getElementById('highIdx').textContent = step.high;
+            document.getElementById('pivotPos').textContent = step.pivotPos >= 0 ? step.pivotPos : '-';
+        }
+
+        function reset() { stopAlgo(); array = [7, 2, 1, 6, 8, 5, 3, 4]; currentStep = 0; generateSteps(); renderArray(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderArray(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderArray(steps[currentStep]); } }
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderArray(steps[0]); }   // replay from step 0
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderArray(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        generateSteps(); renderArray(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

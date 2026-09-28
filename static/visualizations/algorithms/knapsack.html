@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>0/1 Knapsack Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .items-panel {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .item-card.selected {
+            border-color: #51cf66;
+            background: rgba(81, 207, 102, 0.1);
+        }
+
+        .item-card h4 {
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+
+        .dp-table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .dp-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .dp-table th,
+        .dp-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 18px;
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .dp-table th {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .dp-table td.current {
+            background: rgba(255, 107, 107, 0.4);
+            border: 2px solid #ff6b6b;
+        }
+
+        .dp-table td.comparing {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .dp-table td.filled {
+            background: rgba(81, 207, 102, 0.2);
+        }
+
+        .dp-table td.path {
+            background: rgba(0, 212, 255, 0.3);
+            border: 2px solid #00d4ff;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .formula {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🎒</span> 0/1 Knapsack Problem</h1>
+
+        <div class="explanation">
+            <h3>Problem</h3>
+            <p>Given items with weights and values, and a knapsack with capacity W, find the maximum value you can carry
+                without exceeding the weight limit. Each item can only be taken once (0/1 = take or leave).</p>
+        </div>
+
+        <div class="formula">
+            <strong>Recurrence:</strong> dp[i][w] = max(dp[i−1][w], v<sub>i</sub> + dp[i−1][w−w<sub>i</sub>]) if w<sub>i</sub> ≤ w; otherwise dp[i][w] = dp[i−1][w]
+        </div>
+
+        <h3 style="text-align: center; margin: 20px 0;">Items (Capacity W = 7)</h3>
+        <div class="items-panel" id="itemsPanel"></div>
+
+        <div class="dp-table-container">
+            <table class="dp-table" id="dpTable"></table>
+        </div>
+
+        <div class="status" id="status">Click "Start" to fill the DP table</div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+
+        <div class="explanation">
+            <h3>Complexity</h3>
+            <ul style="margin-left: 20px;">
+                <li><strong>Time:</strong> O(nW) where n = items, W = capacity</li>
+                <li><strong>Space:</strong> O(nW) for the table (can be optimized to O(W))</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const items = [
+            { name: 'Item 1', weight: 1, value: 1 },
+            { name: 'Item 2', weight: 3, value: 4 },
+            { name: 'Item 3', weight: 4, value: 5 },
+            { name: 'Item 4', weight: 5, value: 7 }
+        ];
+        const capacity = 7;
+
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        function renderItems(selectedItems = []) {
+            const panel = document.getElementById('itemsPanel');
+            panel.innerHTML = items.map((item, i) => `
+                <div class="item-card ${selectedItems.includes(i + 1) ? 'selected' : ''}">
+                    <h4>${item.name}</h4>
+                    <div>Weight: ${item.weight}</div>
+                    <div>Value: ${item.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function generateSteps() {
+            steps = [];
+            const n = items.length;
+            const dp = Array(n + 1).fill(null).map(() => Array(capacity + 1).fill(0));
+
+            steps.push({
+                dp: dp.map(row => [...row]),
+                current: null,
+                comparing: [],
+                status: "Initialize DP table with zeros (no items = 0 value)"
+            });
+
+            for (let i = 1; i <= n; i++) {
+                for (let w = 0; w <= capacity; w++) {
+                    const item = items[i - 1];
+
+                    if (item.weight > w) {
+                        dp[i][w] = dp[i - 1][w];
+                        steps.push({
+                            dp: dp.map(row => [...row]),
+                            current: { i, w },
+                            comparing: [{ i: i - 1, w }],
+                            status: `Item ${i} (w=${item.weight}) too heavy for capacity ${w}. Copy dp[${i - 1}][${w}] = ${dp[i][w]}`
+                        });
+                    } else {
+                        const exclude = dp[i - 1][w];
+                        const include = item.value + dp[i - 1][w - item.weight];
+                        dp[i][w] = Math.max(exclude, include);
+
+                        steps.push({
+                            dp: dp.map(row => [...row]),
+                            current: { i, w },
+                            comparing: [{ i: i - 1, w }, { i: i - 1, w: w - item.weight }],
+                            status: `Item ${i}: max(exclude=${exclude}, include=${item.value}+${dp[i - 1][w - item.weight]}=${include}) = ${dp[i][w]}`
+                        });
+                    }
+                }
+            }
+
+            // Backtrack
+            const selected = [];
+            let w = capacity;
+            for (let i = n; i > 0 && w > 0; i--) {
+                if (dp[i][w] !== dp[i - 1][w]) {
+                    selected.push(i);
+                    w -= items[i - 1].weight;
+                }
+            }
+
+            steps.push({
+                dp: dp.map(row => [...row]),
+                current: null,
+                comparing: [],
+                selected: selected,
+                status: `✓ Maximum value: ${dp[n][capacity]}. Selected: ${selected.map(i => 'Item ' + i).join(', ')}`
+            });
+        }
+
+        function renderTable(step) {
+            const table = document.getElementById('dpTable');
+            let html = '<tr><th>Item\\W</th>';
+            for (let w = 0; w <= capacity; w++) html += `<th>${w}</th>`;
+            html += '</tr>';
+
+            for (let i = 0; i <= items.length; i++) {
+                html += `<tr><th>${i === 0 ? '0' : items[i - 1].name}</th>`;
+                for (let w = 0; w <= capacity; w++) {
+                    let cls = '';
+                    if (step.current && step.current.i === i && step.current.w === w) cls = 'current';
+                    else if (step.comparing && step.comparing.some(c => c.i === i && c.w === w)) cls = 'comparing';
+                    else if (step.dp[i][w] !== 0) cls = 'filled';
+                    html += `<td class="${cls}">${step.dp[i][w]}</td>`;
+                }
+                html += '</tr>';
+            }
+            table.innerHTML = html;
+
+            document.getElementById('status').textContent = step.status;
+            renderItems(step.selected || []);
+        }
+
+        function reset() {
+            stopAlgo();
+            currentStep = 0;
+            generateSteps();
+            renderTable(steps[0]);
+        }
+
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderTable(steps[currentStep]);
+            }
+        }
+
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) {
+                currentStep--;
+                renderTable(steps[currentStep]);
+            }
+        }
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) {
+                currentStep = 0;
+                renderTable(steps[0]);
+            }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    renderTable(steps[currentStep]);
+                } else { stopAlgo(); }
+            }, 400);
+        }
+
+        function stopAlgo() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        renderItems();
+        generateSteps();
+        renderTable(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

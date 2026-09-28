@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Theorem Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.6em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .formula-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 2px solid #a78bfa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .formula-box .formula {
+            font-size: 1.4em;
+            font-family: 'Times New Roman', serif;
+            color: #5b21b6;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            text-align: center;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2em;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .input-group .desc {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .result-box h3 {
+            margin: 0 0 15px 0;
+            color: #1e293b;
+        }
+
+        .step {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .step.active {
+            border-left-color: #8b5cf6;
+        }
+
+        .step.case1 {
+            border-left-color: #f97316;
+            background: #fff7ed;
+        }
+
+        .step.case2 {
+            border-left-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .step.case3 {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .final-answer {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid #22c55e;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.3em;
+        }
+
+        .final-answer .complexity {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.4em;
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .cases-ref {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .case-card {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+
+        .case-card.c1 {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+        }
+
+        .case-card.c2 {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .case-card.c3 {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+
+        .case-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        a.back-link {
+            color: #6d28d9;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1>📐 Master Theorem Calculator</h1>
+        <p class="subtitle">Solve recurrences of the form T(n) = aT(n/b) + Θ(n<sup>d</sup>)</p>
+
+        <div class="formula-box">
+            <div class="formula">T(n) = <span id="disp-a">a</span> · T(n/<span id="disp-b">b</span>) + n<sup
+                    id="disp-d">d</sup></div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label>a (subproblems)</label>
+                <input type="number" id="input-a" value="2" min="1" step="1" onchange="calculate()">
+                <div class="desc">Number of recursive calls</div>
+            </div>
+            <div class="input-group">
+                <label>b (shrink factor)</label>
+                <input type="number" id="input-b" value="2" min="1.1" step="0.1" onchange="calculate()">
+                <div class="desc">Divide problem by b</div>
+            </div>
+            <div class="input-group">
+                <label>d (work exponent)</label>
+                <input type="number" id="input-d" value="1" min="0" step="0.1" onchange="calculate()">
+                <div class="desc">f(n) = n<sup>d</sup></div>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <h3>Solution Steps:</h3>
+            <div id="steps"></div>
+        </div>
+
+        <div class="final-answer" id="answer">
+            Result: <span class="complexity" id="result">Θ(n log n)</span>
+        </div>
+
+        <div class="cases-ref">
+            <div class="case-card c1">
+                <strong>Case 1: Leaves Win</strong>
+                If d < log<sub>b</sub>a<br>
+                    Then T(n) = Θ(n<sup>log<sub>b</sub>a</sup>)
+            </div>
+            <div class="case-card c2">
+                <strong>Case 2: Tie</strong>
+                If d = log<sub>b</sub>a<br>
+                Then T(n) = Θ(n<sup>d</sup> log n)
+            </div>
+            <div class="case-card c3">
+                <strong>Case 3: Root Wins</strong>
+                If d > log<sub>b</sub>a<br>
+                Then T(n) = Θ(n<sup>d</sup>)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const raw = ['input-a', 'input-b', 'input-d'].map(id => document.getElementById(id).value);   // '' when empty or not a number
+            const [a, b, d] = raw.map(Number);
+
+            // Update display
+            document.getElementById('disp-a').textContent = raw[0] === '' ? 'a' : a;
+            document.getElementById('disp-b').textContent = raw[1] === '' ? 'b' : b;
+            document.getElementById('disp-d').textContent = raw[2] === '' ? 'd' : d;
+
+            const stepsDiv = document.getElementById('steps');
+            stepsDiv.innerHTML = '';
+
+            // Inputs the theorem cannot take: say so instead of computing with a substitute value
+            let problem = '';
+            if (raw.includes('') || ![a, b, d].every(Number.isFinite)) problem = 'Enter a number for each of a, b and d.';
+            else if (a < 1) problem = `The master theorem does not apply: it needs a ≥ 1 (at least one subproblem), but a = ${a}.`;
+            else if (b <= 1) problem = `The master theorem does not apply: it needs b > 1 (each subproblem smaller than n), but b = ${b}.`;
+            if (problem) {
+                stepsDiv.innerHTML = `<div class="step active">${problem}</div>`;
+                document.getElementById('result').innerHTML = '—';
+                return;
+            }
+
+            // Calculate log_b(a)
+            const logba = Math.log(a) / Math.log(b);
+
+            // Step 1: Compute critical exponent
+            const step1 = document.createElement('div');
+            step1.className = 'step active';
+            step1.innerHTML = `<strong>Step 1:</strong> Compute critical exponent: log<sub>${b}</sub>(${a}) = ${logba.toFixed(3)}`;
+            stepsDiv.appendChild(step1);
+
+            // Step 2: Compare
+            const step2 = document.createElement('div');
+            step2.className = 'step active';
+            step2.innerHTML = `<strong>Step 2:</strong> Compare d = ${d} with log<sub>b</sub>a ≈ ${logba.toFixed(3)}`;
+            stepsDiv.appendChild(step2);
+
+            // Step 3: Determine case
+            const step3 = document.createElement('div');
+            let result = '';
+            let caseNum = 0;
+
+            // A tie needs b^d = a within floating-point rounding, checked both as b^d against a and as d
+            // against log_b a (the old 0.0001 tolerance on logarithms misclassified near-ties such as
+            // a = 3, b = 2, d = 1.585, and 100001 = 10^5 + 1). Otherwise compare d with log_b a directly.
+            // For b extremely close to 1, log_b a itself cannot be computed precisely.
+            const near = (x, y) => Math.abs(x - y) <= 1e-9 * Math.max(1, Math.abs(y));
+            const tie = Math.abs(b ** d - a) <= 1e-12 * a && near(d, logba);
+            const whole = Math.round(logba);
+            const wholeExponent = Math.abs(b ** whole - a) <= 1e-12 * a && Math.abs(logba - whole) <= 1e-9;
+            const power = x => x === 0 ? '1' : x === 1 ? 'n' : `n<sup>${x}</sup>`;
+            const shown = +logba.toPrecision(12);
+            if (!tie && d < logba) {
+                caseNum = 1;
+                step3.className = 'step case1';
+                step3.innerHTML = `<strong>Step 3:</strong> Since ${d} < ${shown}, this is <strong>Case 1</strong> (Leaves dominate)`;
+                if (wholeExponent) {
+                    result = `Θ(${power(whole)})`;
+                } else {
+                    result = `Θ(n<sup>log<sub>${b}</sub>${a}</sup>) ≈ Θ(n<sup>${logba.toFixed(3)}</sup>)`;
+                }
+            } else if (!tie) {
+                caseNum = 3;
+                step3.className = 'step case3';
+                step3.innerHTML = `<strong>Step 3:</strong> Since ${d} > ${shown}, this is <strong>Case 3</strong> (Root dominates).
+                    Regularity holds: a·f(n/b) = c·f(n) with c = ${a}/${b}<sup>${d}</sup> &lt; 1 (because d &gt; log<sub>b</sub>a).`;
+                result = `Θ(${power(d)})`;
+            } else {
+                caseNum = 2;
+                step3.className = 'step case2';
+                step3.innerHTML = `<strong>Step 3:</strong> Since b<sup>d</sup> = a (d = log<sub>b</sub>a = ${shown}), this is <strong>Case 2</strong> (Tie)`;
+                if (d === 0) {
+                    result = `Θ(log n)`;
+                } else if (d === 1) {
+                    result = `Θ(n log n)`;
+                } else {
+                    result = `Θ(n<sup>${d}</sup> log n)`;
+                }
+            }
+            stepsDiv.appendChild(step3);
+
+            document.getElementById('result').innerHTML = result;
+        }
+
+        calculate();
+    </script>
+    <script src="presenter.js"></script>
+</body>
+
+</html>

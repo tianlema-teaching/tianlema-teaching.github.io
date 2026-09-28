@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fibonacci Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .method-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .method-box h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .dp-array {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .dp-cell {
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dp-cell.current {
+            background: rgba(255, 107, 107, 0.4);
+        }
+
+        .dp-cell.computed {
+            background: rgba(81, 207, 102, 0.3);
+        }
+
+        .dp-cell.using {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .dp-cell .idx {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .dp-cell .val {
+            font-weight: bold;
+        }
+
+        .call-count {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .n-input {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .n-input input {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🌀</span> Fibonacci: Recursion vs DP</h1>
+
+        <div class="explanation">
+            <h3>The Classic Example</h3>
+            <p>F(n) = F(n-1) + F(n-2), with F(0)=0, F(1)=1</p>
+            <p style="margin-top: 10px;"><strong>Naive Recursion:</strong> O(2ⁿ) — exponential due to repeated work</p>
+            <p><strong>DP (Tabulation):</strong> O(n) — each subproblem solved once</p>
+        </div>
+
+        <div class="n-input">
+            Compute F(<input type="number" id="nInput" value="10" min="0" max="20">)
+        </div>
+
+        <div class="status" id="status">Click "Start" to compare approaches</div>
+
+        <div class="comparison">
+            <div class="method-box">
+                <h3>DP Tabulation</h3>
+                <div class="dp-array" id="dpArray"></div>
+                <div class="call-count">Operations: <span id="dpOps">0</span></div>
+            </div>
+            <div class="method-box">
+                <h3>Naive Recursion</h3>
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3rem; color: #ff6b6b;" id="recursiveResult">?</div>
+                    <div class="call-count">Function calls: <span id="recursiveCalls">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        let n = 10;
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            const raw = document.getElementById('nInput').value.trim();
+            n = Number(raw);
+            steps = [];
+            if (raw === '' || !Number.isInteger(n) || n < 0 || n > 20) {
+                steps.push({ dp: [], current: -1, using: [], ops: 0, status: 'Enter a whole number n from 0 to 20.' });
+                return;
+            }
+
+            const dp = new Array(n + 1).fill(null);
+            dp[0] = 0; if (n > 0) dp[1] = 1;
+            let ops = n > 0 ? 2 : 1;
+
+            steps.push({ dp: [...dp], current: -1, using: [], ops, status: n > 0 ? "Initialize: F(0)=0, F(1)=1" : "Initialize: F(0)=0" });
+
+            for (let i = 2; i <= n; i++) {
+                steps.push({ dp: [...dp], current: i, using: [i - 1, i - 2], ops, status: `Computing F(${i}) = F(${i - 1}) + F(${i - 2})` });
+                dp[i] = dp[i - 1] + dp[i - 2];
+                ops++;
+                steps.push({ dp: [...dp], current: i, using: [], ops, status: `F(${i}) = ${dp[i - 1]} + ${dp[i - 2]} = ${dp[i]}` });
+            }
+
+            // Count recursive calls
+            let recursiveCalls = 0;
+            function countFib(x) {
+                recursiveCalls++;
+                if (x <= 1) return x;
+                return countFib(x - 1) + countFib(x - 2);
+            }
+            const result = countFib(n);
+
+            steps.push({ dp: [...dp], current: -1, using: [], ops, recursiveCalls, result, status: `✓ F(${n}) = ${dp[n]}. DP: ${ops} op${ops === 1 ? '' : 's'} vs Recursion: ${recursiveCalls} call${recursiveCalls === 1 ? '' : 's'}!` });
+        }
+
+        function renderDP(step) {
+            const arr = document.getElementById('dpArray');
+            arr.innerHTML = step.dp.map((v, i) => {
+                let cls = '';
+                if (step.current === i) cls = 'current';
+                else if (step.using.includes(i)) cls = 'using';
+                else if (v !== null) cls = 'computed';
+                return `<div class="dp-cell ${cls}"><span class="idx">F(${i})</span><span class="val">${v ?? '?'}</span></div>`;
+            }).join('');
+
+            document.getElementById('dpOps').textContent = step.ops;
+            document.getElementById('status').textContent = step.status;
+
+            if (step.recursiveCalls) {
+                document.getElementById('recursiveCalls').textContent = step.recursiveCalls.toLocaleString();
+                document.getElementById('recursiveResult').textContent = step.result;
+            } else {
+                document.getElementById('recursiveCalls').textContent = '...';
+                document.getElementById('recursiveResult').textContent = '?';
+            }
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderDP(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderDP(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderDP(steps[currentStep]); } }
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderDP(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderDP(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 500);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        // A new n takes effect at once, so Start and Step never play the previous n.
+        document.getElementById('nInput').addEventListener('input', reset);
+
+        generateSteps(); renderDP(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

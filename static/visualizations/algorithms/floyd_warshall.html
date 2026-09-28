@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Floyd-Warshall Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .table-section h3 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .dp-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .dp-table th,
+        .dp-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 15px;
+            text-align: center;
+            min-width: 45px;
+        }
+
+        .dp-table th {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        .dp-table td.current {
+            background: rgba(255, 107, 107, 0.4);
+            border: 2px solid #ff6b6b;
+        }
+
+        .dp-table td.via {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .dp-table td.updated {
+            background: rgba(81, 207, 102, 0.4);
+        }
+
+        .k-indicator {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(123, 44, 191, 0.2);
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🔄</span> Floyd-Warshall (All-Pairs Shortest Paths)</h1>
+
+        <div class="explanation">
+            <h3>How It Works (Dynamic Programming)</h3>
+            <p>For each intermediate vertex k, check if path i→k→j is shorter than current i→j:</p>
+            <p style="font-family: monospace; margin-top: 10px;">dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+            </p>
+            <p style="margin-top: 10px;"><strong>Time:</strong> Θ(V³) | <strong>Space:</strong> O(V²)</p>
+        </div>
+
+        <div class="k-indicator">Intermediate Vertex k = <span id="kValue">-</span></div>
+
+        <div class="tables-container">
+            <div class="table-section">
+                <h3>Distance Matrix</h3>
+                <table class="dp-table" id="distTable"></table>
+            </div>
+        </div>
+
+        <div class="status" id="status">Click "Start" to compute all-pairs shortest paths</div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const V = ['A', 'B', 'C', 'D'];
+        const INF = 999;
+        const initial = [
+            [0, 3, INF, 7],
+            [8, 0, 2, INF],
+            [5, INF, 0, 1],
+            [2, INF, INF, 0]
+        ];
+
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const dist = initial.map(r => [...r]);
+
+            steps.push({ dist: dist.map(r => [...r]), k: -1, i: -1, j: -1, via: [], updated: null, status: "Initial distance matrix from graph edges" });
+
+            for (let k = 0; k < V.length; k++) {
+                steps.push({ dist: dist.map(r => [...r]), k, i: -1, j: -1, via: [], updated: null, status: `Consider paths through ${V[k]} (k=${k})` });
+
+                for (let i = 0; i < V.length; i++) {
+                    for (let j = 0; j < V.length; j++) {
+                        if (i !== k && j !== k && i !== j) {
+                            const through = dist[i][k] + dist[k][j];
+                            if (through < dist[i][j]) {
+                                const oldVal = dist[i][j];
+                                dist[i][j] = through;
+                                steps.push({
+                                    dist: dist.map(r => [...r]), k, i, j,
+                                    via: [{ r: i, c: k }, { r: k, c: j }],
+                                    updated: { r: i, c: j },
+                                    status: `${V[i]}→${V[j]}: ${oldVal === INF ? '∞' : oldVal} > ${dist[i][k]}+${dist[k][j]}=${through}. Update!`
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            steps.push({ dist: dist.map(r => [...r]), k: -1, i: -1, j: -1, via: [], updated: null, status: "✓ Floyd-Warshall complete! All shortest paths found." });
+        }
+
+        function renderTable(step) {
+            const table = document.getElementById('distTable');
+            let html = '<tr><th></th>';
+            V.forEach(v => html += `<th>${v}</th>`);
+            html += '</tr>';
+
+            for (let i = 0; i < V.length; i++) {
+                html += `<tr><th>${V[i]}</th>`;
+                for (let j = 0; j < V.length; j++) {
+                    let cls = '';
+                    if (step.updated && step.updated.r === i && step.updated.c === j) cls = 'updated';
+                    else if (step.i === i && step.j === j) cls = 'current';
+                    else if (step.via.some(v => v.r === i && v.c === j)) cls = 'via';
+                    const val = step.dist[i][j];
+                    html += `<td class="${cls}">${val === INF ? '∞' : val}</td>`;
+                }
+                html += '</tr>';
+            }
+            table.innerHTML = html;
+            document.getElementById('kValue').textContent = step.k >= 0 ? V[step.k] : '-';
+            document.getElementById('status').textContent = step.status;
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderTable(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderTable(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderTable(steps[currentStep]); } }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderTable(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderTable(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 600);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderTable(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

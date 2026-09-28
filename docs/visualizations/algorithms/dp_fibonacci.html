@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Programming: Fibonacci</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border: 2px solid #a855f7;
+            background: white;
+            color: #a855f7;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .mode-btn.active {
+            background: #a855f7;
+            color: white;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        .status {
+            text-align: center;
+            padding: 12px;
+            background: #faf5ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #e9d5ff;
+        }
+
+        .memo-table {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .memo-cell {
+            width: 50px;
+            height: 55px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .memo-cell .idx {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .memo-cell .val {
+            font-size: 14px;
+        }
+
+        .memo-cell.empty {
+            background: #f1f5f9;
+            color: #94a3b8;
+        }
+
+        .memo-cell.computing {
+            background: #fbbf24;
+            border-color: #f59e0b;
+        }
+
+        .memo-cell.filled {
+            background: #22c55e;
+            border-color: #16a34a;
+            color: white;
+        }
+
+        .memo-cell.using {
+            background: #3b82f6;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .call-stack {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .call-stack h4 {
+            margin: 0 0 10px 0;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+
+        .calls {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .call {
+            padding: 5px 10px;
+            background: #e0e7ff;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4338ca;
+        }
+
+        .call.active {
+            background: #fbbf24;
+            color: #78350f;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        a.back-link {
+            color: #9333ea;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1>🧮 Dynamic Programming: Fibonacci</h1>
+        <p class="subtitle">Compare Naive Recursion vs Memoization</p>
+
+        <div class="mode-toggle">
+            <button class="mode-btn" onclick="setMode('naive')">Naive Recursion</button>
+            <button class="mode-btn active" onclick="setMode('memo')">With Memoization</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="stat-calls">0</div>
+                <div class="stat-label">Function Calls</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-target">F(10)</div>
+                <div class="stat-label">Computing</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-result">?</div>
+                <div class="stat-label">Result</div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Click "Step →" to compute F(10) step by step.</div>
+
+        <div class="memo-table" id="memo"></div>
+
+        <div class="call-stack">
+            <h4>Call Stack:</h4>
+            <div class="calls" id="calls"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="reset()">🔄 Reset</button>
+            <button onclick="play()" id="startBtn">▶ Start</button>
+            <button onclick="stepBack()">← Prev</button>
+            <button onclick="step()" id="btn-next">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const TARGET = 10;
+        let mode = 'memo';
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function setMode(m) {
+            mode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            reset();
+        }
+
+        function render(s) {
+            // Memo table
+            const memoDiv = document.getElementById('memo');
+            memoDiv.innerHTML = '';
+            for (let i = 0; i <= TARGET; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'memo-cell';
+                if (s.computing.includes(i)) cell.classList.add('computing');
+                else if (s.using.includes(i)) cell.classList.add('using');
+                else if (s.memo[i] !== null) cell.classList.add('filled');
+                else cell.classList.add('empty');
+
+                cell.innerHTML = `<span class="idx">F(${i})</span><span class="val">${s.memo[i] !== null ? s.memo[i] : '?'}</span>`;
+                memoDiv.appendChild(cell);
+            }
+
+            // Call stack
+            const callsDiv = document.getElementById('calls');
+            callsDiv.innerHTML = '';
+            s.callStack.forEach((c, idx) => {
+                const el = document.createElement('div');
+                el.className = 'call';
+                if (idx === s.callStack.length - 1) el.classList.add('active');
+                el.textContent = `F(${c})`;
+                callsDiv.appendChild(el);
+            });
+
+            document.getElementById('stat-calls').textContent = s.callCount;
+            document.getElementById('stat-result').textContent = s.memo[TARGET] !== null ? s.memo[TARGET] : '?';
+            document.getElementById('status').textContent = s.status;
+            document.getElementById('btn-next').disabled = currentStep === steps.length - 1;
+        }
+
+        // Run the whole recursion once and record a snapshot after every step, so ← Prev can
+        // show any earlier state. Each call is a frame on the stack; its stage says which child
+        // call comes next. Naive mode never looks in the memo, so it recomputes subproblems.
+        function generateSteps() {
+            steps = [];
+            const memo = new Array(TARGET + 1).fill(null);
+            const callStack = [];
+            let callCount = 0;
+            function record(status, computing, using) {
+                steps.push({ memo: [...memo], callStack: callStack.map(f => f.n), callCount, computing, using, status });
+            }
+            function call(x, status) {
+                callStack.push({ n: x, stage: 0, vals: [] });
+                callCount++;
+                record(status, [x], []);
+            }
+            function ret(value) {
+                callStack.pop();
+                if (callStack.length) callStack[callStack.length - 1].vals.push(value);
+            }
+
+            record(`Click "Step →" to compute F(${TARGET}) step by step.`, [], []);
+            call(TARGET, `Start computing F(${TARGET}).`);
+            while (callStack.length) {
+                const frame = callStack[callStack.length - 1];
+                const current = frame.n;
+
+                if (frame.stage === 0 && current <= 1) {
+                    // Base cases
+                    memo[current] = current;
+                    ret(current);
+                    record(`Base case: F(${current}) = ${current}. Return.`, [], []);
+                } else if (frame.stage === 0 && mode === 'memo' && memo[current] !== null) {
+                    // Check memo
+                    ret(memo[current]);
+                    record(`F(${current}) already computed = ${memo[current]}. Reuse! (Memoization saves work)`, [], [current]);
+                } else if (frame.stage < 2) {
+                    // Need to compute F(current-1), then F(current-2)
+                    const need = current - 1 - frame.stage;
+                    frame.stage++;
+                    const again = mode === 'naive' && memo[need] !== null ? ' (Computed before, but naive recursion does not remember it.)' : '';
+                    call(need, `F(${current}) needs F(${need}). Push F(${need}) to stack.${again}`);
+                } else {
+                    // Both available, compute
+                    const [a, b] = frame.vals;
+                    memo[current] = a + b;
+                    ret(memo[current]);
+                    record(`F(${current}) = F(${current - 1}) + F(${current - 2}) = ${a} + ${b} = ${memo[current]}`, [], [current - 1, current - 2]);
+                }
+            }
+            steps[steps.length - 1].status = `✅ Done! F(${TARGET}) = ${memo[TARGET]}. Total calls: ${callCount}${mode === 'memo' ? ' (with memoization)' : ' (naive - exponential!)'}`;
+        }
+
+        function step() {
+            stopPlay();
+            if (currentStep < steps.length - 1) { currentStep++; render(steps[currentStep]); }
+        }
+
+        function stepBack() {
+            stopPlay();
+            if (currentStep > 0) { currentStep--; render(steps[currentStep]); }
+        }
+
+        function reset() {
+            stopPlay();
+            currentStep = 0;
+            generateSteps();
+            render(steps[0]);
+        }
+
+        function play() {
+            if (isPlaying) { stopPlay(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; render(steps[0]); }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; render(steps[currentStep]); }
+                else stopPlay();
+            }, 600);
+        }
+
+        function stopPlay() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                step();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        generateSteps();
+        render(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

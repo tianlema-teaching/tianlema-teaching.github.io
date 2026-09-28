@@ -1,0 +1,522 @@
+{
+  "about": "Where the published files come from. Digests are SHA-256 of the exact bytes.",
+  "visualizations": {
+    "what": "Interactive algorithm visualizations, created by the instructor for CSI 3620",
+    "source": "the instructor's AlgorithmVisualizations teaching repository, commit 04436ed9991f796c3941051bba773825045235b8",
+    "changes": "12 of the 38 files were edited for public release (keyboard accessibility of the presenter tools, the master theorem calculator's tie logic, the Dijkstra queue display, and wording accuracy); the other 26 are byte-identical to the source",
+    "files": {
+      "visualizations/algorithms/activity_selection.html": {
+        "source_sha256": "6c5edd9e1db16069fef208477213ab0e9f5e44b748f0cecc7e732b217231ff7d",
+        "published_sha256": "6c5edd9e1db16069fef208477213ab0e9f5e44b748f0cecc7e732b217231ff7d",
+        "changed": false
+      },
+      "visualizations/algorithms/bellman_ford.html": {
+        "source_sha256": "7f0a2035b35759aec70314e63730539373d0d8dc1aba11c56f3d16df2cb82e25",
+        "published_sha256": "7f0a2035b35759aec70314e63730539373d0d8dc1aba11c56f3d16df2cb82e25",
+        "changed": false
+      },
+      "visualizations/algorithms/bfs.html": {
+        "source_sha256": "f77e08e4f020b2b8a6b0a72c66bf5412d6c97d1474c2634acc263ce699b9973d",
+        "published_sha256": "f77e08e4f020b2b8a6b0a72c66bf5412d6c97d1474c2634acc263ce699b9973d",
+        "changed": false
+      },
+      "visualizations/algorithms/bfs_dfs_comparison.html": {
+        "source_sha256": "3373e3dc4db58335db8898a6f9a4dc6337c37a08a20e872d6e7eb2090ee4de40",
+        "published_sha256": "3373e3dc4db58335db8898a6f9a4dc6337c37a08a20e872d6e7eb2090ee4de40",
+        "changed": false
+      },
+      "visualizations/algorithms/binary_heap.html": {
+        "source_sha256": "79a400c3d07997029111973ee2ad871f564f5fb8a062d2c3897e259b57890696",
+        "published_sha256": "79a400c3d07997029111973ee2ad871f564f5fb8a062d2c3897e259b57890696",
+        "changed": false
+      },
+      "visualizations/algorithms/binary_search.html": {
+        "source_sha256": "8e4a7b40496da7bb0ff533703c7d931959f0088f8363bf9eb53758c53a7d9fb9",
+        "published_sha256": "8e4a7b40496da7bb0ff533703c7d931959f0088f8363bf9eb53758c53a7d9fb9",
+        "changed": false
+      },
+      "visualizations/algorithms/bubble_sort.html": {
+        "source_sha256": "5073e3384e7d9ce446d9366c7930b8b052b407ea6bb93ff24fa51a7afe27620a",
+        "published_sha256": "5073e3384e7d9ce446d9366c7930b8b052b407ea6bb93ff24fa51a7afe27620a",
+        "changed": false
+      },
+      "visualizations/algorithms/coin_change.html": {
+        "source_sha256": "1463a93a29d268c6ecfd29eb5b9f8e7f31ef42f19a7263d7ea8bdef9978855fa",
+        "published_sha256": "1463a93a29d268c6ecfd29eb5b9f8e7f31ef42f19a7263d7ea8bdef9978855fa",
+        "changed": false
+      },
+      "visualizations/algorithms/dfs.html": {
+        "source_sha256": "f1d6873c98d11c553339b4f3e0abb549a26b6f8b5cfe263225dd48559cacc914",
+        "published_sha256": "f1d6873c98d11c553339b4f3e0abb549a26b6f8b5cfe263225dd48559cacc914",
+        "changed": false
+      },
+      "visualizations/algorithms/dijkstra.html": {
+        "source_sha256": "7c78b24f2a0eae43443b7c512ff636089a0749df2736682d99f2f9775187b2ea",
+        "published_sha256": "4c4517f14edc51f2b885acc436a88f4e15704e0858a0a68873bdc6b529efe8a0",
+        "changed": true,
+        "change": "Priority-queue panel lists entries in priority order."
+      },
+      "visualizations/algorithms/dp_fibonacci.html": {
+        "source_sha256": "4a39dc8ad784ca6219ec0b7b2be139e31d232fe5b884b4d5e32c9876bc2676cc",
+        "published_sha256": "4a39dc8ad784ca6219ec0b7b2be139e31d232fe5b884b4d5e32c9876bc2676cc",
+        "changed": false
+      },
+      "visualizations/algorithms/edit_distance.html": {
+        "source_sha256": "90c0eb1d3e6f7b10b820647455887c0fc607afadb7318529bc861f865f143f3b",
+        "published_sha256": "90c0eb1d3e6f7b10b820647455887c0fc607afadb7318529bc861f865f143f3b",
+        "changed": false
+      },
+      "visualizations/algorithms/efficiency_comparison.html": {
+        "source_sha256": "e8711d60f7be6e945ba86dd3b75e9c5640e7d95f3092f52da13f63850a82fa93",
+        "published_sha256": "c7c3f540fc64fb168a91e307343cc99654f7ad061661ab101d2d9ff0fa83631d",
+        "changed": true,
+        "change": "Ratio described as 'Linear Search needs N× as many worst-case comparisons', not 'faster'."
+      },
+      "visualizations/algorithms/fibonacci.html": {
+        "source_sha256": "f3e546424dae8fb62f60ef703108284b1d220ecdfc7a972a696588a614feb133",
+        "published_sha256": "f3e546424dae8fb62f60ef703108284b1d220ecdfc7a972a696588a614feb133",
+        "changed": false
+      },
+      "visualizations/algorithms/floyd_warshall.html": {
+        "source_sha256": "80b947560f6f774c94720c716583bc1584666d5c1bdaaa5e9b1bc984939f443a",
+        "published_sha256": "80b947560f6f774c94720c716583bc1584666d5c1bdaaa5e9b1bc984939f443a",
+        "changed": false
+      },
+      "visualizations/algorithms/fractional_knapsack.html": {
+        "source_sha256": "5deab3a294fa01c5fef6487183b9718c29065c071105fbf6215dc285c0f84fab",
+        "published_sha256": "5deab3a294fa01c5fef6487183b9718c29065c071105fbf6215dc285c0f84fab",
+        "changed": false
+      },
+      "visualizations/algorithms/growth_rates.html": {
+        "source_sha256": "7326878607fbf70fbbe9e227cb4104675b8b7ff068a2a99ea97e5551c58de4ef",
+        "published_sha256": "1906bf78e48e7bd9bb8ffdca246d17550dc5c1115e0f56c3d52a65def3fca6e0",
+        "changed": true,
+        "change": "Canvas has a text alternative describing the checkbox-chosen curves; canvas fonts have fallbacks."
+      },
+      "visualizations/algorithms/heapsort.html": {
+        "source_sha256": "1e0c8cccc886e31db39cb5bfb3142f81267a898a83cee507775276ec71b5cc70",
+        "published_sha256": "1e0c8cccc886e31db39cb5bfb3142f81267a898a83cee507775276ec71b5cc70",
+        "changed": false
+      },
+      "visualizations/algorithms/huffman.html": {
+        "source_sha256": "6d789d2b122904f56d89c8674b9a588ea423bde241f73260a49ca913813cc1db",
+        "published_sha256": "6d789d2b122904f56d89c8674b9a588ea423bde241f73260a49ca913813cc1db",
+        "changed": false
+      },
+      "visualizations/algorithms/index.html": {
+        "source_sha256": "076fe439f3378440cf170fbb3352e7f3a5bdb37480ac451c319e2661800d8e9a",
+        "published_sha256": "8f81cbce39e0b77dcb88193e8d0ae0ed68ec8a6e46700a6cfbc8ad94bea68794",
+        "changed": true,
+        "change": "Quicksort card: space O(log n) average; footer explains ?present for the presenter tools."
+      },
+      "visualizations/algorithms/insertion_sort.html": {
+        "source_sha256": "6e1b4f5d6817c65345be16fa645de787c033f91c16494167cbaed4384c63d7ef",
+        "published_sha256": "6e1b4f5d6817c65345be16fa645de787c033f91c16494167cbaed4384c63d7ef",
+        "changed": false
+      },
+      "visualizations/algorithms/knapsack.html": {
+        "source_sha256": "6dcbaad53b37075b84362ac944bc2cd1175db44e88b33580585ba94ce2b4bdac",
+        "published_sha256": "4ecb8ad9e55f6e2bf53e02b2dc361188f96bc5d525544637cd1fb1479cf910a8",
+        "changed": true,
+        "change": "Recurrence states the w_i > w case."
+      },
+      "visualizations/algorithms/kruskal.html": {
+        "source_sha256": "9930b8b1a7749758ba1a0f4be7ef87356392402100250563b6a069da94f8fbb7",
+        "published_sha256": "9930b8b1a7749758ba1a0f4be7ef87356392402100250563b6a069da94f8fbb7",
+        "changed": false
+      },
+      "visualizations/algorithms/lcs.html": {
+        "source_sha256": "6d7f5a6ca029ab16c954346b5441f88ac88e64355243e29b64e28683ccedbe68",
+        "published_sha256": "6d7f5a6ca029ab16c954346b5441f88ac88e64355243e29b64e28683ccedbe68",
+        "changed": false
+      },
+      "visualizations/algorithms/linear_search.html": {
+        "source_sha256": "bc9fe503dfaeec81d312bc1264252bdf62a9b74d24c5173ad925d9222901e621",
+        "published_sha256": "bc9fe503dfaeec81d312bc1264252bdf62a9b74d24c5173ad925d9222901e621",
+        "changed": false
+      },
+      "visualizations/algorithms/master_theorem.html": {
+        "source_sha256": "c1c86031aa90012d3aa01398ef21027e4482ff78465c4e23997202cc13a9e43c",
+        "published_sha256": "555070c104720d95a88a95f97368c44a97865b2764275aac30379b1a8917ca1d",
+        "changed": true,
+        "change": "Tie requires b^d = a within rounding checked both as b^d vs a and d vs log_b a; otherwise d is compared with log_b a directly; whole-number log_b a detected within rounding (the old 0.0001 log tolerance misclassified 3,2,1.585 and 100001,10,5); Θ(n^1)/Θ(n^0) print as Θ(n)/Θ(1); step 3 shows 12 significant digits; subtitle says Θ(n^d) instead of f(n)."
+      },
+      "visualizations/algorithms/merge_sort.html": {
+        "source_sha256": "2f4a5e71e7455f1d2cd2f29d88bb5aed4bcab06ad6cab04495d6c9630418018f",
+        "published_sha256": "12e7df7cce74a43997f8bad9fc3c6d098031ce8f1bd7c4db3248dcf6225341d7",
+        "changed": true,
+        "change": "'always divides evenly' replaced by 'halves differ by at most one'."
+      },
+      "visualizations/algorithms/p_vs_np.html": {
+        "source_sha256": "de6b20c80bbb278437c6d8106b7b1bcf5fecb6a7b36a2ba21a9de72519731a54",
+        "published_sha256": "720b91b9bcf7967f0213545ff98690e9a439c10dca1ffb4d4069a0dd24924677",
+        "changed": true,
+        "change": "Shortest path O((V+E) log V); primality note defines n; graph coloring NP-complete for k >= 3; 'If P = NP'; NP 'not all known to be solvable quickly (P ⊆ NP)'."
+      },
+      "visualizations/algorithms/presenter.js": {
+        "source_sha256": "812a8f122806b9c4a450fc3338d9994c770d2ff5e56da333579054a801b8131b",
+        "published_sha256": "cfd1ce9fd68eadd155e2604f5d171d1039698e3c9379d5fec26ad7c8731f0881",
+        "changed": true,
+        "change": "Comment no longer names a local path; single-letter tools are off unless opened with ?present (?present=off/0/false/no turns them off; works without storage) (WCAG 2.1.4); hidden toolbar leaves the tab order; Space on a keyboard-focused button presses it instead of stepping (mouse clicks drop button focus, Shift+Space still steps back); step narration (#status) is announced (aria-live)."
+      },
+      "visualizations/algorithms/prim.html": {
+        "source_sha256": "ecbbb79775d0e7a305a3a3cd8f954c439139c1ab56728ea8f4db4776bfa4c107",
+        "published_sha256": "ecbbb79775d0e7a305a3a3cd8f954c439139c1ab56728ea8f4db4776bfa4c107",
+        "changed": false
+      },
+      "visualizations/algorithms/quickselect.html": {
+        "source_sha256": "8b93fb9c297f51049102451a9a5343dece04684e069c77da3318a37f455cc0ba",
+        "published_sha256": "8b93fb9c297f51049102451a9a5343dece04684e069c77da3318a37f455cc0ba",
+        "changed": false
+      },
+      "visualizations/algorithms/quicksort.html": {
+        "source_sha256": "dba49d0672ffe84ed110f7a31912fe6327e9a98efb1c7f73a474c288982e7832",
+        "published_sha256": "dba49d0672ffe84ed110f7a31912fe6327e9a98efb1c7f73a474c288982e7832",
+        "changed": false
+      },
+      "visualizations/algorithms/quicksort_partition_hoare.html": {
+        "source_sha256": "73f81ea20d9b6555a982fdb22c19c6639b9fe469736afd2d9016c25e80f9f231",
+        "published_sha256": "443456fabaf7b43219d9a8ecb6ae10a89566ee4d0c934d447f9a48271f0dcde0",
+        "changed": true,
+        "change": "Legend says 'after partition', not 'final'."
+      },
+      "visualizations/algorithms/quicksort_partition_lomuto.html": {
+        "source_sha256": "6b2c8dff5e62ae1f0217aa42c5a21fe3445ec35144c349d87d6ce8cec61eea83",
+        "published_sha256": "6b2c8dff5e62ae1f0217aa42c5a21fe3445ec35144c349d87d6ce8cec61eea83",
+        "changed": false
+      },
+      "visualizations/algorithms/quicksort_randomized.html": {
+        "source_sha256": "5e66d00cb77a02a5df85498e7465839fcffa8394dfea9b29ea9bc1e466c4b9a5",
+        "published_sha256": "f88592fabfbb3c3d91ffc59e777904e8cc902d261c54f90670a5e95eca8679be",
+        "changed": true,
+        "change": "Reset behavior described correctly; 'balanced' overclaim replaced (fixed pivot gives a 10-level chain, levels 0-9); fixed-pivot wording."
+      },
+      "visualizations/algorithms/selection_sort.html": {
+        "source_sha256": "358682c0e5fdc919ef1b0eab630135dd96a0bc0f2de0b6ffd1966bdf363fb7ac",
+        "published_sha256": "358682c0e5fdc919ef1b0eab630135dd96a0bc0f2de0b6ffd1966bdf363fb7ac",
+        "changed": false
+      },
+      "visualizations/algorithms/topological_sort.html": {
+        "source_sha256": "b8d4324eb10231eaa413891f714ae99e000183a031afead1b2d7e761750b7363",
+        "published_sha256": "b8d4324eb10231eaa413891f714ae99e000183a031afead1b2d7e761750b7363",
+        "changed": false
+      },
+      "visualizations/algorithms/vertex_cover.html": {
+        "source_sha256": "fe0ea39efe1c3e3cbdfee2014e383399f65596c1b67d950a9bed973ed799d0b3",
+        "published_sha256": "23e3472892b329eecd8463b82d08244aca957cb9f897f4f86f38ec5ce3c7b360",
+        "changed": true,
+        "change": "Singular/plural 'edge remains'."
+      }
+    }
+  },
+  "katex": {
+    "what": "KaTeX 0.16.11 math renderer, self-hosted so lecture slides make no request to another host",
+    "source": "npm package katex@0.16.11 (dist/katex.min.js, dist/katex.min.css, the 20 dist/fonts/*.woff2 files, and LICENSE published as LICENSE.txt)",
+    "verified": "2026-09-27: every published file compared by SHA-256 with the file served by cdn.jsdelivr.net/npm/katex@0.16.11; all identical. The same files were already in the instructor's lecture folders.",
+    "license": "MIT, Copyright (c) 2013-2020 Khan Academy and other contributors; the license text is published beside the files",
+    "files": {
+      "katex/LICENSE.txt": {
+        "source_sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
+        "published_sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_AMS-Regular.woff2": {
+        "source_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+        "published_sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Caligraphic-Bold.woff2": {
+        "source_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+        "published_sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Caligraphic-Regular.woff2": {
+        "source_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+        "published_sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Fraktur-Bold.woff2": {
+        "source_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+        "published_sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Fraktur-Regular.woff2": {
+        "source_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+        "published_sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Main-Bold.woff2": {
+        "source_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+        "published_sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Main-BoldItalic.woff2": {
+        "source_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+        "published_sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Main-Italic.woff2": {
+        "source_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+        "published_sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Main-Regular.woff2": {
+        "source_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+        "published_sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Math-BoldItalic.woff2": {
+        "source_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+        "published_sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Math-Italic.woff2": {
+        "source_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+        "published_sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_SansSerif-Bold.woff2": {
+        "source_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+        "published_sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_SansSerif-Italic.woff2": {
+        "source_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+        "published_sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_SansSerif-Regular.woff2": {
+        "source_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+        "published_sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Script-Regular.woff2": {
+        "source_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+        "published_sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Size1-Regular.woff2": {
+        "source_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+        "published_sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Size2-Regular.woff2": {
+        "source_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+        "published_sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Size3-Regular.woff2": {
+        "source_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+        "published_sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Size4-Regular.woff2": {
+        "source_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+        "published_sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+        "changed": false
+      },
+      "katex/fonts/KaTeX_Typewriter-Regular.woff2": {
+        "source_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+        "published_sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+        "changed": false
+      },
+      "katex/katex.min.css": {
+        "source_sha256": "717bc9ae7853b61f0f76455dddf0ecd4f527a783f42de2ac24684899c1c46258",
+        "published_sha256": "717bc9ae7853b61f0f76455dddf0ecd4f527a783f42de2ac24684899c1c46258",
+        "changed": false
+      },
+      "katex/katex.min.js": {
+        "source_sha256": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
+        "published_sha256": "e6bfe5deebd4c7ccd272055bab63bd3ab2c73b907b6e6a22d352740a81381fd4",
+        "changed": false
+      }
+    }
+  },
+  "decks": {
+    "what": "CSI 3620 lecture slide decks, one self-contained HTML file per lecture built by the instructor's slides engine",
+    "source": "slides/<course>/<term>/decks/*.md in this repository, built by tools/build.py --slides with the instructor's slides engine",
+    "instructor_decks": {
+      "slides/csi3620/2026-fall/decks/L04-divide-and-conquer-sorting.md": {
+        "from": "the instructor's in-class deck for lecture 4",
+        "from_sha256": "0177d0178bd2e4dc74a9437c1621aaa351479602e54cb7892a9f4dfa6f08cca6",
+        "only_change": "line 6 '@katex ./katex/' -> '@katex ../../../katex/'"
+      },
+      "slides/csi3620/2026-fall/decks/L05-simple-and-digit-sorting.md": {
+        "from": "the instructor's in-class deck for lecture 5",
+        "from_sha256": "706dfbca1d93f193de28d451de531e913c71342dab06634974cbe087dd322698",
+        "only_change": "line 6 '@katex ./katex/' -> '@katex ../../../katex/'"
+      }
+    },
+    "published": {
+      "csi3620/2026-fall/slides/L01-what-are-dsa.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L01-what-are-dsa.md",
+        "deck_sha256": "a40315860201c07767c8cad03c84c4d37696bfb902f4a9fbf80645bd4c1be262",
+        "published_sha256": "d7f0bbf4d81c765515659548f4adde7cfc78c1ed5b1066ff20c890b387dfc6c4",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L02-complexity-and-asymptotics.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L02-complexity-and-asymptotics.md",
+        "deck_sha256": "4239ba70b09e9478b0cb28a99f7fc4972b2988c8f39303aec90010f5ac75653e",
+        "published_sha256": "a26a306446ac4f1a1c84e71fdc068e0a15048b4abf2f60a0f53e0c41e0dfff1d",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L03-linear-and-binary-search.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L03-linear-and-binary-search.md",
+        "deck_sha256": "a39fa23162525c4df34bae97bbec018efc4d32c591e50a428a70ecad2853ec5b",
+        "published_sha256": "1168c7c104c98687275bdec25f9781d6ca60761a7e163674d7495750b280bbc5",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L04-divide-and-conquer-sorting.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L04-divide-and-conquer-sorting.md",
+        "deck_sha256": "2239b7993139ff117da68efcd42f708945a6a45fefa1775577c4cb693d577851",
+        "published_sha256": "0df0819fb84f5a42ef0dac78c08b08d470b63b870a5d92bda5dc185e1dd750f7",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L05-simple-and-digit-sorting.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L05-simple-and-digit-sorting.md",
+        "deck_sha256": "19c8127bddbf7d888aaf60bd6ad6b7f558a55a900f8af92f73ba48acba9a3a04",
+        "published_sha256": "7a36ba7362110aca52eecde2735983b86cac9cb8e289175bac8a4af04da7ceed",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L06-linked-lists.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L06-linked-lists.md",
+        "deck_sha256": "a592eaa687018ed53f91383f16e79f1287398e854e0be9b59cd360abe63ecf84",
+        "published_sha256": "6a02cff78943ad5a97d99de8823ce9cbf80075df56a2c08ed3d94afe4da681bc",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L07-stacks-and-queues.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L07-stacks-and-queues.md",
+        "deck_sha256": "e824f924627aa3c22695906e4f43241f223aa7fcbfc74e3731c77f5b327ff5a8",
+        "published_sha256": "e33a0ba2b28d70dd25b6a48bbb77e1805f9a1f6f7d3d090257c9883d6db4e982",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L08-trees-and-bsts.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L08-trees-and-bsts.md",
+        "deck_sha256": "da1d9015c2b095162efb44e674189ef034c1e2cac73edc83efec3a23b079d4a2",
+        "published_sha256": "f8cec0e8f65f8dd60522b3d325a848cc737b62ecd03da531423ed1cf70ddf46e",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L09-tree-traversals.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L09-tree-traversals.md",
+        "deck_sha256": "7bb0bb35b7c060c110272420ccc1fcfd8d165d6dab539f85dabd871a5edc31ed",
+        "published_sha256": "4b59802cec94782b9cf3083bc857c0185bdec62efb3c1ac35ac53c37061f15f6",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L10-balanced-trees-avl.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L10-balanced-trees-avl.md",
+        "deck_sha256": "6893fce3bdd5475655a046e3b188b813274588df726445bbb777a5b765d56ecc",
+        "published_sha256": "140b701adfeb45ddcfc7473f796c57c208a261fc0e884a5f59ff20708d7cd7f9",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L11-red-black-trees.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L11-red-black-trees.md",
+        "deck_sha256": "bad734ecdc3581aa29853cd5f713bcc5603fba07b36289f0ab8c1c596cbedf01",
+        "published_sha256": "45853a12ecc92e59dbcd69d681f4401cd996f7e9a876cd5275669ceacc2ee580",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L12-hash-tables.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L12-hash-tables.md",
+        "deck_sha256": "89f6620965c5b99e54382b9244cf27d24fff3e751da5ddb0665e9956a08f99a0",
+        "published_sha256": "b05ce8af4774407c56e5d6ccab9330f7db18ad9a65468b75a431e9443b061da1",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L13-b-trees.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L13-b-trees.md",
+        "deck_sha256": "702217cce9dea16170b718b7be09b611de087999c0a345de24519e869f818e64",
+        "published_sha256": "243193e245fa7b6f3e7fd179884ead1ff315aeb63d69440f80644092e983eb8f",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L14-heaps-and-priority-queues.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L14-heaps-and-priority-queues.md",
+        "deck_sha256": "6954978b32b5783d7f8d2981c9706779b2698627a47e8b9fcde74203b3c4780d",
+        "published_sha256": "cf79c596fe9904119f5a699dcaa270793b467dea734f7fce5f41a371c3ad3d5c",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L15-graphs-bfs-dfs.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L15-graphs-bfs-dfs.md",
+        "deck_sha256": "0012a4f46ffe809a356eaa1c9997ac8a8b8cfb10cf77a83aae047507acdcbf5a",
+        "published_sha256": "88c220c556fce4627153895ba4c342827cecd04c3e2cfbf4564a4388b5deb965",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L16-topological-sort-cycles.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L16-topological-sort-cycles.md",
+        "deck_sha256": "97c620927afa33565ba302474a7eed91f30917aa1ef0399eb31759d34fb98cec",
+        "published_sha256": "fe7ad4f7f888f03eb42a1bf501d792ee9357fe19505104efe415e381ac8fa958",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L17-shortest-paths.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L17-shortest-paths.md",
+        "deck_sha256": "0849135afdf8004b8dec7a513fff735988152408aba760d9e545cd9081ba2663",
+        "published_sha256": "20540f629670012e1b5ca3ca74752f881630c040f5f847cb7883611c00acacce",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L18-minimum-spanning-trees.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L18-minimum-spanning-trees.md",
+        "deck_sha256": "3c783c560dab40c0e8a97ebc3bf7a6cf1056861234636c4f60082c1781c04e88",
+        "published_sha256": "a8fddc26b308fc23cc34c8b76ed63d290b41f0048ae4d8b6fdf782d8c6a93db6",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L19-greedy-algorithms.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L19-greedy-algorithms.md",
+        "deck_sha256": "785a1bb3e9738f8bcca558df86517fa6d3f6d558f0fa96c1ddbf53ed8634b644",
+        "published_sha256": "1a972d65724eb4d869716e47518233cb8b3bd82776ca4b12b3acba82a9360a9b",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L20-dynamic-programming.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L20-dynamic-programming.md",
+        "deck_sha256": "da05265910f2de4dd8bb0cb33a21b9b17c6cd55985d6291f21bb1cd580e2c677",
+        "published_sha256": "736b0aa1ed41c1f0f4d4a65f367541d5f7dc21b57b2f9159f0bf6244759d19e4",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      },
+      "csi3620/2026-fall/slides/L21-backtracking.html": {
+        "built_from": "slides/csi3620/2026-fall/decks/L21-backtracking.md",
+        "deck_sha256": "8cae81e23a826b7fdba933cca5f1a13318e9b04e6c1f12d5d454029f71854c36",
+        "published_sha256": "69e351e02eec00f44aea6794d4bcbe40f86dfe774df5ec69897881518835be8d",
+        "engine_version": "2.7.0",
+        "engine_commit": "feeca08abbef62e0f7416fbec839e8f1d1beed58",
+        "engine_source_clean": true
+      }
+    }
+  },
+  "rights": "Created by or for the instructor. A public license has not been chosen yet; until then all rights are reserved."
+}

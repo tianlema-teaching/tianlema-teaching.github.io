@@ -1,0 +1,843 @@
+{
+  "status": "pass",
+  "checks": 128,
+  "decks": 21,
+  "errors": [],
+  "scope": "built docs/ served on loopback; not the live site, not a full accessibility audit",
+  "results": [
+    {
+      "route": "/csi3620/2026-fall/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/lectures/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L01-what-are-dsa.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L02-complexity-and-asymptotics.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L03-linear-and-binary-search.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L04-divide-and-conquer-sorting.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 47,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L05-simple-and-digit-sorting.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 44,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L06-linked-lists.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 55,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L07-stacks-and-queues.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 49,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L08-trees-and-bsts.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 56,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L09-tree-traversals.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 55,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L10-balanced-trees-avl.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 49,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L11-red-black-trees.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 41,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L12-hash-tables.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L13-b-trees.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L14-heaps-and-priority-queues.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 53,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L15-graphs-bfs-dfs.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 52,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L16-topological-sort-cycles.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 56,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L17-shortest-paths.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 58,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L18-minimum-spanning-trees.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L19-greedy-algorithms.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 54,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L20-dynamic-programming.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 58,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L21-backtracking.html",
+      "viewport": "laptop",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi4130-5130/2026-fall/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi4130-5130/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/",
+      "viewport": "laptop",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/activity_selection.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bellman_ford.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bfs.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bfs_dfs_comparison.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/binary_heap.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/binary_search.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bubble_sort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/coin_change.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dfs.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dijkstra.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dp_fibonacci.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/edit_distance.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/efficiency_comparison.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/fibonacci.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/floyd_warshall.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/fractional_knapsack.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/growth_rates.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/heapsort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/huffman.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/index.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/insertion_sort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/knapsack.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/kruskal.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/lcs.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/linear_search.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/master_theorem.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/merge_sort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/p_vs_np.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/prim.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quickselect.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_partition_hoare.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_partition_lomuto.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_randomized.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/selection_sort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/topological_sort.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/vertex_cover.html",
+      "viewport": "laptop",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/lectures/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L01-what-are-dsa.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L02-complexity-and-asymptotics.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L03-linear-and-binary-search.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L04-divide-and-conquer-sorting.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 47,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L05-simple-and-digit-sorting.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 44,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L06-linked-lists.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 55,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L07-stacks-and-queues.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 49,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L08-trees-and-bsts.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 56,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L09-tree-traversals.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 55,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L10-balanced-trees-avl.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 49,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L11-red-black-trees.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 41,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L12-hash-tables.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L13-b-trees.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L14-heaps-and-priority-queues.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 53,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L15-graphs-bfs-dfs.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 52,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L16-topological-sort-cycles.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 56,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L17-shortest-paths.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 58,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L18-minimum-spanning-trees.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 51,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L19-greedy-algorithms.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 54,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L20-dynamic-programming.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 58,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/2026-fall/slides/L21-backtracking.html",
+      "viewport": "phone",
+      "status": 200,
+      "slides": 50,
+      "problems": []
+    },
+    {
+      "route": "/csi3620/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi4130-5130/2026-fall/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/csi4130-5130/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/",
+      "viewport": "phone",
+      "status": 200,
+      "h1": 1,
+      "sideways": false,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/activity_selection.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bellman_ford.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bfs.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bfs_dfs_comparison.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/binary_heap.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/binary_search.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/bubble_sort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/coin_change.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dfs.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dijkstra.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/dp_fibonacci.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/edit_distance.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/efficiency_comparison.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/fibonacci.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/floyd_warshall.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/fractional_knapsack.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/growth_rates.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/heapsort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/huffman.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/index.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/insertion_sort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/knapsack.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/kruskal.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/lcs.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/linear_search.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/master_theorem.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/merge_sort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/p_vs_np.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/prim.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quickselect.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_partition_hoare.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_partition_lomuto.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/quicksort_randomized.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/selection_sort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/topological_sort.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    },
+    {
+      "route": "/visualizations/algorithms/vertex_cover.html",
+      "viewport": "phone",
+      "status": 200,
+      "problems": []
+    }
+  ]
+}

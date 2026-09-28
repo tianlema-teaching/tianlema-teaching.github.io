@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>BFS Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .node.current {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+            transform: scale(1.3);
+            box-shadow: 0 0 25px rgba(255, 107, 107, 0.7);
+        }
+
+        .node.visited {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+        }
+
+        .node.queued {
+            background: linear-gradient(135deg, #ffd43b, #fab005);
+        }
+
+        .node .dist {
+            position: absolute;
+            bottom: -22px;
+            font-size: 0.75rem;
+            color: #00d4ff;
+        }
+
+        .edge {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            height: 2px;
+            transform-origin: left center;
+        }
+
+        .edge.active {
+            background: #51cf66;
+            height: 3px;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .queue-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+        }
+
+        .queue-item {
+            padding: 8px 14px;
+            background: rgba(255, 212, 59, 0.3);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .visited-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .visited-item {
+            padding: 6px 12px;
+            background: rgba(81, 207, 102, 0.3);
+            border-radius: 6px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🌊</span> Breadth-First Search (BFS)</h1>
+
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <p>BFS explores vertices level by level using a <strong>queue</strong>:</p>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Start from source, add to queue</li>
+                <li>Dequeue a vertex and mark it visited</li>
+                <li>Add each neighbor that is not yet visited or queued to the queue (distance + 1)</li>
+                <li>Repeat until queue is empty</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Key Property:</strong> BFS finds shortest path (in terms of edges) in
+                unweighted graphs!</p>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to run BFS from node A</div>
+            </div>
+
+            <div class="sidebar">
+                <h3>Queue (FIFO)</h3>
+                <div class="queue-display" id="queueDisplay"></div>
+
+                <h3 style="margin-top: 20px;">Visited Order</h3>
+                <div class="visited-display" id="visitedDisplay"></div>
+
+                <h3 style="margin-top: 20px;">Distances from A</h3>
+                <div id="distanceDisplay" style="font-size: 0.9rem; margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = {
+            A: { x: 50, y: 150 },
+            B: { x: 180, y: 50 },
+            C: { x: 180, y: 250 },
+            D: { x: 320, y: 50 },
+            E: { x: 320, y: 150 },
+            F: { x: 320, y: 250 },
+            G: { x: 460, y: 150 }
+        };
+
+        const edges = [
+            { from: 'A', to: 'B' }, { from: 'A', to: 'C' },
+            { from: 'B', to: 'D' }, { from: 'B', to: 'E' },
+            { from: 'C', to: 'E' }, { from: 'C', to: 'F' },
+            { from: 'D', to: 'G' }, { from: 'E', to: 'G' }, { from: 'F', to: 'G' }
+        ];
+
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        function getNeighbors(node) {
+            const neighbors = [];
+            edges.forEach(e => {
+                if (e.from === node) neighbors.push(e.to);
+                if (e.to === node) neighbors.push(e.from);
+            });
+            return neighbors;
+        }
+
+        // "E is" / "D, E, F are" (for the narration)
+        function listIs(names) {
+            return names.join(', ') + (names.length === 1 ? ' is' : ' are');
+        }
+
+        function generateSteps() {
+            steps = [];
+            const visited = new Set();
+            const queue = ['A'];
+            const dist = { A: 0 };
+            const visitedOrder = [];
+
+            steps.push({
+                queue: [...queue],
+                visited: [...visited],
+                visitedOrder: [...visitedOrder],
+                current: null,
+                dist: { ...dist },
+                status: "Initialize: Add source A to queue. Distance = 0."
+            });
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                if (visited.has(current)) continue;
+
+                visited.add(current);
+                visitedOrder.push(current);
+
+                steps.push({
+                    queue: [...queue],
+                    visited: [...visited],
+                    visitedOrder: [...visitedOrder],
+                    current: current,
+                    dist: { ...dist },
+                    status: `Dequeue ${current} (dist=${dist[current]}). Mark as visited.`
+                });
+
+                const neighbors = getNeighbors(current).filter(n => !visited.has(n));
+                const added = neighbors.filter(n => dist[n] === undefined);   // never seen before
+                const waiting = neighbors.filter(n => dist[n] !== undefined); // already in the queue
+                added.forEach(n => {
+                    dist[n] = dist[current] + 1;
+                    queue.push(n);
+                });
+
+                let status;
+                if (added.length > 0) {
+                    status = `Add new neighbors [${added.join(', ')}] to queue (dist=${dist[current] + 1}).`;
+                    if (waiting.length > 0) status += ` ${listIs(waiting)} already in the queue.`;
+                } else if (waiting.length > 0) {
+                    status = `No new neighbors: ${listIs(waiting)} already in the queue.`;
+                } else {
+                    status = `No new neighbors: ${listIs(getNeighbors(current))} already visited.`;
+                }
+                steps.push({
+                    queue: [...queue],
+                    visited: [...visited],
+                    visitedOrder: [...visitedOrder],
+                    current: current,
+                    dist: { ...dist },
+                    status: status
+                });
+            }
+
+            steps.push({
+                queue: [],
+                visited: [...visited],
+                visitedOrder: [...visitedOrder],
+                current: null,
+                dist: { ...dist },
+                status: "✓ BFS Complete! All reachable vertices visited."
+            });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            edges.forEach(edge => {
+                const from = nodes[edge.from];
+                const to = nodes[edge.to];
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+                // Rim to rim: nodes are 45px circles (radius 22.5); the 2px line is centred on the
+                // line between the two centres.
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge';
+                edgeEl.style.left = (from.x + 22.5 + dx / length * 22.5) + 'px';
+                edgeEl.style.top = (from.y + 22.5 + dy / length * 22.5 - 1) + 'px';
+                edgeEl.style.width = (length - 45) + 'px';
+                edgeEl.style.transform = `rotate(${angle}deg)`;
+                canvas.appendChild(edgeEl);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                if (step.current === name) nodeEl.classList.add('current');
+                else if (step.visited.includes(name)) nodeEl.classList.add('visited');
+                else if (step.queue.includes(name)) nodeEl.classList.add('queued');
+                nodeEl.style.left = pos.x + 'px';
+                nodeEl.style.top = pos.y + 'px';
+                nodeEl.innerHTML = `${name}<span class="dist">${step.dist[name] !== undefined ? step.dist[name] : '∞'}</span>`;
+                canvas.appendChild(nodeEl);
+            });
+
+            document.getElementById('status').textContent = step.status;
+            document.getElementById('queueDisplay').innerHTML = step.queue.map(n => `<span class="queue-item">${n}</span>`).join('');
+            document.getElementById('visitedDisplay').innerHTML = step.visitedOrder.map(n => `<span class="visited-item">${n}</span>`).join('');
+            document.getElementById('distanceDisplay').innerHTML = Object.entries(step.dist).map(([k, v]) => `${k}: ${v}`).join(' | ');
+        }
+
+        function reset() {
+            stopAlgo();
+            currentStep = 0;
+            generateSteps();
+            renderGraph(steps[0]);
+        }
+
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderGraph(steps[currentStep]);
+            }
+        }
+
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) {
+                currentStep--;
+                renderGraph(steps[currentStep]);
+            }
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+
+        function stopAlgo() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        generateSteps();
+        renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

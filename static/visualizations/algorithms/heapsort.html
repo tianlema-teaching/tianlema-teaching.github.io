@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Heapsort Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0 40px;
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 50px;
+            background: linear-gradient(180deg, #00d4ff, #0077b6);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bar span {
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .bar .index {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .bar.current {
+            background: linear-gradient(180deg, #ff6b6b, #c92a2a);
+        }
+
+        .bar.swapping {
+            background: linear-gradient(180deg, #ffd43b, #fab005);
+            transform: scale(1.1);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(180deg, #51cf66, #2f9e44);
+        }
+
+        .bar.heap-root {
+            background: linear-gradient(180deg, #be4bdb, #9c36b5);
+        }
+
+        .tree-container {
+            margin: 30px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        .tree-node {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .tree-node.current {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+        }
+
+        .tree-node.sorted {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+            opacity: 0.5;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .phase-label {
+            text-align: center;
+            color: #7b2cbf;
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🔺</span> Heapsort</h1>
+
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Build Max-Heap:</strong> Convert array to max-heap (O(n))</li>
+                <li><strong>Extract Max:</strong> Swap root with last element, reduce heap size</li>
+                <li><strong>Heapify:</strong> Restore heap property by sifting down</li>
+                <li>Repeat until heap is empty</li>
+            </ol>
+        </div>
+
+        <div class="visualization">
+            <div class="phase-label" id="phaseLabel">Phase: Build Heap</div>
+            <div class="array-container" id="arrayContainer"></div>
+            <div class="status" id="status">Click "Start" to begin Heapsort</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+
+        <div class="explanation">
+            <h3>Complexity</h3>
+            <ul style="margin-left: 20px;">
+                <li><strong>Time:</strong> O(n log n) — always</li>
+                <li><strong>Space:</strong> O(1) — in-place</li>
+                <li><strong>Not Stable</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let array = [4, 10, 3, 5, 1, 8];
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const arr = [...array];
+            const n = arr.length;
+
+            steps.push({
+                array: [...arr],
+                current: -1,
+                swapping: [],
+                sorted: [],
+                phase: 'Build Max-Heap',
+                status: `Initial array: [${arr.join(', ')}]. Building max-heap...`
+            });
+
+            // Build heap
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+                heapify(arr, n, i, [], 'Build Max-Heap');
+            }
+
+            steps.push({
+                array: [...arr],
+                current: -1,
+                swapping: [],
+                sorted: [],
+                phase: 'Max-Heap Built',
+                status: `Max-heap built: [${arr.join(', ')}]. Begin extraction...`
+            });
+
+            // Extract elements
+            for (let i = n - 1; i > 0; i--) {
+                steps.push({
+                    array: [...arr],
+                    current: 0,
+                    swapping: [0, i],
+                    sorted: Array.from({ length: n - i - 1 }, (_, k) => n - 1 - k),
+                    phase: 'Extract Max',
+                    status: `Swap root ${arr[0]} with ${arr[i]} (index ${i})`
+                });
+
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+
+                const sorted = Array.from({ length: n - i }, (_, k) => n - 1 - k);
+                steps.push({
+                    array: [...arr],
+                    current: -1,
+                    swapping: [],
+                    sorted: sorted,
+                    phase: 'Extract Max',
+                    status: `${arr[i]} is now in final position. Heapify remaining...`
+                });
+
+                heapify(arr, i, 0, sorted, 'Heapify');
+            }
+
+            steps.push({
+                array: [...arr],
+                current: -1,
+                swapping: [],
+                sorted: Array.from({ length: n }, (_, k) => k),
+                phase: 'Complete',
+                status: `✓ Heapsort complete! Array sorted: [${arr.join(', ')}]`
+            });
+        }
+
+        function heapify(arr, n, i, sorted, phase) {
+            let largest = i;
+            const left = 2 * i + 1;
+            const right = 2 * i + 2;
+
+            if (left < n && arr[left] > arr[largest]) largest = left;
+            if (right < n && arr[right] > arr[largest]) largest = right;
+
+            if (largest !== i) {
+                steps.push({
+                    array: [...arr],
+                    current: i,
+                    swapping: [i, largest],
+                    sorted: [...sorted],
+                    phase: phase,
+                    status: `Heapify at position ${i}: ${arr[i]} < ${right < n ? 'larger child' : 'child'} ${arr[largest]}. Swap positions ${i} and ${largest}.`
+                });
+
+                [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                heapify(arr, n, largest, sorted, phase);
+            } else if (left < n) {
+                // The node is already at least as large as its children: sift-down stops here.
+                steps.push({
+                    array: [...arr],
+                    current: i,
+                    swapping: [],
+                    sorted: [...sorted],
+                    phase: phase,
+                    status: `Heapify at position ${i}: ${arr[i]} ≥ ${right < n ? `children ${arr[left]} and ${arr[right]}` : `child ${arr[left]}`} — no swap needed.`
+                });
+            }
+        }
+
+        function renderArray(step) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+            const maxVal = Math.max(...step.array);
+
+            step.array.forEach((val, idx) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (val / maxVal * 100 + 20) + 'px';
+
+                if (step.swapping.includes(idx)) bar.classList.add('swapping');
+                else if (idx === step.current) bar.classList.add('current');
+                else if (step.sorted.includes(idx)) bar.classList.add('sorted');
+
+                bar.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
+                container.appendChild(bar);
+            });
+
+            document.getElementById('status').textContent = step.status;
+            document.getElementById('phaseLabel').textContent = 'Phase: ' + step.phase;
+        }
+
+        function reset() {
+            stopAlgo();
+            array = [4, 10, 3, 5, 1, 8];
+            currentStep = 0;
+            generateSteps();
+            renderArray(steps[0]);
+        }
+
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderArray(steps[currentStep]); }
+        }
+
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderArray(steps[currentStep]); }
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            // At the last step, Start replays from the beginning.
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderArray(steps[0]); }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderArray(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 600);
+        }
+
+        function stopAlgo() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        generateSteps();
+        renderArray(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

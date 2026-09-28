@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P vs NP - Complexity Classes</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #6b21a8 0%, #581c87 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .diagram {
+            position: relative;
+            height: 350px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .class-circle {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .class-circle:hover {
+            transform: translate(-50%, -50%) scale(1.03);
+        }
+
+        .class-np {
+            width: 300px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(239, 68, 68, 0.15);
+            border: 3px solid #ef4444;
+        }
+
+        .class-np .label {
+            position: absolute;
+            top: 15px;
+            font-size: 1.2em;
+            color: #dc2626;
+        }
+
+        .class-p {
+            width: 160px;
+            height: 160px;
+            left: calc(50% - 55px);
+            top: 55%;
+            transform: translate(-50%, -50%);
+            background: rgba(34, 197, 94, 0.2);
+            border: 3px solid #22c55e;
+        }
+
+        .class-p .label {
+            color: #16a34a;
+            font-size: 1.1em;
+        }
+
+        .npc-region {
+            position: absolute;
+            /* Inside the NP circle, beside P and not touching it (as in CLRS Figure 34.6). */
+            top: calc(50% - 40px);
+            left: calc(50% + 35px);
+            width: 100px;
+            height: 80px;
+            background: rgba(251, 191, 36, 0.3);
+            border: 2px dashed #f59e0b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #d97706;
+            font-size: 0.9em;
+        }
+
+        .problems {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .problem-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .problem-card.p {
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+        }
+
+        .problem-card.npc {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+
+        .problem-card.np {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+
+        .problem-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .problem-card .complexity {
+            font-size: 0.8em;
+            color: #64748b;
+        }
+
+        .info-box {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-box.question {
+            background: #faf5ff;
+            border: 2px solid #a855f7;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #7c3aed;
+        }
+
+        .definition {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .def-card {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .def-card.p {
+            background: #f0fdf4;
+        }
+
+        .def-card.np {
+            background: #fef2f2;
+        }
+
+        .def-card.npc {
+            background: #fffbeb;
+        }
+
+        .def-card strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        a.back-link {
+            color: #6d28d9;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1>🧠 P vs NP: Complexity Classes</h1>
+        <p class="subtitle">Understanding the most famous unsolved problem in computer science</p>
+
+        <div class="diagram">
+            <div class="class-circle class-np">
+                <span class="label">NP</span>
+            </div>
+            <div class="class-circle class-p">
+                <span class="label">P</span>
+            </div>
+            <div class="npc-region">NP-Complete</div>
+        </div>
+        <p class="subtitle">Drawn assuming P ≠ NP (widely believed, not proven): P and NP-Complete both lie inside NP
+            and do not overlap.<br>If P = NP, P and NP would be the same class.</p>
+
+        <div class="info-box question">
+            <h3>The Million Dollar Question: Does P = NP?</h3>
+            <p>If P = NP, every problem we can quickly <em>verify</em> could also be quickly
+                <em>solved</em>.<br>
+                Most experts believe P ≠ NP, but no one has proven it.</p>
+        </div>
+
+        <div class="definition">
+            <div class="def-card p">
+                <strong>P (Polynomial Time)</strong>
+                Problems solvable in O(n<sup>k</sup>) time, for some constant k.<br>
+                "Efficiently solvable."
+            </div>
+            <div class="def-card np">
+                <strong>NP (Nondeterministic Polynomial)</strong>
+                Solutions can be <em>verified</em> in polynomial time.<br>
+                Not all known to be solvable quickly (P ⊆ NP).
+            </div>
+            <div class="def-card npc">
+                <strong>NP-Complete</strong>
+                Hardest problems in NP: every NP problem reduces to them in polynomial time.<br>
+                If any NPC problem is in P, then P = NP.
+            </div>
+        </div>
+
+        <h3 style="margin-top: 25px; color: #475569;">Example Problems:</h3>
+        <div class="problems">
+            <div class="problem-card p">
+                <strong>Sorting</strong>
+                <div class="complexity">O(n log n)</div>
+                In P ✓
+            </div>
+            <div class="problem-card p">
+                <strong>Shortest Path</strong>
+                <div class="complexity">O((V + E) log V)</div>
+                In P ✓
+            </div>
+            <div class="problem-card p">
+                <strong>Primality Test</strong>
+                <div class="complexity">Õ(log<sup>6</sup> n)</div>
+                <small>n = the number tested (its input is log n bits)</small><br>
+                In P ✓
+            </div>
+            <div class="problem-card npc">
+                <strong>SAT / 3-SAT</strong>
+                <div class="complexity">NP-Complete</div>
+                SAT: first proven NPC
+            </div>
+            <div class="problem-card npc">
+                <strong>Traveling Salesman</strong>
+                <div class="complexity">NP-Complete</div>
+                Tour of cost ≤ k?
+            </div>
+            <div class="problem-card npc">
+                <strong>Graph Coloring</strong>
+                <div class="complexity">NP-Complete</div>
+                k ≥ 3 colors, no adj. same (2 colors: in P)
+            </div>
+        </div>
+    </div>
+    <script src="presenter.js"></script>
+</body>
+
+</html>

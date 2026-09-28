@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bellman-Ford Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .node.source {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+        }
+
+        .node.updated {
+            background: linear-gradient(135deg, #ffd43b, #fab005);
+            transform: scale(1.1);
+        }
+
+        .node .dist {
+            position: absolute;
+            bottom: -22px;
+            font-size: 0.75rem;
+            color: #00d4ff;
+        }
+
+        /* A has the A→B / B→A edges below it: keep its distance clear of them */
+        .node.label-above .dist {
+            bottom: auto;
+            top: -22px;
+        }
+
+        .edge {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+        }
+
+        /* Arrowhead: the edges are directed; its tip touches the target node */
+        .edge::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            margin-top: -6px;
+            border-left: 12px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .edge.relaxing {
+            background: #ffd43b;
+            height: 4px;
+        }
+
+        .edge.relaxing::after {
+            border-left-color: #ffd43b;
+        }
+
+        .edge-label {
+            position: absolute;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #ffd43b;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .iteration-display {
+            text-align: center;
+            font-size: 1.3rem;
+            padding: 15px;
+            background: rgba(123, 44, 191, 0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dist-table th,
+        .dist-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dist-table th {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        .dist-table td.updated {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🔔</span> Bellman-Ford Algorithm</h1>
+
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <p>Finds shortest paths even with <strong>negative edges</strong>. Detects negative cycles.</p>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Initialize: d[source] = 0, all others = ∞</li>
+                <li>Repeat V-1 times: relax ALL edges</li>
+                <li>Check for negative cycle (one more iteration)</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Time:</strong> O(VE) — slower than Dijkstra but handles negatives</p>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to run from node S</div>
+            </div>
+            <div class="sidebar">
+                <div class="iteration-display">Iteration: <span id="iteration">0</span> / <span id="maxIter">4</span>
+                </div>
+                <h3>Distances</h3>
+                <table class="dist-table" id="distTable"></table>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = { S: { x: 30, y: 130 }, A: { x: 150, y: 50, labelAbove: true }, B: { x: 150, y: 210 }, C: { x: 300, y: 130 }, D: { x: 420, y: 130 } };
+        // labelSide -1: weight label on the left of the direction of travel (default: right)
+        const edges = [
+            { from: 'S', to: 'A', w: 6, labelSide: -1 }, { from: 'S', to: 'B', w: 7, labelSide: -1 },
+            { from: 'A', to: 'C', w: 5 }, { from: 'A', to: 'B', w: 8 },
+            { from: 'B', to: 'A', w: -3 }, { from: 'B', to: 'C', w: -4 },
+            { from: 'C', to: 'D', w: 2 }, { from: 'A', to: 'D', w: -2, labelSide: -1 }
+        ];
+
+        const V = Object.keys(nodes).length;
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const dist = {};
+            Object.keys(nodes).forEach(n => dist[n] = n === 'S' ? 0 : Infinity);
+
+            const order = edges.map(e => `${e.from}→${e.to}`).join(', ');
+
+            steps.push({ dist: { ...dist }, iteration: 0, edge: null, updated: null, status: "Initialize: d[S]=0, others=∞" });
+
+            for (let i = 1; i < V; i++) {
+                const header = { dist: { ...dist }, iteration: i, edge: null, updated: null, status: `Iteration ${i}: Relax all edges in order ${order}` };
+                steps.push(header);
+                let changed = false;
+
+                for (const e of edges) {
+                    if (dist[e.from] !== Infinity) {
+                        const newDist = dist[e.from] + e.w;
+                        if (newDist < dist[e.to]) {
+                            steps.push({ dist: { ...dist }, iteration: i, edge: e, updated: null, status: `Relax ${e.from}→${e.to}: ${dist[e.from]}+${e.w}=${newDist} < ${dist[e.to] === Infinity ? '∞' : dist[e.to]}` });
+                            dist[e.to] = newDist;
+                            steps.push({ dist: { ...dist }, iteration: i, edge: e, updated: e.to, status: `Update d[${e.to}] = ${newDist}` });
+                            changed = true;
+                        }
+                    }
+                }
+                if (!changed) header.status = `Iteration ${i}: Relax all edges again — no distance changes`;
+            }
+
+            // One more pass over all edges: if any edge can still be relaxed, a negative cycle is reachable.
+            const bad = edges.find(e => dist[e.from] !== Infinity && dist[e.from] + e.w < dist[e.to]);
+            steps.push({
+                dist: { ...dist }, iteration: V - 1, edge: bad || null, updated: null, status: bad
+                    ? `✗ Negative-cycle check: ${bad.from}→${bad.to} can still be relaxed, so a negative cycle is reachable from S`
+                    : `✓ Negative-cycle check: no edge can still be relaxed, so there is no negative cycle. Shortest paths found.`
+            });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            edges.forEach(e => {
+                const from = nodes[e.from], to = nodes[e.to];
+                const dx = to.x - from.x, dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                const nx = -dy / length, ny = dx / length;   // unit normal, right of the direction of travel
+                const off = edges.some(o => o.from === e.to && o.to === e.from) ? 6 : 0;   // A→B and B→A: one line each
+                const tip = length - Math.sqrt(22.5 * 22.5 - off * off);   // where the line meets the target rim (radius 22.5)
+
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge';
+                if (step.edge && step.edge.from === e.from && step.edge.to === e.to) edgeEl.classList.add('relaxing');
+                edgeEl.style.cssText = `left:${from.x + 22.5 + nx * off}px;top:${from.y + 22.5 + ny * off}px;width:${tip - 12}px;transform:rotate(${angle}deg)`;
+                canvas.appendChild(edgeEl);
+
+                const side = (e.labelSide || 1) * (off + 16);
+                const label = document.createElement('div');
+                label.className = 'edge-label';
+                label.textContent = e.w;
+                label.style.cssText = `left:${from.x + 22.5 + dx / 2 + nx * side}px;top:${from.y + 22.5 + dy / 2 + ny * side}px;transform:translate(-50%, -50%)`;
+                canvas.appendChild(label);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                if (name === 'S') nodeEl.classList.add('source');
+                if (step.updated === name) nodeEl.classList.add('updated');
+                if (pos.labelAbove) nodeEl.classList.add('label-above');
+                nodeEl.style.cssText = `left:${pos.x}px;top:${pos.y}px`;
+                nodeEl.innerHTML = `${name}<span class="dist">${step.dist[name] === Infinity ? '∞' : step.dist[name]}</span>`;
+                canvas.appendChild(nodeEl);
+            });
+
+            document.getElementById('iteration').textContent = step.iteration;
+            document.getElementById('maxIter').textContent = V - 1;
+            document.getElementById('status').textContent = step.status;
+
+            const table = document.getElementById('distTable');
+            table.innerHTML = '<tr><th>Node</th><th>Distance</th></tr>' +
+                Object.entries(step.dist).map(([n, d]) =>
+                    `<tr><td>${n}</td><td class="${step.updated === n ? 'updated' : ''}">${d === Infinity ? '∞' : d}</td></tr>`
+                ).join('');
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderGraph(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderGraph(steps[currentStep]); } }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 600);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

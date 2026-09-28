@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LCS Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .strings-display {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .string-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 8px;
+        }
+
+        .string-box span {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .dp-table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .dp-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .dp-table th,
+        .dp-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 45px;
+        }
+
+        .dp-table th {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .dp-table td.current {
+            background: rgba(255, 107, 107, 0.4);
+            border: 2px solid #ff6b6b;
+        }
+
+        .dp-table td.match {
+            background: rgba(81, 207, 102, 0.4);
+        }
+
+        .dp-table td.looking {
+            background: rgba(255, 212, 59, 0.3);
+        }
+
+        .dp-table td.path {
+            background: rgba(0, 212, 255, 0.3);
+            border: 2px solid #00d4ff;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 20px;
+            background: rgba(81, 207, 102, 0.2);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-box h3 {
+            color: #51cf66;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">🔤</span> Longest Common Subsequence</h1>
+
+        <div class="explanation">
+            <h3>Problem</h3>
+            <p>Find the longest sequence that appears in both strings <strong>in the same order</strong> (not
+                necessarily contiguous).</p>
+            <p style="margin-top: 10px;"><strong>Recurrence:</strong></p>
+            <p>If X[i] = Y[j]: dp[i][j] = 1 + dp[i−1][j−1]</p>
+            <p>Else: dp[i][j] = max(dp[i−1][j], dp[i][j−1])</p>
+        </div>
+
+        <div class="strings-display">
+            <div class="string-box">X = <span id="stringX">ABCB</span></div>
+            <div class="string-box">Y = <span id="stringY">BDCAB</span></div>
+        </div>
+
+        <div class="dp-table-container">
+            <table class="dp-table" id="dpTable"></table>
+        </div>
+
+        <div class="status" id="status">Click "Start" to fill the LCS table</div>
+
+        <div class="result-box" id="resultBox" style="display: none;">
+            <h3>LCS Found!</h3>
+            <p>Length: <span id="lcsLength"></span></p>
+            <p>Sequence: <span id="lcsSeq" style="font-size: 1.5rem; color: #00d4ff;"></span></p>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const X = "ABCB";
+        const Y = "BDCAB";
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const m = X.length, n = Y.length;
+            const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+
+            steps.push({ dp: dp.map(r => [...r]), current: null, looking: [], status: "Initialize table with zeros" });
+
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    if (X[i - 1] === Y[j - 1]) {
+                        dp[i][j] = dp[i - 1][j - 1] + 1;
+                        steps.push({
+                            dp: dp.map(r => [...r]),
+                            current: { i, j },
+                            looking: [{ i: i - 1, j: j - 1 }],
+                            match: true,
+                            status: `X[${i}]='${X[i - 1]}' = Y[${j}]='${Y[j - 1]}' → dp[${i}][${j}] = 1 + dp[${i - 1}][${j - 1}] = ${dp[i][j]}`
+                        });
+                    } else {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                        steps.push({
+                            dp: dp.map(r => [...r]),
+                            current: { i, j },
+                            looking: [{ i: i - 1, j }, { i, j: j - 1 }],
+                            match: false,
+                            status: `X[${i}]='${X[i - 1]}' ≠ Y[${j}]='${Y[j - 1]}' → dp[${i}][${j}] = max(${dp[i - 1][j]}, ${dp[i][j - 1]}) = ${dp[i][j]}`
+                        });
+                    }
+                }
+            }
+
+            // Backtrack
+            let lcs = "";
+            let i = m, j = n;
+            const path = [];
+            while (i > 0 && j > 0) {
+                if (X[i - 1] === Y[j - 1]) {
+                    lcs = X[i - 1] + lcs;
+                    path.push({ i, j });
+                    i--; j--;
+                } else if (dp[i - 1][j] > dp[i][j - 1]) {
+                    i--;
+                } else {
+                    j--;
+                }
+            }
+
+            steps.push({
+                dp: dp.map(r => [...r]),
+                current: null,
+                looking: [],
+                path: path,
+                lcs: lcs,
+                status: `✓ LCS = "${lcs}" (length ${lcs.length})`
+            });
+        }
+
+        function renderTable(step) {
+            const table = document.getElementById('dpTable');
+            let html = '<tr><th></th><th>""</th>';
+            for (let j = 0; j < Y.length; j++) html += `<th>${Y[j]}</th>`;
+            html += '</tr>';
+
+            for (let i = 0; i <= X.length; i++) {
+                html += `<tr><th>${i === 0 ? '""' : X[i - 1]}</th>`;
+                for (let j = 0; j <= Y.length; j++) {
+                    let cls = '';
+                    if (step.current && step.current.i === i && step.current.j === j) {
+                        cls = step.match ? 'match' : 'current';
+                    } else if (step.looking && step.looking.some(l => l.i === i && l.j === j)) {
+                        cls = 'looking';
+                    } else if (step.path && step.path.some(p => p.i === i && p.j === j)) {
+                        cls = 'path';
+                    }
+                    html += `<td class="${cls}">${step.dp[i][j]}</td>`;
+                }
+                html += '</tr>';
+            }
+            table.innerHTML = html;
+            document.getElementById('status').textContent = step.status;
+
+            if (step.lcs) {
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('lcsLength').textContent = step.lcs.length;
+                document.getElementById('lcsSeq').textContent = step.lcs;
+            } else {
+                document.getElementById('resultBox').style.display = 'none';
+            }
+        }
+
+        function reset() {
+            stopAlgo();
+            currentStep = 0;
+            generateSteps();
+            renderTable(steps[0]);
+        }
+
+        function stepForward() {
+            stopAlgo();
+            if (currentStep < steps.length - 1) { currentStep++; renderTable(steps[currentStep]); }
+        }
+
+        function stepBack() {
+            stopAlgo();
+            if (currentStep > 0) { currentStep--; renderTable(steps[currentStep]); }
+        }
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderTable(steps[0]); }
+            isPlaying = true;
+            document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderTable(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 400);
+        }
+
+        function stopAlgo() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            document.getElementById('startBtn').textContent = '▶ Start';
+        }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        generateSteps();
+        renderTable(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Topological Sort Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .main-area {
+            display: grid;
+            grid-template-columns: 1fr 250px;
+            gap: 20px;
+        }
+
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        .node {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0077b6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .node.current {
+            background: linear-gradient(135deg, #ff6b6b, #c92a2a);
+            transform: scale(1.2);
+        }
+
+        .node.finished {
+            background: linear-gradient(135deg, #51cf66, #2f9e44);
+        }
+
+        .node .indegree {
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+
+        .edge {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid rgba(255, 255, 255, 0.5);
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .queue-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+        }
+
+        .queue-item {
+            padding: 8px 12px;
+            background: rgba(255, 212, 59, 0.3);
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .result-display {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 3px;
+            background: rgba(81, 207, 102, 0.3);
+            border-radius: 6px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .step-hint {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin: 8px 0 0 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .explanation h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        a.back-link {
+            color: #00d4ff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 .icon {
+            -webkit-text-fill-color: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to All Algorithms</a>
+        <h1><span class="icon" aria-hidden="true">📊</span> Topological Sort (Kahn's Algorithm)</h1>
+
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Compute in-degree for each vertex</li>
+                <li>Add all vertices with in-degree 0 to queue</li>
+                <li>Remove vertex from queue, add to result</li>
+                <li>Decrease in-degree of neighbors; if 0, add to queue</li>
+                <li>Repeat until queue is empty</li>
+            </ol>
+            <p style="margin-top: 10px;"><strong>Use Case:</strong> Task scheduling, build systems, course prerequisites
+            </p>
+        </div>
+
+        <div class="main-area">
+            <div class="visualization">
+                <div class="graph-canvas" id="graphCanvas"></div>
+                <div class="status" id="status">Click "Start" to compute topological order</div>
+            </div>
+            <div class="sidebar">
+                <h3>Queue (in-degree = 0)</h3>
+                <div class="queue-display" id="queueDisplay"></div>
+                <div class="result-display">
+                    <h3>Topological Order</h3>
+                    <div id="resultDisplay"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn-primary" onclick="startAlgo()" id="startBtn">▶ Start</button>
+            <button class="btn-secondary" onclick="stepBack()">← Prev</button>
+            <button class="btn-secondary" onclick="stepForward()">Step →</button>
+        </div>
+        <div class="step-hint">Tip: use ← / → arrow keys (or Space) to step — no clicking needed.</div>
+    </div>
+
+    <script>
+        const nodes = { A: { x: 50, y: 130 }, B: { x: 150, y: 50 }, C: { x: 150, y: 210 }, D: { x: 280, y: 130 }, E: { x: 380, y: 50 }, F: { x: 380, y: 210 } };
+        const edges = [{ from: 'A', to: 'B' }, { from: 'A', to: 'C' }, { from: 'B', to: 'D' }, { from: 'C', to: 'D' }, { from: 'D', to: 'E' }, { from: 'D', to: 'F' }];
+
+        let steps = [], currentStep = 0, isPlaying = false, playInterval;
+
+        function generateSteps() {
+            steps = [];
+            const indegree = {};
+            Object.keys(nodes).forEach(n => indegree[n] = 0);
+            edges.forEach(e => indegree[e.to]++);
+
+            const queue = Object.keys(nodes).filter(n => indegree[n] === 0);
+            const result = [], finished = new Set();
+
+            steps.push({ indegree: { ...indegree }, queue: [...queue], result: [...result], finished: [...finished], current: null, status: "Compute in-degrees. Add vertices with in-degree 0 to queue." });
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                result.push(current);
+                finished.add(current);
+
+                steps.push({ indegree: { ...indegree }, queue: [...queue], result: [...result], finished: [...finished], current, status: `Process ${current}. Add to topological order.` });
+
+                const changes = [], ready = [];
+                edges.filter(e => e.from === current).forEach(e => {
+                    indegree[e.to]--;
+                    changes.push(`${e.to} ${indegree[e.to] + 1}→${indegree[e.to]}`);
+                    if (indegree[e.to] === 0) { queue.push(e.to); ready.push(e.to); }
+                });
+
+                const status = changes.length === 0 ? `${current} has no outgoing edges — no in-degree changes.`
+                    : `Decrease in-degree of ${current}'s neighbors: ${changes.join(', ')}.` + (ready.length ? ` Add ${ready.join(', ')} to queue.` : '');
+                steps.push({ indegree: { ...indegree }, queue: [...queue], result: [...result], finished: [...finished], current, status });
+            }
+
+            steps.push({ indegree: { ...indegree }, queue: [], result: [...result], finished: [...finished], current: null, status: `✓ Topological Order: ${result.join(' → ')}` });
+        }
+
+        function renderGraph(step) {
+            const canvas = document.getElementById('graphCanvas');
+            canvas.innerHTML = '';
+
+            edges.forEach(edge => {
+                const from = nodes[edge.from], to = nodes[edge.to];
+                const dx = to.x - from.x, dy = to.y - from.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                // Nodes are 45px circles (radius 22.5). The 2px line runs from the source rim to the
+                // base of the 8px arrowhead, whose tip touches the target rim.
+                const ux = dx / length, uy = dy / length;
+                const x1 = from.x + 22.5 + ux * 22.5, y1 = from.y + 22.5 + uy * 22.5;
+                const x2 = to.x + 22.5 - ux * 22.5, y2 = to.y + 22.5 - uy * 22.5;
+
+                const edgeEl = document.createElement('div');
+                edgeEl.className = 'edge';
+                edgeEl.style.cssText = `left:${x1}px;top:${y1 - 1}px;width:${length - 45 - 8}px;transform:rotate(${angle}deg)`;
+                canvas.appendChild(edgeEl);
+
+                const arrowEl = document.createElement('div');
+                arrowEl.className = 'arrow';
+                arrowEl.style.cssText = `left:${x2 - 8}px;top:${y2 - 5}px;transform-origin:right center;transform:rotate(${angle}deg)`;
+                canvas.appendChild(arrowEl);
+            });
+
+            Object.entries(nodes).forEach(([name, pos]) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                if (step.current === name) nodeEl.classList.add('current');
+                else if (step.finished.includes(name)) nodeEl.classList.add('finished');
+                nodeEl.style.cssText = `left:${pos.x}px;top:${pos.y}px`;
+                nodeEl.innerHTML = `${name}<span class="indegree">in:${step.indegree[name]}</span>`;
+                canvas.appendChild(nodeEl);
+            });
+
+            document.getElementById('queueDisplay').innerHTML = step.queue.map(n => `<span class="queue-item">${n}</span>`).join('');
+            document.getElementById('resultDisplay').innerHTML = step.result.map(n => `<span class="result-item">${n}</span>`).join('');
+            document.getElementById('status').textContent = step.status;
+        }
+
+        function reset() { stopAlgo(); currentStep = 0; generateSteps(); renderGraph(steps[0]); }
+        function stepForward() { stopAlgo(); if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); } }
+        function stepBack() { stopAlgo(); if (currentStep > 0) { currentStep--; renderGraph(steps[currentStep]); } }
+
+        // Keyboard stepping: → / Space next, ← / Shift+Space previous. Keys typed into a
+        // form control, and browser shortcuts (Ctrl/⌘/Alt), are left alone.
+        document.addEventListener('keydown', function (e) {
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (e.key === 'ArrowRight' || (e.key === ' ' && !e.shiftKey)) {
+                e.preventDefault();
+                stepForward();
+            } else if (e.key === 'ArrowLeft' || (e.key === ' ' && e.shiftKey)) {
+                e.preventDefault();
+                stepBack();
+            }
+        });
+
+        function startAlgo() {
+            if (isPlaying) { stopAlgo(); return; }
+            if (currentStep >= steps.length - 1) { currentStep = 0; renderGraph(steps[0]); }
+            isPlaying = true; document.getElementById('startBtn').textContent = '⏸ Pause';
+            playInterval = setInterval(() => {
+                if (currentStep < steps.length - 1) { currentStep++; renderGraph(steps[currentStep]); }
+                else { stopAlgo(); }
+            }, 800);
+        }
+        function stopAlgo() { isPlaying = false; clearInterval(playInterval); document.getElementById('startBtn').textContent = '▶ Start'; }
+
+        generateSteps(); renderGraph(steps[0]);
+    </script>
+    <script src="presenter.js" data-keys="→ Space: next step; ← Shift+Space: previous step"></script>
+</body>
+
+</html>

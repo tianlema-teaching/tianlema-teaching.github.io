@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Slides</title>
+<style>
+html,body{height:100%;margin:0}
+/* slides v2.7.0 — a lightweight, dependency-free presentation engine. MIT. */
+/* ── Tokens: everything visual is a variable. Override them on .sv (or a parent) to restyle a deck. ── */
+.sv{
+  --paper:#fbfbf9; --ink:#1b1d20; --ink-2:#4a4e54; --mist:#7b8087;
+  --rule:#e1e2df; --rule-2:#f0f0ed; --code-bg:#f4f4f1;
+  --accent:#2e63a6; --accent-ink:#244f85; --accent-tint:rgba(46,99,166,.09);
+  --mark:#f7e39a; --mark-ink:#2b2a1f;
+  --math:#1d4f8f;                  /* formulas stand out from prose (set to var(--ink) for plain) */
+  --blue:#dbe7f6;  --blue-ink:#2f5f9a;   --green:#dcefe1; --green-ink:#2f7a4d;
+  --amber:#fbeac6; --amber-ink:#9a6b12;  --rose:#f9dfe3;  --rose-ink:#a8404f;
+  --violet:#e8e1f5;--violet-ink:#6a4fa3; --gray:#ececea;  --gray-ink:#5c6066;
+  --c1:var(--accent);--c2:var(--green-ink);--c3:var(--amber-ink);--c4:var(--rose-ink);--c5:var(--violet-ink);--c6:var(--gray-ink);
+  --muted-opacity:.32;             /* how faded "past" bullets are in fade mode */
+  --muted-block-opacity:.75;       /* diagrams / code / images fade less so they stay readable while bullets explain them */
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --slide-max:1100px;              /* content column */
+  --stage-pad:6cqh clamp(24px,8cqw,120px);
+  color-scheme:light;
+}
+.sv[data-theme="dark"]{
+  --paper:#15171b; --ink:#e6e4df; --ink-2:#b9b7b1; --mist:#8b8f96;
+  --rule:#2c2f35; --rule-2:#1e2126; --code-bg:#1c1f24;
+  --accent:#7aa6df; --accent-ink:#a3c2ec; --accent-tint:rgba(122,166,223,.14);
+  --mark:#5a4d14; --mark-ink:#f4e7a8;
+  --math:#9ec5f5;
+  --blue:#223650;  --blue-ink:#9cc0ee;   --green:#1f3a2a; --green-ink:#8fd2a6;
+  --amber:#3d3116; --amber-ink:#e6c36a;  --rose:#3f2229;  --rose-ink:#ee9daa;
+  --violet:#2d2542;--violet-ink:#c3aef0; --gray:#2a2d32;  --gray-ink:#b5b8bd;
+  color-scheme:dark;
+}
+
+/* ── Root, stage, slides. Sizes are container-relative so the same deck works full-screen or in a box. ── */
+.sv,.sv *,.sv *::before,.sv *::after{box-sizing:border-box}
+.sv{position:relative;overflow:hidden;font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.5;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;container-type:size;
+  font-size:calc(.55cqw + .55cqh + 6px);margin:0;padding:0;outline:none}
+.sv.sv-body{position:fixed;inset:0;height:100%}
+.sv.sv-box{width:100%;aspect-ratio:16/9;border-radius:10px;border:1px solid var(--rule)}
+.sv.sv-box:fullscreen{border:0;border-radius:0;aspect-ratio:auto}
+.sv.idle{cursor:none}
+.sv kbd{font:500 .8em var(--mono);border:1px solid var(--rule);border-bottom-width:2px;border-radius:4px;padding:0 .35em;color:var(--ink-2)}
+.sv a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+.sv a:hover{border-bottom-color:currentColor}
+.sv button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.sv :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sv .stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:var(--stage-pad)}
+.sv .slide{width:100%;max-width:var(--slide-max);max-height:100%;overflow:auto;padding:1em 0;animation:sv-in .32s var(--ease) both;--scale:1}
+.sv .slide.out{animation:sv-out .18s ease-in both}
+@keyframes sv-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes sv-out{to{opacity:0;transform:translateY(-8px)}}
+.sv .slide h1{font-size:calc(2.15em*var(--scale));font-weight:600;letter-spacing:-.012em;line-height:1.2;margin:0 0 clamp(20px,3.5cqh,38px)}
+.sv .slide.center{text-align:center}
+.sv .slide.center .items,.sv .slide.center .text{margin-inline:auto}
+.sv .slide.title,.sv .slide.section{text-align:center;display:flex;flex-direction:column;justify-content:center;min-height:60cqh}
+.sv .slide.title h1{font-size:calc(3.8em*var(--scale));margin-bottom:.35em}
+.sv .slide.title .sub{font-size:calc(1.5em*var(--scale));color:var(--mist);font-weight:400;margin:0}
+.sv .slide.section h1{font-size:calc(2.9em*var(--scale))}
+.sv .slide.section .sub{color:var(--mist);margin:.9em 0 0}
+.sv .slide .sub{font-size:1.1em;color:var(--mist);margin:-.6em 0 1.2em}
+
+/* ── Items (bullets & blocks): the reveal machine ── */
+.sv .items{display:flex;flex-direction:column;gap:clamp(6px,1.2cqh,12px);max-width:960px}
+.sv .item{position:relative;padding:.35em .9em .35em 1em;border-left:3px solid transparent;font-size:calc(1.38em*var(--scale));
+  transition:opacity .35s var(--ease),transform .35s var(--ease),border-color .3s}
+.sv .item.d1{margin-left:1.6em;font-size:calc(1.24em*var(--scale))}
+.sv .item.d2{margin-left:3.2em;font-size:calc(1.17em*var(--scale))}
+.sv .item.future{opacity:0;transform:translateY(6px);pointer-events:none}
+.sv.marker .item.current{border-left-color:var(--accent)}        /* off by default: the un-faded bullet is the cue */
+.sv .item.past.m-fade{opacity:var(--muted-opacity)}
+.sv .item.block.past.m-fade{opacity:var(--muted-block-opacity)}
+.sv .item.past.m-hide{opacity:0;visibility:hidden}
+.sv .item.past.m-keep,.sv .item.shown{opacity:1}
+.sv .text{line-height:1.55;max-width:34em}
+.sv .text code,.sv .sub code,.sv .quiz code,.sv .cc code{font:.88em var(--mono);background:var(--code-bg);border:1px solid var(--rule);border-radius:4px;padding:.05em .35em}
+.sv .text mark{background:var(--mark);color:var(--mark-ink);border-radius:3px;padding:0 .15em}
+.sv .text strong{font-weight:600}
+.sv .ok{color:var(--green-ink);font-weight:700}.sv .no{color:var(--rose-ink);font-weight:700}
+.sv .tex{font-family:var(--mono);font-size:.9em;color:var(--math)}
+.sv .katex{font-size:1.12em;color:var(--math)}
+.sv .katex-display{margin:.45em 0;font-size:1.2em}
+.sv .cap{font-size:.78em;color:var(--mist);margin-top:.5em;text-align:center}
+.sv .err{background:var(--rose);color:var(--rose-ink);border-radius:8px;padding:.6em 1em;font-size:.85em}
+.sv .raw{font-size:.9em}
+
+/* ── Code, pseudocode, media, tables, demo links, quiz ── */
+.sv .code{background:var(--code-bg);border:1px solid var(--rule);border-radius:8px;overflow:auto;max-height:62cqh;font-size:.82em}
+.sv .code .lbl{font:500 .8em var(--mono);color:var(--mist);padding:.6em 1.2em 0}
+.sv .code pre{margin:0;padding:.85em 1.2em;font:1em/1.6 var(--mono);tab-size:4}
+.sv .tk-c{color:var(--mist);font-style:italic}.sv .tk-s{color:var(--green-ink)}.sv .tk-n{color:var(--amber-ink)}
+.sv .tk-k{color:var(--accent-ink);font-weight:600}.sv .tk-b{color:var(--violet-ink)}.sv .tk-p{color:var(--rose-ink)}.sv .tk-f{color:var(--ink)}
+.sv .algo{background:var(--code-bg);border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:6px;
+  padding:.85em 1.2em;font:.85em/1.75 var(--mono);white-space:pre;overflow:auto;max-height:62cqh}
+.sv .algo .kw{color:var(--accent-ink);font-weight:600}.sv .algo .cm{color:var(--mist);font-style:italic}
+.sv .fig{text-align:center;margin:0 auto}
+.sv .fig img,.sv .fig video{max-width:100%;max-height:62cqh;height:auto;border-radius:8px;border:1px solid var(--rule);display:inline-block}
+.sv .fig iframe{width:min(100%,860px);aspect-ratio:16/9;border:0;border-radius:8px;display:block;margin:0 auto}
+.sv .fig audio{width:min(100%,600px);display:block;margin:0 auto}
+.sv table.tbl{width:100%;border-collapse:collapse;font-size:.85em}
+.sv .tbl th,.sv .tbl td{padding:.5em .9em;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+.sv .tbl th{font-weight:600;border-bottom:2px solid var(--ink-2)}
+.sv .tbl tr:last-child td{border-bottom:0}
+.sv .tblw{overflow-x:auto}
+.sv a.demo{display:inline-flex;align-items:center;gap:.45em;border:1.5px solid var(--accent);border-radius:999px;padding:.3em 1em;font-size:.85em;font-weight:500;color:var(--accent-ink)}
+.sv a.demo:hover{background:var(--accent-tint)}
+
+/* ── Html fragments and frames: data-step elements wait at opacity 0; a frame alone on a slide takes the room, and without a title the whole stage ── */
+.sv .raw [data-step]{opacity:0;transition:opacity .35s var(--ease)}.sv .raw [data-step].on{opacity:1}
+.sv .fig.emb{display:flex;flex-direction:column;height:62cqh}
+.sv .item:only-child>.fig.emb{height:70cqh}
+.sv .items:first-child>.item:only-child>.fig.emb{height:78cqh}
+.sv .slide:has(>.items:first-child>.item:only-child>.emb),.sv .slide:has(>.items:first-child>.item:only-child>.emb) .items{max-width:none}
+.sv .fig.emb iframe{flex:1;min-height:0;width:100%;aspect-ratio:auto;border:1px solid var(--rule);border-radius:8px;background:var(--paper)}
+.sv .fig.emb iframe.hf{border:0;background:none}
+
+/* ── Native diagrams ── */
+.sv .dgw{display:flex;flex-direction:column;align-items:center}
+.sv .dg{display:block;width:100%;height:auto;max-height:64cqh;overflow:visible;font-family:var(--sans)}
+.sv .dg text{fill:var(--ink);font-size:16px;font-weight:500;dominant-baseline:central;text-anchor:middle;user-select:none}
+.sv .dg .grp rect{fill:var(--rule-2);stroke:var(--rule);stroke-width:1;stroke-dasharray:4 4;rx:12}
+.sv .dg .grp text{fill:var(--mist);font-size:13px;font-weight:600;text-anchor:start;paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.sv .dg .grp{opacity:0;transition:opacity .4s}.sv .dg .grp.on{opacity:1}
+.sv .dg .nd{opacity:0;transform:scale(.92);transform-box:fill-box;transform-origin:center;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.sv .dg .nd.on{opacity:1;transform:none}
+.sv .dg .nd .shp{fill:var(--paper);stroke:var(--ink-2);stroke-width:1.5;transition:fill .3s,stroke .3s}
+.sv .dg .nd.blue .shp{fill:var(--blue);stroke:var(--blue-ink)}   .sv .dg .nd.green .shp{fill:var(--green);stroke:var(--green-ink)}
+.sv .dg .nd.amber .shp{fill:var(--amber);stroke:var(--amber-ink)}.sv .dg .nd.rose .shp{fill:var(--rose);stroke:var(--rose-ink)}
+.sv .dg .nd.violet .shp{fill:var(--violet);stroke:var(--violet-ink)}.sv .dg .nd.gray .shp{fill:var(--gray);stroke:var(--gray-ink)}
+.sv .dg .nd.em .shp,.sv .dg .nd.new .shp{stroke:var(--accent);stroke-width:2;fill:var(--accent-tint)}
+.sv .dg .ed path{fill:none;stroke:var(--ink-2);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
+  transition:stroke-dashoffset .55s var(--ease),stroke .3s}
+.sv .dg .ed.on path{stroke-dashoffset:0}
+.sv .dg .ed.dash path{stroke-dasharray:6 5;stroke-dashoffset:0;opacity:0;transition:opacity .4s}
+.sv .dg .ed.dash.on path{opacity:1}
+.sv .dg .ed.thick path{stroke-width:3}
+.sv .dg .ed .ah{fill:var(--ink-2);opacity:0;transition:opacity .2s ease .4s,fill .3s}
+.sv .dg .ed.on .ah{opacity:1}
+.sv .dg .ed.new path{stroke:var(--accent)}.sv .dg .ed.new .ah{fill:var(--accent)}
+.sv .dg .ed text{font-size:13px;fill:var(--mist);paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round;opacity:0;transition:opacity .3s ease .35s}
+.sv .dg .ed.on text{opacity:1}
+.sv .dg .nd.dim,.sv .dg .ed.dim{opacity:.22}
+.sv .dcap{font-size:.85em;color:var(--ink-2);margin-top:.6em;min-height:1.4em;text-align:center;transition:opacity .3s}
+
+/* ── Native charts ── */
+.sv .ch{display:block;width:100%;height:auto;max-height:60cqh;font-family:var(--sans)}
+.sv .ch text{fill:var(--mist);font-size:12px}
+.sv .ch .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+.sv .ch .grid{stroke:var(--rule);stroke-width:1}
+.sv .ch .axis{stroke:var(--ink-2);stroke-width:1}
+.sv .ch .sr .bar{transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);transition:transform .5s var(--ease)}
+.sv .ch .sr.on .bar{transform:none}
+.sv .ch .sr .ln{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset .7s var(--ease)}
+.sv .ch .sr.on .ln{stroke-dashoffset:0}
+.sv .ch .sr .pt{opacity:0;transition:opacity .3s ease .5s}.sv .ch .sr.on .pt{opacity:1}
+.sv .ch .sr .lg{opacity:.25;transition:opacity .3s}.sv .ch .sr.on .lg{opacity:1}
+/* Quiz: a question and its options; .chosen marks the learner's pick, .revealed shows the answer */
+.sv .quiz .qq{font-weight:600;margin-bottom:.45em}
+.sv .quiz .qo{margin:0;padding-left:1.7em;display:flex;flex-direction:column;gap:.3em}
+.sv .quiz .qo li::marker{color:var(--mist);font-variant-numeric:tabular-nums}
+.sv .quiz .qo button{text-align:left;padding:.12em .55em;border-radius:6px;border:1.5px solid transparent;line-height:1.45}
+.sv .quiz .qo button:hover{background:var(--accent-tint)}
+.sv .quiz li.chosen button{border-color:var(--accent)}
+.sv .quiz.revealed li[data-ok] button{background:var(--green);color:var(--green-ink);border-color:var(--green-ink)}
+.sv .quiz.revealed li.chosen:not([data-ok]) button{background:var(--rose);color:var(--rose-ink);border-color:var(--rose-ink)}
+
+/* ── Chrome: hidden unless asked for. Progress + counter (C), toast, overlays, notes drawer ── */
+.sv .prog{position:absolute;top:0;left:0;height:2px;width:0;background:var(--accent);opacity:.75;transition:width .35s var(--ease);z-index:50;display:none}
+.sv .count{position:absolute;right:1.6em;bottom:1.2em;font-size:.8em;color:var(--mist);opacity:.7;user-select:none;z-index:50;font-variant-numeric:tabular-nums;display:none}
+.sv.chrome .prog,.sv.chrome .count{display:block}
+.sv .toast{position:absolute;left:50%;bottom:3.8em;transform:translate(-50%,8px);background:var(--ink);color:var(--paper);padding:.45em 1em;border-radius:999px;
+  font-size:.85em;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:200;white-space:nowrap}
+.sv .toast.on{opacity:1;transform:translate(-50%,0)}
+.sv .ovl{position:absolute;inset:0;z-index:300;display:none;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(6px);font-size:16px}
+.sv .ovl.on{display:flex}
+.sv .ovl.blank{z-index:400;background:#000}
+.sv .card{margin:auto;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:28px 32px;max-width:min(92%,720px);max-height:92%;overflow:auto;box-shadow:0 24px 60px -20px rgba(0,0,0,.35)}
+.sv .card h2{font-size:1.15em;font-weight:600;margin:0 0 14px}
+.sv .card p{color:var(--mist);font-size:.92em;margin:0 0 12px}
+.sv .btn{display:inline-block;background:var(--ink);color:var(--paper);border-radius:8px;padding:.55em 1.2em;font-weight:500;font-size:.95em;margin:4px 6px 4px 0}
+.sv .btn.ghost{background:none;color:var(--ink);border:1px solid var(--rule)}
+.sv .ovl.picker .card{text-align:center}
+.sv .ovl.picker.drag .card{border-color:var(--accent);background:var(--accent-tint)}
+.sv .keys{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 14px;font-size:.88em;align-items:center}
+.sv .keys span:nth-child(odd){text-align:right}
+.sv .keys span:nth-child(even){color:var(--ink-2)}
+.sv .ovl.goto input{width:100%;font:inherit;font-size:1.3em;text-align:center;padding:.4em;border:1.5px solid var(--rule);border-radius:8px;background:var(--code-bg);color:var(--ink);margin-bottom:12px}
+.sv .ovl.ov .card{max-width:min(94%,1100px);width:100%;max-height:86%;overflow:auto}
+.sv .ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.sv .ovc{display:block;text-align:left;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;font-size:.85em;line-height:1.3;color:var(--ink)}
+.sv .ovc small{display:block;color:var(--mist);margin-bottom:3px;font-variant-numeric:tabular-nums}
+.sv .ovc:hover{border-color:var(--accent)}.sv .ovc.cur{border-color:var(--accent);background:var(--accent-tint)}
+.sv .notes{position:absolute;left:0;right:0;bottom:0;z-index:150;background:var(--paper);border-top:1px solid var(--rule);padding:14px 32px 18px;
+  transform:translateY(100%);transition:transform .3s var(--ease);max-height:38%;overflow:auto;font-size:.95em}
+.sv .notes.on{transform:none}
+.sv .notes .meta{display:flex;gap:24px;color:var(--mist);font-size:.8em;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.sv .notes .body{color:var(--ink-2);max-width:70ch;white-space:pre-wrap}
+
+/* ── Presenter tools: laser, spotlight, pen, marker, draggable toolbar (T) ── */
+.sv .ink{position:absolute;inset:0;z-index:120;pointer-events:none;mix-blend-mode:multiply;touch-action:none}
+.sv[data-theme="dark"] .ink{mix-blend-mode:normal}
+.sv .ink.live{pointer-events:auto;cursor:crosshair}
+.sv .spot{position:absolute;inset:0;z-index:110;pointer-events:none;display:none;
+  background:radial-gradient(circle at var(--x,50%) var(--y,50%),transparent var(--r,140px),rgba(0,0,0,.6) calc(var(--r,140px) + 48px))}
+.sv .spot.on{display:block}
+.sv .laser{position:absolute;left:0;top:0;width:var(--d,14px);height:var(--d,14px);border-radius:50%;background:var(--lc,#e5484d);
+  box-shadow:0 0 0 3px rgba(255,255,255,.55),0 0 18px 4px var(--lc,#e5484d);z-index:130;pointer-events:none;display:none;transform:translate(-50%,-50%)}
+.sv .laser.on{display:block}
+.sv.tool-laser{cursor:none}
+.sv .tbar{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:160;display:flex;align-items:center;gap:2px;
+  background:var(--ink);color:var(--paper);padding:6px 10px;border-radius:999px;box-shadow:0 12px 30px -10px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:opacity .25s;font-size:13px;user-select:none;white-space:nowrap}
+.sv .tbar.on{opacity:1;pointer-events:auto}
+.sv .tbar button{padding:.35em .7em;border-radius:999px;color:inherit;opacity:.85}
+.sv .tbar button:hover{background:rgba(255,255,255,.12);opacity:1}
+.sv .tbar button.act{background:var(--paper);color:var(--ink);opacity:1}
+.sv .tbar .sep{width:1px;height:18px;background:rgba(255,255,255,.18);margin:0 6px}
+.sv .tbar .grip{cursor:grab;opacity:.5;padding:0 6px;letter-spacing:-2px}
+.sv .tbar .sw{width:16px;height:16px;border-radius:50%;padding:0;margin:0 2px;border:2px solid transparent}
+.sv .tbar .sw.act{border-color:var(--paper)}
+.sv .tbar input[type=range]{width:70px;accent-color:var(--paper);margin:0 6px}
+.sv .tbar kbd{border-color:rgba(255,255,255,.25);color:inherit;opacity:.6;margin-left:.3em;font-size:.7em}
+
+/* ── Narration bar (A), captions (V), "Listen" prompt, live source editor (E), presenter view (W) ── */
+.sv .nar{position:absolute;left:1.4em;bottom:1.1em;z-index:150;display:flex;align-items:center;gap:.6em;font-size:.78em;color:var(--mist);
+  background:color-mix(in srgb,var(--paper) 80%,transparent);backdrop-filter:blur(6px);border:1px solid var(--rule);border-radius:999px;padding:.3em .9em .3em .5em;
+  opacity:0;pointer-events:none;transition:opacity .3s;font-variant-numeric:tabular-nums;user-select:none}
+.sv .nar.on{opacity:1;pointer-events:auto}
+.sv.idle .nar.on{opacity:.35}
+.sv .nar button{padding:.1em .45em;border-radius:999px;color:var(--ink);font-size:1em;line-height:1.4}
+.sv .nar button:hover{background:var(--accent-tint)}
+.sv .nar .nPlay{min-width:2em;text-align:center}
+.sv .nar .nRate{color:var(--mist);font-size:.9em}
+.sv .nar .nTrack{width:min(28cqw,260px);height:3px;background:var(--rule);border-radius:2px;cursor:pointer;position:relative}
+.sv .nar .nFill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);border-radius:2px}
+.sv .narGo{position:absolute;left:50%;bottom:4.2em;transform:translateX(-50%);z-index:150;display:none;background:var(--ink);color:var(--paper);border-radius:999px;padding:.5em 1.3em;font-size:.95em;font-weight:500;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.sv .narGo.on{display:block}
+.sv .cc{display:none;position:absolute;left:50%;bottom:3.9em;transform:translateX(-50%);z-index:140;max-width:min(90%,70ch);padding:.2em .8em;border-radius:6px;
+  text-align:center;font-size:1.1em;line-height:1.45;color:var(--ink);background:color-mix(in srgb,var(--paper) 88%,transparent);pointer-events:none}
+.sv.narrating.captions .cc{display:block}
+.sv.narrating.captions .cc:empty{display:none}
+.sv.narrating.captions .stage{padding-bottom:calc(6cqh + 3.2em)}   /* the slide moves up so the caption line never covers it */
+.sv .cc .tex{font-size:.9em}
+.sv .slideAudio{display:block;width:min(100%,520px);margin:-.6em 0 1.4em;height:2.2em}
+.sv .slide.title .slideAudio,.sv .slide.section .slideAudio{margin:1.2em auto 0}
+
+/* Split layouts: the stage becomes its own container so the slide scales to its half. */
+.sv.split .stage{container-type:size}
+.sv.split .slide{font-size:calc(.55cqw + .55cqh + 6px)}
+.sv .src{position:absolute;left:0;top:0;bottom:0;width:42%;z-index:140;border:0;border-right:1px solid var(--rule);background:var(--code-bg);color:var(--ink);
+  font:13px/1.55 var(--mono);padding:18px 20px;resize:none;outline:none;tab-size:2;white-space:pre;overflow:auto}
+.sv.editing .stage{left:42%}
+.sv.editing .nar{left:calc(42% + 1.4em)}
+
+.sv.presenter .stage{left:0;top:0;width:64%;height:100%;padding:4cqh 3cqw}
+.sv.presenter .stage .slide{border:1px solid var(--rule);border-radius:8px;padding:2.5em 3em;background:var(--paper)}
+.sv.presenter .stage .item.future{opacity:.2;transform:none}   /* the presenter sees what comes next */
+.sv.presenter .pv{position:absolute;left:64%;top:0;right:0;height:46%;padding:3cqh 2.5cqw 0;display:flex;flex-direction:column;gap:6px}
+.sv .pv{display:none}.sv.presenter .pv{display:flex}
+.sv.presenter .pvLbl{font-size:.75em;color:var(--mist);text-transform:uppercase;letter-spacing:.06em}
+.sv.presenter .pvBox{flex:1;min-height:0;container-type:size;border:1px solid var(--rule);border-radius:8px;overflow:hidden;opacity:.85;display:flex;align-items:center;justify-content:center;padding:2cqh 3cqw}
+.sv.presenter .pvBox .slide{font-size:calc(.55cqw + .55cqh + 6px);animation:none;max-height:100%}
+.sv.presenter .pvBox .item{opacity:1!important;transform:none!important}
+.sv.presenter .notes{left:64%;top:46%;bottom:0;transform:none;max-height:none;border-top:0;border-left:1px solid var(--rule);padding:16px 2.5cqw;font-size:1em}
+.sv.presenter .notes .meta{font-size:.95em;gap:18px;margin-bottom:12px}
+.sv.presenter .notes .nClock{font-weight:600;color:var(--ink)}
+.sv.presenter .count{right:auto;left:3cqw;bottom:1.2cqh}
+.sv.presenter .tbar,.sv.presenter .ink,.sv.presenter .laser,.sv.presenter .spot{display:none!important}
+
+/* ── Scroll mode: every slide stacked and fully revealed. For course pages, handouts and printing. ── */
+.sv.sv-scroll{position:static;overflow:visible;height:auto;container-type:inline-size;font-size:clamp(15px,.75cqw + 9px,20px);aspect-ratio:auto;border:0;border-radius:0}
+.sv.sv-scroll .stage{position:static;display:block;padding:0}
+.sv.sv-scroll .slide{max-height:none;overflow:visible;margin:0 auto;padding:6cqh 6cqw;border-bottom:1px solid var(--rule);animation:none;min-height:60cqh}
+.sv.sv-scroll .slide.title,.sv.sv-scroll .slide.section{min-height:40cqh}
+.sv.sv-scroll .tbar,.sv.sv-scroll .count,.sv.sv-scroll .prog,.sv.sv-scroll .notes,.sv.sv-scroll .ink,.sv.sv-scroll .spot,.sv.sv-scroll .laser,.sv.sv-scroll .nar,.sv.sv-scroll .narGo,.sv.sv-scroll .cc,.sv.sv-scroll .pv{display:none!important}
+.sv.sv-scroll .ovl{position:fixed}
+.sv.sv-scroll .toast{position:fixed}
+/* "Everything revealed": scroll mode, the presenter's next-slide preview, print. */
+.sv.sv-scroll .item,.sv .pvBox .item,.sv .pvBox .raw [data-step]{opacity:1!important;visibility:visible!important;transform:none!important}
+.sv.sv-scroll .dg .nd,.sv.sv-scroll .dg .ed path,.sv.sv-scroll .dg .ed .ah,.sv.sv-scroll .dg .ed text,.sv.sv-scroll .dg .grp,.sv.sv-scroll .ch .sr .ln,.sv.sv-scroll .ch .sr .pt,.sv.sv-scroll .ch .sr .lg,
+.sv .pvBox .dg .nd,.sv .pvBox .dg .ed path,.sv .pvBox .dg .ed .ah,.sv .pvBox .dg .ed text,.sv .pvBox .dg .grp,.sv .pvBox .ch .sr .ln,.sv .pvBox .ch .sr .pt,.sv .pvBox .ch .sr .lg{opacity:1!important;transform:none!important;stroke-dashoffset:0!important}
+.sv.sv-scroll .ch .sr .bar,.sv .pvBox .ch .sr .bar{transform:none!important}
+@media print{
+  .sv{position:static!important;overflow:visible!important;background:#fff!important;color:#000!important;height:auto!important;border:0!important;aspect-ratio:auto!important;font-size:14pt!important}
+  .sv .tbar,.sv .count,.sv .prog,.sv .toast,.sv .notes,.sv .ink,.sv .spot,.sv .laser,.sv .ovl,.sv .nar,.sv .narGo,.sv .cc,.sv .src,.sv .pv{display:none!important}
+  .sv .stage{position:static!important;display:block!important;padding:0!important}
+  .sv .slide{max-height:none!important;overflow:visible!important;break-after:page;animation:none!important;padding:40px 40px 0!important;min-height:0!important;border:0!important}
+  .sv .code,.sv .algo{max-height:none;overflow:visible}
+  .sv .code pre,.sv .algo{white-space:pre-wrap;overflow-wrap:anywhere}
+  .sv .item,.sv .raw [data-step]{opacity:1!important;visibility:visible!important;transform:none!important}
+  .sv .dg .nd,.sv .dg .ed path,.sv .dg .ed .ah,.sv .dg .ed text,.sv .dg .grp,.sv .ch .sr .ln,.sv .ch .sr .pt,.sv .ch .sr .lg{opacity:1!important;transform:none!important;stroke-dashoffset:0!important}
+  .sv .ch .sr .bar{transform:none!important}
+}
+@media (max-width:700px){.sv{--stage-pad:4cqh 20px}.sv .notes{padding:10px 16px}}
+@media (prefers-reduced-motion:reduce){.sv *,.sv *::before,.sv *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+</style>
+</head>
+<body>
+<!-- The sample deck doubles as the syntax reference. -->
+<script type="text/plain" id="deck" data-name="L16-topological-sort-cycles.md">
+@title Lecture 16: Topological sort and cycle detection
+@reveal keep
+@align left
+@theme light
+@lang en-US
+@katex ../../../katex/
+
+# Topological sort and cycle detection
+## Ordering work that depends on other work
+
+---
+# Where we are
+
+- L15 stored graphs as adjacency lists and explored them with BFS and DFS.
+- Today both searches answer a new question: in what order can we do the work?
+- By the end of today you can:
+  - check whether a given order respects every edge of a directed graph;
+  - trace Kahn's algorithm and DFS-based topological sort by hand;
+  - find and report a cycle in a directed or an undirected graph;
+  - state the cost $O(V+E)$ and the assumptions behind it.
+
+> Last lecture gave us two traversals, breadth-first and depth-first, and a way to store a graph with adjacency lists. Today we reuse both traversals almost unchanged. The new question is about order: if some tasks must happen before others, can we list all the tasks so that no rule is broken, and if we cannot, which rules are to blame? Each outcome on the slide is something you can do with a pencil by the end of class.
+
+---
+# A planning problem
+
+- A department lists seven courses and which ones must come first.
+- A student wants one semester-by-semester sequence that breaks no rule.
+- With seven courses you can juggle it in your head. With seven hundred you cannot.
+- Worse, someone may type a rule that makes the plan impossible.
+- We want an algorithm that either produces an order or names the conflict.
+
+> Picture a curriculum committee adding prerequisite rules one at a time. Each rule is harmless alone, but together they might say that course A needs B, B needs C, and C needs A. Nobody could ever graduate. We need a method that produces a valid sequence whenever one exists, and otherwise points at the circular chain of rules so a person can fix it. That is exactly topological sort plus cycle detection.
+
+---
+# Precedence constraints are everywhere
+
+| Domain | Vertex | Edge `u -> v` means |
+|---|---|---|
+| Course plans | a course | take `u` before `v` |
+| Software builds | a module | compile `u` before `v` |
+| Data pipelines | a task | `v` reads the output of `u` |
+| Spreadsheets | a cell | `v`'s formula uses `u` |
+
+> A precedence constraint says one thing must happen before another. Build tools compile a library before the program that links it. A data pipeline cleans the raw file before training a model on it. A spreadsheet recomputes a cell only after the cells its formula mentions. In every row the graph is directed, and the arrow points from what must come first to what comes after. Keep that direction convention in mind; it is the one we use all lecture.
+
+---
+# The running example
+
+```diagram Edge u -> v: take u before v
+@dir LR
+@reveal all
+I[Intro] -> D[Data]
+I -> L[Logic]
+D -> A[Algo]
+D -> S[Sys]
+L -> A
+A -> C[Cap]
+S -> N[Net]
+N -> C
+```
+
+- Seven made-up courses, eight rules, numbered 0 to 6 left to right:
+  Intro, Data, Logic, Algo, Sys, Net, Cap.
+- Neighbor lists keep edges in the order they were added.
+
+> These course names are invented for this lecture. Intro is vertex zero, Data one, Logic two, Algo three, Sys four, Net five and Cap six. Intro leads to Data and Logic, both of which are needed for Algo; Data also leads to Sys, then Net; and the capstone, Cap, needs both Algo and Net. Every trace today uses this graph, and the order of each neighbor list matters: Data's list is Algo then Sys, and Net's list is just Cap. All states on later slides come from running the Java code on exactly this graph.
+
+---
+# Vocabulary
+
+- A **directed acyclic graph (DAG)** is a directed graph with no directed cycle.
+- A **directed cycle** is a path $v_0 \to v_1 \to \dots \to v_k = v_0$ with $k \ge 1$.
+- The **in-degree** of $v$ is the number of edges entering $v$.
+- A **source** has in-degree 0. A **sink** has no outgoing edges.
+- In our example Intro is the only source and Cap the only sink.
+
+> A cycle must follow the arrows, so a self-loop from a vertex to itself counts as a cycle of length one. Our course graph has no directed cycle, so it is a DAG, even though Intro, Data, Algo and Logic form a loop if you ignore the arrow directions. In-degree is just a count of arrows coming in: Algo has two, Cap has two, Intro has none. A source is a course with no prerequisites, and a sink is a course that nothing else requires.
+
+---
+# Topological order
+
+- A **topological order** lists every vertex exactly once.
+- For every edge $u \to v$, $u$ appears before $v$.
+- `Intro, Data, Logic, Sys, Algo, Net, Cap` is one topological order.
+- `Data, Intro, ...` is not: the edge Intro to Data points backwards.
+- Checking a proposed order costs $O(V+E)$: record positions, then test every edge.
+
+> The definition has two parts: a permutation of all vertices, and one inequality per edge. To check a proposed order, write each vertex's position in an array, then walk every edge and confirm the tail's position is smaller than the head's. One backwards edge is enough to reject the order. Our Java checker does exactly this, and the test suite uses it on every order the algorithms produce.
+
+---
+@type section
+# Orders exist exactly for DAGs
+
+---
+# A cycle forbids every order
+
+- Suppose $v_0 \to v_1 \to \dots \to v_{k-1} \to v_0$ is a cycle.
+- An order would need $v_0$ before $v_1$, $v_1$ before $v_2$, and so on.
+- Chaining these gives $v_0$ before $v_0$: impossible.
+- So a graph with a directed cycle has **no** topological order.
+
+> This direction is the easy one. Follow the cycle around and apply the rule to each edge. Before is transitive, so the chain of rules ends up saying the first vertex comes before itself, which no list can do. A self-loop is the shortest example: it demands that a vertex come before itself directly.
+
+---
+# Every DAG has a source
+
+- Pick any vertex and walk **backwards** along incoming edges.
+- If the walk ever stops, it stopped at a vertex with in-degree 0.
+- If it never stops, after $V$ steps some vertex repeats.
+- A repeat means the walk traced a directed cycle, backwards.
+- In a DAG that cannot happen, so the walk stops at a source.
+
+> Start at Cap in our example and step back along an incoming arrow, say to Net, then Sys, then Data, then Intro, where no arrow comes in. In general, a finite graph has only V vertices, so a walk of more than V steps must revisit one. The stretch between the two visits is a cycle, which a DAG does not have. So every nonempty DAG has at least one source. The same argument, walking forward, shows every nonempty DAG has a sink.
+
+---
+# Every DAG has an order
+
+- Induction on $V$. An empty graph has the empty order.
+- Take a source $s$ of the DAG; put $s$ first.
+- Deleting $s$ and its edges leaves a smaller DAG.
+- Order the rest by induction; append it after $s$.
+- Every edge out of $s$ points forward. Every other edge is handled by the rest.
+
+$$\text{order exists} \iff \text{DAG}$$
+
+> Removing a vertex cannot create a cycle, so the remainder is still a DAG and, by induction, has an order. Placing the source in front is safe because no edge enters it, and every edge leaving it now points to a later position. Together with the previous slide this proves the equivalence on screen. The proof is also an algorithm: repeatedly take a source and delete it. That is Kahn's algorithm, which we trace next.
+
+---
+# Quiz: orders and cycles
+
+```quiz
+A directed graph has edges A -> B, B -> C and A -> C. How many topological orders does it have?
+- [ ] zero, because A, B, C form a cycle
+- [x] exactly one: A, B, C
+- [ ] two: A, B, C and A, C, B
+- [ ] six, one per permutation
+```
+
+> The three edges form a triangle only if you ignore direction; following the arrows there is no way back to A, so the graph is a DAG and has at least one order. A must come first because it has in-degree zero and is the only source. Then B must come before C because of the edge B to C. That leaves exactly one order. The option A, C, B breaks the edge B to C.
+
+---
+@type section
+# Kahn's algorithm
+
+---
+# Kahn's idea
+
+- Count the in-degree of every vertex.
+- Put every source in a FIFO queue.
+- Repeatedly remove a vertex $u$ from the queue and output it.
+- "Delete" $u$: decrement the in-degree of each neighbor of $u$.
+- A neighbor whose count reaches 0 has become a source: enqueue it.
+
+> We never actually delete anything from the graph. The in-degree array plays the role of the shrinking graph: a count tells how many prerequisites of that vertex are still waiting. When the count drops to zero, all its prerequisites have been output, so it is safe to schedule. The queue holds the vertices that are ready right now. Any order of removal from that set works; a FIFO queue is simply a convenient choice.
+
+---
+# Kahn in pseudocode
+
+```algorithm
+function KAHN(G):                     // G has vertices 0..V-1
+  indeg[v] ← 0 for every v
+  for each edge u → v do indeg[v] ← indeg[v] + 1
+  Q ← queue of every v with indeg[v] = 0
+  order ← empty list
+  while Q is not empty do
+    u ← DEQUEUE(Q); append u to order
+    for each v in adj[u] do
+      indeg[v] ← indeg[v] - 1
+      if indeg[v] = 0 then ENQUEUE(Q, v)
+  if len(order) < V then report "cycle"   // some vertex never freed
+  return order
+```
+
+> Read it in three parts: count, seed, repeat. The count loop visits every edge once. The seed puts all current sources in the queue. The main loop outputs one vertex per round and releases the vertices whose last waiting prerequisite was just output. The final test matters: if fewer than V vertices came out, something was never released. We will see that this happens exactly when there is a cycle.
+
+---
+# Kahn in Java: count and seed
+
+```java
+int n = g.vertexCount();
+int[] inDegree = new int[n];
+for (int u = 0; u < n; u++) {
+    for (int v : g.neighbors(u)) {
+        inDegree[v]++;
+    }
+}
+Deque<Integer> queue = new ArrayDeque<>();
+for (int v = 0; v < n; v++) {
+    if (inDegree[v] == 0) {
+        queue.add(v);
+    }
+}
+```
+
+> The double loop visits each adjacency list once, so it touches every edge exactly once and increments the head's count. `ArrayDeque` serves as the queue: `add` puts a vertex at the tail and, on the next slide, `remove` takes from the head. The seed loop scans vertices in index order, which is why Intro, vertex zero, is examined first. On our graph it is also the only source.
+
+---
+# Kahn in Java: the main loop
+
+```java
+List<Integer> order = new ArrayList<>();
+// ...
+while (!queue.isEmpty()) {
+    int u = queue.remove();
+    order.add(u);
+    for (int v : g.neighbors(u)) {
+        inDegree[v]--;
+        if (inDegree[v] == 0) {
+            queue.add(v);
+        }
+    }
+    // ...
+}
+return order;
+```
+
+> This is the rest of the method kahnOutput. Each round removes the head of the queue, appends it to the output, and walks its adjacency list once. The decrement and the zero test are the whole algorithm: a neighbor joins the queue at the exact moment its last waiting prerequisite is output. The two marked gaps are the trace-recording lines of the tested file. The method returns whatever it managed to output, even if that is fewer than V vertices; the wrapper on the next slide turns that into a clear answer.
+
+---
+# Kahn in Java: an order or nothing
+
+```java
+public static Optional<List<Integer>> kahn(Digraph g) {
+    List<Integer> order = kahnOutput(g, null);
+    return order.size() == g.vertexCount()
+            ? Optional.of(order) : Optional.empty();
+}
+```
+
+- All $V$ vertices output: return the order.
+- Fewer: some vertex never reached in-degree 0. Return an empty `Optional`.
+- The caller must handle the cyclic case; no partial list slips through.
+
+> The public wrapper returns an order only when every vertex came out, and an empty Optional when a cycle blocked some of them. Returning Optional instead of a possibly short list forces the caller to think about the cyclic case. The null argument switches off the tracing hook that printed the trace on the next slides; the traced run and the plain run execute the same statements otherwise.
+
+---
+# Kahn trace: the starting counts
+
+| Vertex | Intro | Data | Logic | Algo | Sys | Net | Cap |
+|---|---|---|---|---|---|---|---|
+| in-degree | 0 | 1 | 1 | 2 | 1 | 1 | 2 |
+
+- Only Intro has in-degree 0, so the queue starts as `[Intro]`.
+- Algo and Cap each wait for two prerequisites.
+
+> Check each count against the picture of the graph. Data and Logic each have one arrow in, from Intro. Algo has two, from Data and from Logic. Sys and Net have one each. Cap has two, from Algo and from Net. These are the numbers the Java code printed before its main loop began, and the queue held Intro alone.
+
+---
+# Kahn trace, steps 1 to 4
+
+```diagram
+@dir TB
+@reveal manual
+K1[out Intro | queue: Data, Logic]
+focus K1
+--- Intro leaves. Data and Logic drop to 0 and join the queue.
+K1 -> K2[out Data | queue: Logic, Sys]
+focus K1 K2
+--- Algo drops to 1. Sys drops to 0 and joins.
+K2 -> K3[out Logic | queue: Sys, Algo]
+focus K2 K3
+--- Algo drops to 0: both of its prerequisites are out.
+K3 -> K4[out Sys | queue: Algo, Net]
+focus K3 K4
+--- Net drops to 0 and joins behind Algo.
+```
+
+> Each box shows the vertex just output and the queue after its neighbors were updated. Removing Intro frees both Data and Logic. Removing Data lowers Algo from two to one, not yet zero, and frees Sys. Removing Logic finally frees Algo. Removing Sys frees Net. Notice the queue is first in, first out: Algo joined before Net, so Algo will leave first.
+
+---
+# Kahn trace, steps 5 to 7
+
+```diagram
+@dir TB
+@reveal manual
+K5[out Algo | queue: Net]
+focus K5
+--- Cap drops from 2 to 1. It still waits for Net.
+K5 -> K6[out Net | queue: Cap]
+focus K5 K6
+--- Cap drops to 0 and joins.
+K6 -> K7[out Cap | queue empty]
+focus K6 K7
+--- Seven of seven vertices are out.
+K7 -> R[Intro, Data, Logic, Sys, Algo, Net, Cap].green
+focus R
+--- The output is a topological order.
+```
+
+> Algo leaves and lowers Cap to one. Net leaves and lowers Cap to zero, so Cap joins the queue and leaves last. The queue is empty and the output holds all seven vertices, which the checker confirms respects all eight edges. Read the final order against the graph: every arrow points from an earlier course to a later one.
+
+---
+# Why Kahn works, and what it costs
+
+- Invariant: `inDegree[v]` counts edges into $v$ from vertices not yet output.
+- A vertex is queued only when that count is 0: all its prerequisites are out.
+- So every edge $u \to v$ has $u$ output before $v$.
+- Time: $\Theta(V)$ to seed plus $\Theta(E)$ for all decrements: $\Theta(V+E)$ with adjacency lists.
+- Extra space: $\Theta(V)$ for the counts, the queue and the output.
+
+> The invariant holds at the start by construction, and each decrement keeps it true because one more tail has just been output. When v enters the queue, every vertex with an edge into v is already in the output, so v lands after all of them. Each vertex enters the queue at most once and each edge is decremented once, so the total work is linear in V plus E. With an adjacency matrix, scanning neighbors costs V per vertex and the total becomes Theta of V squared.
+
+---
+@type section
+# DFS-based topological sort
+
+---
+# The finish-time idea
+
+- Run DFS from every unvisited vertex, as in L15.
+- A vertex **finishes** when its whole adjacency list has been explored.
+- In a DAG, for every edge $u \to v$, $v$ finishes before $u$.
+- So listing vertices by **decreasing** finish time is a topological order.
+- Implementation: push each vertex on the front of a list as it finishes.
+
+> DFS gives us two moments for each vertex: when it is first discovered and when it is finished. The claim on screen is about finish times. If every arrow's head finishes before its tail, then reversing the finish order puts every tail before its head, which is the definition of a topological order. We prove the claim in a moment. The trick in code is cheap: instead of sorting by finish time, push each vertex onto the front of a deque the instant it finishes.
+
+---
+# DFS order in pseudocode
+
+```algorithm
+function DFS-ORDER(G):
+  visited[v] ← false for every v
+  L ← empty list
+  for s ← 0 to V - 1 do
+    if not visited[s] then VISIT(s)
+  return L                         // reverse finish order
+
+function VISIT(u):
+  visited[u] ← true
+  for each v in adj[u] do
+    if not visited[v] then VISIT(v)
+  insert u at the front of L       // u finishes now
+```
+
+> This is plain depth-first search with one extra line at the end of VISIT. The outer loop matters: it starts a new search from every vertex that is still unvisited, so vertices unreachable from vertex zero are still ordered. The pseudocode assumes the input is a DAG. On a graph with a cycle it still returns a list, but that list is meaningless, so check for cycles first.
+
+---
+# DFS order in Java
+
+```java
+private void visit(int u) {
+    visited[u] = true;
+    // ...
+    for (int v : g.neighbors(u)) {
+        if (!visited[v]) {
+            visit(v);
+        }
+    }
+    finished.push(u); // push adds at the front: latest finisher first
+    // ...
+}
+```
+
+- The constructor calls `visit(s)` for every `s` from 0 to $V-1$ that is still unvisited.
+
+> The fields visited, finished and g live in a small DepthFirstOrder object, which keeps the recursive method's signature short. `finished` is an `ArrayDeque`, and `push` inserts at the front, so after the search the deque reads from the last finisher to the first. The bullet describes the outer loop in the constructor, the same loop as in the pseudocode. The two marked gaps are the trace lines that printed the next two slides.
+
+---
+# DFS trace: the first branch
+
+```diagram
+@dir TB
+@reveal manual
+D1[enter Intro, Data, Algo, Cap]
+focus D1
+--- DFS dives Intro, Data, Algo, Cap. Cap has no neighbors.
+D1 -> D2[finish Cap, then Algo | list: Algo, Cap]
+focus D1 D2
+--- Cap finishes first, then Algo. Each goes to the front.
+D2 -> D3[enter Sys, Net | from Data]
+focus D2 D3
+--- Back at Data, the next neighbor is Sys, then Net.
+D3 -> D4[finish Net | list: Net, Algo, Cap]
+focus D3 D4
+--- Net's only neighbor, Cap, is already visited.
+```
+
+> Follow adjacency lists in their stored order. From Intro the first neighbor is Data; from Data it is Algo; from Algo it is Cap, which has no outgoing edges and finishes immediately. Algo then has nothing left and finishes. Data's second neighbor is Sys, which leads to Net. Net's only neighbor Cap is already visited, so Net finishes. Each finisher is pushed onto the front, so the list reads Net, Algo, Cap.
+
+---
+# DFS trace: unwinding
+
+```diagram
+@dir TB
+@reveal manual
+E1[finish Sys, then Data | list: Data, Sys, Net, Algo, Cap]
+focus E1
+--- Sys and Data finish as the recursion unwinds.
+E1 -> E2[enter Logic | from Intro]
+focus E1 E2
+--- Intro's second neighbor is Logic. Its neighbor Algo is visited.
+E2 -> E3[finish Logic, then Intro]
+focus E2 E3
+--- Logic finishes, then Intro. The outer loop finds nothing unvisited.
+E3 -> R[Intro, Logic, Data, Sys, Net, Algo, Cap].green
+focus R
+--- Reverse finish order: a topological order.
+```
+
+> Sys finishes, then Data, each pushed to the front. Back at Intro, the next neighbor is Logic, whose only neighbor Algo is done, so Logic finishes at once and lands in front of Data. Intro finishes last and goes to the very front. The outer loop then checks vertices one through six and finds them all visited. The checker confirms this order respects all eight edges.
+
+---
+# Why reverse finish order works
+
+- Take any edge $u \to v$ when DFS scans it from $u$. Then $u$ is gray: started, not finished.
+- If $v$ is white (unvisited), $v$ becomes a descendant and finishes before $u$.
+- If $v$ is black (finished), it finished before $u$ already.
+- If $v$ were gray, $v$ would be on the current path to $u$: a cycle. A DAG has none.
+- In every possible case $v$ finishes first, so $u$ comes first in the reversed list.
+
+> The colors here are the ones we formalize in the next section: white is unvisited, gray is on the recursion stack, black is finished. When DFS looks along the edge from u to v, u is still gray. The three cases for v cover everything. The gray case is exactly a cycle, which a DAG cannot have, and the other two cases both make v finish before u. Reversing the finish order therefore places u before v for every edge.
+
+---
+# Orders are not unique
+
+| Method | Order produced on the course graph |
+|---|---|
+| Kahn, FIFO queue | Intro, Data, Logic, Sys, Algo, Net, Cap |
+| DFS, reverse finish | Intro, Logic, Data, Sys, Net, Algo, Cap |
+
+- Both are valid. A brute-force count finds 9 valid orders of this graph.
+- Unique exactly when consecutive vertices of a topological order are joined by edges (the DAG has a Hamiltonian path).
+- Changing neighbor order or queue discipline can change the answer, not its validity.
+
+> Two correct algorithms gave two different answers, and both are right. Our test program tries all five thousand and forty permutations of the seven courses and finds nine that respect every rule. Intro must be first and Cap last, but Logic can sit in several places, and Sys can come before or after Algo. When grading your own trace, do not compare against one expected list; check the definition, edge by edge. The order is forced only when each adjacent pair in it is joined by an edge.
+
+---
+# Kahn or DFS?
+
+| Question | Kahn | DFS-based |
+|---|---|---|
+| Time, adjacency lists | $\Theta(V+E)$ | $\Theta(V+E)$ |
+| Cycle signal | fewer than $V$ output | needs the color test |
+| Recursion | none | depth up to $V$ |
+| Natural extras | list vertices "level by level" | reuses one DFS for other tasks |
+
+> Both run in linear time with adjacency lists. Kahn's algorithm is iterative and detects cycles for free, which makes it a common choice for build and task schedulers. The DFS version needs the three-color test to be safe on cyclic input, and its recursion can be as deep as the longest path. In Java, a very deep recursion can throw StackOverflowError on the default thread stack; an explicit stack avoids that. The DFS version is attractive when you already run a DFS for another purpose.
+
+---
+@type section
+# Cycle detection in directed graphs
+
+---
+# A rule that breaks the plan
+
+```diagram The course graph plus one mistaken rule, Net -> Data
+@dir LR
+@reveal all
+I[Intro] -> D[Data]
+I -> L[Logic]
+D -> A[Algo]
+D -> S[Sys]
+L -> A
+A -> C[Cap]
+S -> N[Net]
+N -> C
+N -> D
+```
+
+- Someone adds "Net before Data". Now Data, Sys, Net need each other.
+- No order exists. We want the algorithm to say which vertices form the cycle.
+
+> The new edge from Net back to Data is appended after Net's existing edge to Cap, so Net's adjacency list is now Cap, then Data. With it, Data requires Net, which requires Sys, which requires Data. Answering "no order exists" is not enough for the committee; they need the offending chain to know which rule to remove. Both detectors we study find this cycle, and the DFS one reports it.
+
+---
+# Three colors
+
+- **White**: not yet discovered.
+- **Gray**: discovered, still on the recursion stack.
+- **Black**: finished; everything reachable from it has been explored.
+- At any moment the gray vertices form one path: the current DFS path.
+- Edge $u \to v$ with $v$ gray is a **back edge**: it points to an ancestor.
+
+> Plain DFS uses a single visited flag, which merges gray and black into one state. For cycle detection that is not enough, because an edge to a black vertex is harmless while an edge to a gray vertex closes a loop. Gray vertices are exactly the calls that have started and not returned, so they line up as a path from the current root to the vertex we are exploring. A back edge jumps from the end of that path to a vertex earlier on it.
+
+---
+# A back edge means a cycle, and conversely
+
+- Back edge $u \to v$: $v$ is gray, so the path $v \leadsto u$ exists. Add $u \to v$: a cycle.
+- Conversely, suppose a cycle exists. Let $v$ be its first vertex DFS turns gray.
+- At that moment the rest of the cycle is white and reachable from $v$.
+- So its predecessor $u$ on the cycle finishes inside $v$'s call.
+- When $u$ scans $u \to v$, $v$ is still gray: a back edge.
+
+> The first direction is immediate from the gray path. The second direction uses the white-path idea from CLRS Chapter 20: when v turns gray, every other cycle vertex is still white and reachable from v along the cycle, so each becomes a descendant of v before v finishes. In particular the cycle vertex just before v, call it u, is explored inside v's call, and its edge back to v finds v gray. So the test finds a cycle whenever one exists.
+
+---
+# Three-color DFS in pseudocode
+
+```algorithm
+function FIND-CYCLE(G):
+  color[v] ← WHITE; parent[v] ← none, for every v
+  for s ← 0 to V - 1 do
+    if color[s] = WHITE and DFS(s) found a cycle then return it
+  return "no cycle"
+
+function DFS(u):
+  color[u] ← GRAY
+  for each v in adj[u] do
+    if color[v] = GRAY then return cycle from v to u   // back edge
+    if color[v] = WHITE then
+      parent[v] ← u; DFS(v); stop if it found a cycle
+  color[u] ← BLACK
+```
+
+> Compare this with the DFS order recipe: the only changes are the two-level color test and the parent array. A black neighbor is skipped silently, because everything reachable from it was already explored without finding a way back. The outer loop again starts from every white vertex. The parent array records who discovered each vertex, which is what lets us print the cycle rather than just say one exists.
+
+---
+# Three-color DFS in Java
+
+```java
+private void dfs(int u) {
+    color[u] = Color.GRAY;
+    for (int v : g.neighbors(u)) {
+        if (color[v] == Color.GRAY) {
+            cycle = cycleFrom(u, v);
+        } else if (color[v] == Color.WHITE) {
+            parent[v] = u;
+            dfs(v);
+        }
+        if (!cycle.isEmpty()) {
+            return;
+        }
+    }
+    color[u] = Color.BLACK;
+}
+```
+
+> Color is an enum with WHITE, GRAY and BLACK, and cycle is a field that starts as an empty list. Look at the early return: once any call records a back edge, every call on the stack returns immediately, leaving its vertex gray. That is fine because the search is over. A self-loop from u to u is caught on the first test, since u is gray when it scans its own edge.
+
+---
+# Reporting the cycle with parent pointers
+
+```java
+private List<Integer> cycleFrom(int u, int v) {
+    Deque<Integer> path = new ArrayDeque<>();
+    for (int x = u; x != v; x = parent[x]) {
+        path.push(x);
+    }
+    path.push(v);
+    return new ArrayList<>(path);
+}
+```
+
+- The back edge is $u \to v$. Parents lead from $u$ up to the ancestor $v$.
+- Pushing on the front reverses the walk, so the list follows edge direction.
+
+> parent of x is the vertex whose call discovered x, so following parents from u climbs the gray path toward the root. We stop when we reach v, the target of the back edge, which must be on that path. Each vertex is pushed onto the front of the deque, so the finished list reads v first and u last. The cycle is that list plus the back edge from u to v. The walk costs at most the length of the cycle.
+
+---
+# Three-color trace on the broken graph
+
+```diagram
+@dir TB
+@reveal manual
+C1[gray: Intro, Data, Algo, Cap]
+focus C1
+--- DFS dives from Intro to Cap. All four are gray.
+C1 -> C2[black: Cap, Algo | gray: Intro, Data]
+focus C1 C2
+--- Cap and Algo finish without finding a gray neighbor.
+C2 -> C3[gray: Intro, Data, Sys, Net]
+focus C2 C3
+--- Data's next neighbor is Sys, then Net.
+C3 -> C4[Net -> Data: Data is gray].rose
+focus C3 C4
+--- Net skips black Cap, then finds Data gray: a back edge.
+C4 -> R[cycle: Data -> Sys -> Net -> Data].rose
+focus R
+--- Parents: Net came from Sys, Sys from Data. Stop at Data.
+```
+
+> This is the Java output on the graph with the extra rule. The first dive reaches Cap, which has no neighbors, so Cap turns black, and Algo follows. Back at Data the search tries Sys and then Net, all gray now, forming the path Intro, Data, Sys, Net. Net's list is Cap, which is black and ignored, then Data, which is gray. That back edge triggers the report: parent of Net is Sys, parent of Sys is Data, and the walk stops. The reported cycle is Data, Sys, Net.
+
+---
+# Kahn detects cycles too
+
+```diagram
+@dir TB
+@reveal manual
+Q0[start | queue: Intro]
+focus Q0
+--- The extra edge raises Data's in-degree to 2.
+Q0 -> Q1[out Intro | queue: Logic]
+focus Q0 Q1
+--- Data drops only to 1: Net has not been output.
+Q1 -> Q2[out Logic | queue empty]
+focus Q1 Q2
+--- Algo drops to 1. Nothing else reaches 0.
+Q2 -> R[2 of 7 output: cycle].rose
+focus R
+--- Fewer than V vertices came out.
+```
+
+> On a DAG, Kahn outputs everything. Here Data waits for Net, Net waits for Sys, and Sys waits for Data, so none of the three ever reaches zero, and Algo and Cap are stuck behind them. The run outputs Intro and Logic and stops. Conversely, if the queue empties early, the vertices left over each have a remaining incoming edge from another leftover vertex, so walking backwards among them must repeat, which is a cycle. Kahn tells you that a cycle exists but does not name it.
+
+---
+# Quiz: which edge reveals a cycle?
+
+```quiz
+During a directed DFS, vertex u scans the edge u -> v. Which color of v proves the graph has a cycle?
+- [ ] white
+- [x] gray
+- [ ] black
+- [ ] any color other than white
+```
+
+> Only gray does. A gray vertex is on the current recursion path, so there is already a path from v down to u, and the edge from u back to v closes the loop. A white vertex is simply explored next. A black vertex is finished: in the course graph, when Net scans its edge to Cap, Cap is black, and there is no cycle through that edge. Treating black like gray is the classic false alarm, and we will see it again among the pitfalls.
+
+---
+@type section
+# Undirected graphs
+
+---
+# Cycles in undirected graphs
+
+- In an undirected graph each edge `u - v` is stored twice: `v` in `u`'s list and `u` in `v`'s list.
+- DFS from `u` sees the edge back to its own parent. That is not a cycle.
+- Rule: a visited neighbor **other than the parent** means a cycle.
+- Parallel edges `u - w`: the child `w` skips both copies, but `u`'s scan of the second copy reports the 2-cycle.
+- A self-loop is caught too. `new Graph(n)` rejects both; the checks test them on a multigraph.
+
+> In an undirected DFS every non-tree edge leads to an ancestor, so any visited neighbor besides the parent closes a cycle, and no colors beyond visited are needed. The parent exception looks as if it could hide the cycle formed by two parallel edges, but it does not. The child w skips both copies of its edge to u, since both lead to its parent. When w's call returns, u scans its second copy, finds w visited and not u's own parent, and reports the 2-cycle. A self-loop is caught when its vertex scans itself. A graph made with new Graph rejects both in addEdge; the checks build a small multigraph to confirm these cases.
+
+---
+# Undirected DFS in Java
+
+```java
+private static boolean dfs(Graph g, int u, int parent, boolean[] visited) {
+    visited[u] = true;
+    for (int v : g.neighbors(u)) {
+        if (!visited[v]) {
+            if (dfs(g, v, u, visited)) {
+                return true;
+            }
+        } else if (v != parent) {
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+- Example: edges `0-1`, `1-2`, `3-4`, `2-0`. DFS goes 0, 1, 2; at 2 the neighbor 0 is visited and not the parent.
+
+> The parent is passed down as an argument, with minus one for a root. On the small example, DFS starts at zero, visits one, where it skips its parent zero, then visits two, where it skips its parent one and then meets zero, visited and not the parent. That is the triangle zero, one, two. The public method wraps this in an outer loop over all vertices, so the component three-four is also searched when no cycle has been found yet.
+
+---
+# Preview of L18: union-find
+
+- Keep a forest where each tree is one connected component found so far.
+- For each edge `u - v`: find the roots of `u` and `v`.
+- Different roots: link one root under the other. The components merge.
+- Same root: `u` and `v` were already connected, so this edge closes a cycle.
+- Needs only the edge list. L18 uses it in Kruskal's algorithm.
+
+```diagram
+@dir LR
+@reveal manual
+U1[0-1: roots 0, 1 | link]
+U1 -> U2[1-2: roots 1, 2 | link]
+U2 -> U3[3-4: roots 3, 4 | link]
+U3 -> U4[2-0: roots 2, 2 | cycle].rose
+focus U4
+--- Edges in order. The fourth finds both ends under root 2.
+```
+
+> Union-find, also called disjoint sets, is the subject of CLRS Chapter 19 and the engine of Kruskal's algorithm in Lecture 18. The idea is independent of DFS: process edges one at a time, and keep track of which vertices are already connected. The trace is the Java output on the same four edges. The first three edges each join two different trees. For the edge two-zero, zero's root chain leads to one and then to two, which is also two's root, so the edge is redundant and closes a cycle.
+
+---
+# Union-find in Java, bare version
+
+```java
+for (int[] e : g.edges()) {
+    int a = find(root, e[0]);
+    int b = find(root, e[1]);
+    if (a == b) {
+        return true;
+    }
+    root[a] = b;
+}
+return false;
+```
+
+```java
+private static int find(int[] root, int v) {
+    while (root[v] != v) {
+        v = root[v];
+    }
+    return v;
+}
+```
+
+> Every vertex starts as its own root. find follows root pointers to the top of its tree. This bare version can build long chains, so one find may take up to Theta of V steps. L18 adds union by rank and path compression, which make the total cost almost linear in the number of edges. For today, the point is the test on the fourth line: an edge whose ends already share a root is a cycle edge.
+
+---
+@type section
+# Costs and pitfalls
+
+---
+# Costs at a glance
+
+| Task | Time | Extra space |
+|---|---|---|
+| Check a proposed order | $O(V+E)$ | $\Theta(V)$ |
+| Kahn's algorithm | $\Theta(V+E)$ | $\Theta(V)$ |
+| DFS order | $\Theta(V+E)$ | $\Theta(V)$ |
+| Three-color DFS | $O(V+E)$; $\Theta(V+E)$ worst case (a DAG) | $\Theta(V)$ |
+| Undirected DFS cycle test | $O(V+E)$ | $\Theta(V)$ |
+| Bare union-find test | $O(V + VE)$ | $\Theta(V)$ |
+
+Adjacency lists assumed; DFS recursion depth is up to $V$. A matrix makes neighbor scans $\Theta(V^2)$.
+
+> Kahn's algorithm and the DFS order always scan every vertex and every edge, so they are Theta of V plus E on every input. The three-color DFS may stop at the first back edge, so in general it is O of V plus E; its worst case is a DAG, where no back edge exists and it scans everything, which is Theta of V plus E. The order checker may reject early, so it is O of V plus E, and Theta of V plus E for a valid order. The DFS rows' extra space includes the recursion stack, which can be V calls deep. The undirected test stops even sooner: on a simple graph it scans at most 2V minus 1 list entries before it stops, since every entry before the reporting one is a tree edge or the edge back to the parent. The union-find row is only an upper bound for the bare version; L18 improves it.
+
+---
+# Pitfall: the undirected rule on a directed graph
+
+```diagram A DAG: A -> B -> C and A -> C
+@dir LR
+@reveal all
+A -> B -> C
+A -> C
+```
+
+- DFS from A reaches C through B. Then A scans `A -> C`: C is visited but black.
+- The rule "visited means cycle" reports a cycle here. There is none.
+- Directed graphs need the gray test. Our test suite confirms the false alarm.
+
+> This is the most common bug in student code. A single visited flag treats any visited neighbor as a loop; adding the undirected parent exception would not help, because C is not A's parent. But in a directed graph, reaching a vertex twice by different routes is normal: A to B to C and A directly to C. Viewed as undirected, this is a triangle, and the undirected rule is right to say so. Viewed as directed, it is a DAG with exactly one topological order. Our Pitfalls class implements the wrong rule, and the checks confirm it reports a false cycle on this graph while the three-color test does not.
+
+---
+# Pitfall: forgetting disconnected parts
+
+- A single `dfs(0)` explores only what vertex 0 can reach.
+- Example: `P` isolated, and a cycle `Q -> R -> Q`. Searching from `P` alone finds nothing.
+- Every method today needs the outer loop over all vertices.
+- Kahn is immune: it counts every vertex's in-degree at the start.
+- Other edge cases: the empty graph has the empty order; a self-loop is a cycle.
+
+> Graphs from real data are often in pieces: a course with no prerequisites and no dependents, or a separate cluster of tasks. A search launched from one vertex silently ignores the rest, and a topological order built that way misses vertices entirely. The checks include a three-vertex graph where the only cycle is unreachable from vertex zero: the one-start search says no cycle, while the full outer loop finds Q and R. Kahn is safe by design because it seeds from every source, in every component.
+
+---
+# Quiz: the parallel-edge case
+
+```quiz
+An undirected multigraph has two separate edges between u and w, and nothing else. The undirected DFS from the earlier slide starts at u. Which scan reports the cycle?
+- [ ] none: both copies lead to a parent, so no cycle is reported
+- [ ] w, when it scans its second copy of the edge to u
+- [x] u, after w's call returns, when it scans its second edge to w
+- [ ] u, when it first scans its edge to w
+```
+
+> Run the code in your head. u scans its first edge to w; w is unvisited, so this is a tree edge and the search calls into w with parent u. w's list holds u twice, and both times u is the parent, so w skips both and returns false. Back in u, the second edge to w finds w visited, and w is not u's parent, since u is the root. That scan reports the cycle of length two. An instrumented copy of the method printed exactly this sequence, and the checks confirm the result on the multigraph.
+
+---
+# In Java and in the visualizations
+
+- `java.util` has no graph type: we built one on `ArrayList` and `ArrayDeque`.
+- `ArrayDeque.add` and `remove` act as a FIFO queue; `push` inserts at the front.
+- `ArrayDeque` does not permit `null` elements; our vertex numbers never are.
+- Step through Kahn's algorithm: [Topological sort visualization](../../../visualizations/algorithms/topological_sort.html).
+- Review discovery and finish order: [DFS visualization](../../../visualizations/algorithms/dfs.html).
+
+> The Java SE API documentation for ArrayDeque describes add and remove as queue operations at the tail and head, and push as insertion at the front, which is all our code relies on. Nothing in the standard library does topological sorting for you, so being able to write one in about twenty lines is useful. The two visualizations let you replay the algorithms on other graphs; try predicting each step before you advance it.
+
+---
+@type section
+# Wrap-up
+
+---
+# Summary
+
+- A topological order puts the tail of every edge before its head.
+- One exists if and only if the directed graph is acyclic.
+- Kahn: repeatedly output a source; fewer than $V$ outputs means a cycle.
+- DFS: reverse finish order is a topological order of a DAG.
+- Directed cycles: a back edge to a gray vertex; parents recover the cycle.
+- Undirected cycles: a visited non-parent neighbor, or union-find.
+
+> Everything today costs linear time in V plus E with adjacency lists. Kahn and DFS gave two different valid orders of the same courses, and both detectors found the same broken rule. The next lecture adds weights to edges and asks a different question: not in what order, but by what cheapest route. DFS and BFS will reappear inside those algorithms as well.
+
+---
+# Check yourself
+
+- Add the edge Logic -> Sys to the course graph. Rerun Kahn's algorithm by hand. What changes?
+- Why can Kahn's algorithm use a stack instead of a queue and still be correct?
+- Give a directed graph where the three-color DFS finds a cycle only because of the outer loop.
+
+> Try the first question on paper using the in-degree table; then check that your new order still respects all nine edges. For the second, look back at the invariant: it never mentioned which ready vertex leaves first. For the third, think about the unreachable cycle from the pitfalls slide and make it your own.
+
+---
+# Sources
+
+- Cormen, Leiserson, Rivest, Stein, *Introduction to Algorithms*, 4th ed. (CLRS), Chapter 20: Elementary graph algorithms (depth-first search, topological sort).
+- CLRS, Chapter 19: Data structures for disjoint sets (union-find).
+- A. B. Kahn, "Topological sorting of large networks", *Communications of the ACM* 5(11), 1962, 558–562.
+- Java SE API documentation: `java.util.ArrayDeque`, `java.util.Optional`.
+- All examples, traces and code are original to this course and were produced by the tested Java files for this lecture.
+
+> CLRS Chapter 20 covers depth-first search, the white-path idea, and topological sorting by finish times. Kahn's 1962 paper is the origin of the source-removal method named after him. The Java API documentation is the authority for what ArrayDeque and Optional guarantee. Every trace in this deck came from running the lecture's Java code on the course graph.
+
+</script>
+<script>
+/* slides v2.7.0 — a lightweight, dependency-free presentation engine. MIT. */
+(function (global) {
+'use strict';
+
+/* ── core/util.js ── */
+// Small shared helpers. No DOM assumptions beyond what a browser gives us.
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const store = {
+  get: (k, d) => { try { return localStorage.getItem('slides.' + k) ?? d; } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem('slides.' + k, v); } catch { } }
+};
+const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Math is protected from every other transform: $…$, $$…$$, \(…\), \[…\].
+const MATH_RE = /(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|(?<![\\$\w])\$(?!\s)(?:\\.|[^\\$\n])+?(?<!\s)\$(?!\w))/g;
+const HAS_MATH = /\$|\\\(|\\\[/;
+function protectMath(text, fn) {
+  const m = [];
+  const out = fn(text.replace(MATH_RE, x => { m.push(x); return `\u0002${m.length - 1}\u0002`; }));
+  return out.replace(/\u0002(\d+)\u0002/g, (_, i) => `<span class="tex">${esc(m[+i])}</span>`);
+}
+
+
+/* ── core/config.js ── */
+// Every knob in one place. Override per mount (Slides.mount(el, {...})),
+// globally (Slides.defaults.reveal = 'keep'), or from a deck (@reveal keep).
+const REVEAL_MODES = ['fade', 'keep', 'hide', 'none'];
+const DEFAULTS = {
+  // ── source ──────────────────────────────────────────────────
+  src: null,          // URL of a .md or .json deck
+  text: null,         // deck source as a string (Markdown or JSON)
+  deck: null,         // an already-parsed deck object
+  base: null,         // base URL for relative media; defaults to the folder of `src`
+  // ── behaviour ───────────────────────────────────────────────
+  mode: 'present',    // 'present' (one slide, stepped)  |  'scroll' (all slides stacked: web pages, handouts, print)
+  reveal: 'fade',     // fade | keep | hide | none   (how past bullets look)
+  align: 'left',      // left | center
+  theme: 'auto',      // auto | light | dark
+  autoplay: 4,        // seconds per step while playing (P toggles playing)
+  loop: false,        // autoplay wraps around at the end
+  start: null,        // slide to open on (1-based); null → URL hash, else 1
+  // ── what is on screen: minimal by default, everything else is a keystroke away ──
+  chrome: false,      // progress hairline + slide counter (C toggles)
+  marker: false,      // accent bar beside the current bullet
+  toolbar: true,      // presenter toolbar exists (T toggles); false removes it entirely
+  toolbarHover: false,// also show the toolbar when the mouse rests near the bottom edge
+  hint: false,        // one-time "press ? for shortcuts" toast after loading
+  hideCursor: true,   // hide the pointer after 2.5s idle
+  // ── integration ─────────────────────────────────────────────
+  keys: true,         // keyboard shortcuts
+  hash: 'auto',       // keep the slide number in the URL (#7). 'auto' = only when mounted on <body>
+  touch: true,        // swipe to navigate
+  click: true,        // click right / left half to step
+  math: 'auto',       // 'auto' loads KaTeX only if the deck contains TeX; false never; true always
+  katex: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/',  // or a local folder such as './katex/' — the only optional external
+  persist: true,      // remember theme, pen colour and size in localStorage
+  picker: true,       // show the file picker when nothing loads (standalone use)
+  sample: null,       // sample deck text for the picker's "view sample" button
+  // ── narration: audio (or spoken notes) synchronised with slides ──────────
+  narration: true,    // enable the narration player when a slide has @audio (A plays / pauses)
+  autonarrate: false, // start narrating as soon as the deck loads (browsers may require one click first)
+  rate: 1,            // playback speed ([ and ] change it live)
+  tts: false,         // 'auto' | true: read speaker notes aloud with the browser's speech synthesis when a slide has no audio file
+  voice: null,        // preferred speech-synthesis voice (substring of its name), e.g. 'Samantha'
+  lang: null,         // language of the deck for speech synthesis, e.g. 'en-US' (@lang)
+  // ── authoring & presenting ──────────────────────────────────────────────
+  edit: false,        // open with the live source editor (E toggles): edit Markdown, see the slide update
+  watch: false,       // true | seconds: re-fetch `src` on an interval and re-render when it changed (edit in your own editor)
+  sync: 'auto',       // keep every open window of this deck on the same slide (BroadcastChannel); 'auto' = body mounts only;
+                      // or your own transport { send(msg), onMessage(fn), close?() } — WebSocket, WebRTC… — so an audience follows along
+  presenter: false,   // this window is the presenter view (W opens one): notes, next slide, clock
+  onSlide: null,      // (index, slide) → called after a slide renders
+  onStep: null        // (position, end) → called after each reveal step
+};
+
+
+/* ── parse/inline.js ── */
+
+// The active resolver maps relative media/demo paths onto the deck's folder.
+// The viewer swaps it in before rendering; parsers never touch URLs.
+const ctx = { resolve: u => u };
+
+// Math-safe Markdown subset: `code`, [links](url), **bold**, *em*, ==mark==,
+// bare URLs, *.html / *.ipynb demo links, ✓ ✗. A backslash makes punctuation literal (\* \$ \#).
+// Text arrives escaped, so URLs are escaped exactly once; they may contain balanced (parentheses).
+function inline(text) {
+  return protectMath(String(text ?? ''), t => {
+    const stash = [];
+    const keep = html => { stash.push(html); return `\u0003${stash.length - 1}\u0003`; };
+    const out = esc(t)
+      .replace(/\\(&(?:amp|lt|gt|quot|#39);|[!-\/:-@\[-`{-~])|`([^`\n]+)`/g, (_, e, c) => keep(c != null ? `<code>${c}</code>` : e))
+      .replace(/&lt;!--[\s\S]*?--&gt;/g, '')                                        // <!-- comments --> are not shown
+      .replace(/\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g, (_, a, u) => keep(`<a href="${ctx.resolve(u)}" target="_blank" rel="noopener">${a}</a>`))
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*(?=\S)([^*\n]*?\S)\*(?=[\s.,;:!?)]|$)/g, '$1<em>$2</em>')
+      .replace(/==([^=\n]+)==/g, '<mark>$1</mark>')
+      .replace(/✓/g, '<span class="ok">✓</span>').replace(/✗/g, '<span class="no">✗</span>')
+      .replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?])|\b([\w-]+\.(?:html|ipynb))\b/g, (m, url, file) => {
+        if (file) return `<a class="demo" href="${esc(ctx.resolve(file))}" target="_blank" rel="noopener">${file}</a>`;
+        let tail = '';                             // a closing parenthesis without its opening one ends the sentence, not the URL
+        while (url.endsWith(')') && url.split('(').length < url.split(')').length) { url = url.slice(0, -1); tail = ')' + tail; }
+        return `<a href="${url}" target="_blank" rel="noopener">${url}</a>${tail}`;
+      });
+    const back = s => s.replace(/\u0003(\d+)\u0003/g, (_, i) => back(stash[+i]));   // a link may hold code or an escape
+    return back(out);
+  });
+}
+
+
+/* ── parse/json.js ── */
+// Structured decks. The legacy schema (slides[] with type/title/bullets/…)
+// is accepted unchanged; everything new is optional.
+const toItem = b => typeof b === 'string' ? { type: 'text', text: b, depth: 0 }
+  : (!b || !b.type) ? { type: 'text', text: String(b?.text ?? b?.content ?? ''), depth: b?.depth || 0 } : b;
+
+// Cue times: "1:05" | "65" | 65 → seconds; 'auto' spreads the steps evenly over the audio.
+const parseTime = t => { if (typeof t === 'number') return t; const p = String(t).trim().split(':').map(Number); return p.some(isNaN) ? NaN : p.reduce((a, b) => a * 60 + b, 0); };
+function parseCues(v) {
+  if (v == null || v === '') return null;
+  if (typeof v === 'string' && v.trim().toLowerCase() === 'auto') return 'auto';
+  const arr = Array.isArray(v) ? v : String(v).split(/[\s,]+/).filter(Boolean);
+  const out = arr.map(parseTime).filter(Number.isFinite); return out.length ? out : null;
+}
+function parseJSON(raw) {
+  if (typeof raw === 'string') raw = JSON.parse(raw);
+  const slides = (raw.slides || []).map(s => {
+    const t = s.type || 'content';
+    const o = { title: s.title || '', subtitle: s.subtitle || '', notes: s.notes || '', reveal: s.reveal || null, align: s.align || null, kind: 'content', items: [],
+      audio: s.audio || s.narration || null, cues: parseCues(s.cues), vtt: s.vtt || null };
+    if (t === 'title') o.kind = 'title';
+    else if (t === 'section_header' || t === 'section') o.kind = 'section';
+    else if (t === 'content') o.items = (s.bullets || s.items || []).map(toItem);
+    else o.items = [Object.assign({}, s, { type: t })];          // standalone code / image / diagram / … slide
+    return o;
+  });
+  const deck = { title: raw.title || '', slides };
+  for (const k of ['reveal', 'align', 'theme', 'katex', 'autoplay', 'lang', 'tts', 'voice', 'rate', 'macros']) if (raw[k] != null) deck[k] = raw[k];
+  if (raw.media && typeof raw.media === 'object') deck.media = { ...raw.media };   // path → data URI (single-file bundles)
+  return deck;
+}
+
+
+/* ── parse/vtt.js ── */
+
+// WebVTT captions → [{ start, end, text }] in seconds. Header, NOTE and STYLE blocks and cue
+// identifiers are skipped; cue settings after the end time are ignored; <v> / <b> tags are stripped.
+function parseVTT(text) {
+  const out = [];
+  for (const block of String(text || '').replace(/\r/g, '').split(/\n{2,}/)) {
+    const lines = block.split('\n'), k = lines.findIndex(l => l.includes('-->')); if (k < 0) continue;
+    const [a, b] = lines[k].split('-->'), start = parseTime(a), end = parseTime(b.trim().split(/\s+/)[0]);
+    if (!Number.isFinite(start)) continue;
+    out.push({ start, end: Number.isFinite(end) ? end : Infinity, text: lines.slice(k + 1).join(' ').replace(/<[^>]*>/g, '').trim() });
+  }
+  return out.sort((x, y) => x.start - y.start);
+}
+
+
+/* ── parse/markdown.js ── */
+
+
+
+// Plain-text decks → { title, slides[], media?, …settings }. docs/AUTHORING.md specifies the format;
+// this parser is its reference implementation, pinned by test/parse.test.mjs.
+const DECK_KEYS = ['reveal', 'align', 'theme', 'katex', 'title', 'autoplay', 'lang', 'tts', 'voice', 'rate', 'macros'];
+
+const mediaItem = (cap, url) => {
+  const yt = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/), vm = url.match(/vimeo\.com\/(\d+)/);
+  if (yt || vm || /\.(mp4|webm|mov|ogv)([?#]|$)/i.test(url)) return { type: 'video', url, caption: cap };
+  if (/\.(mp3|wav|ogg|m4a|flac)([?#]|$)/i.test(url)) return { type: 'audio', url, caption: cap };
+  if (/\.html?([?#]|$)/i.test(url)) return { type: 'embed', url, caption: cap };     // a page shown inside the slide
+  return { type: 'image', url, caption: cap, alt: cap };
+};
+
+// Original offsets are shared by parsing and source editing; CRLF and code stay intact.
+function* markdownLines(src) {
+  let fence = null, start = 0;
+  for (const raw of src.split('\n')) {
+    const text = raw.replace(/\r$/, ''), f = text.match(/^\s*(`{3,}|~{3,})/), fenced = !!(fence || f);
+    if (f) fence = fence && f[1][0] === fence[0] && f[1].length >= fence.length ? null : (fence || f[1]);
+    yield { text, start, end: start + text.length, next: Math.min(src.length, start + raw.length + 1), fenced };
+    start += raw.length + 1;
+  }
+}
+function markdownChunks(src) {
+  const chunks = []; let start = 0;
+  const add = end => chunks.push({ start, end, chunk: src.slice(start, end) });
+  for (const line of markdownLines(src)) if (!line.fenced && /^-{3,}\s*$/.test(line.text)) { add(line.start); start = line.next; }
+  add(src.length); return chunks;
+}
+
+function parseMarkdown(src) {
+  const chunks = markdownChunks(String(src)).map(c => c.chunk.replace(/\r/g, '').split('\n'));
+  const deck = { title: '', slides: [] };
+  chunks.forEach((ch, ci) => {
+    const sl = { title: '', subtitle: '', notes: '', reveal: null, align: null, kind: 'content', items: [], audio: null, cues: null, vtt: null, _type: null };
+    const notes = []; let para = null, table = null;
+    const flush = () => { if (para) { sl.items.push(para); para = null; } if (table) { sl.items.push(table); table = null; } };
+    for (let i = 0; i < ch.length; i++) {
+      const ln = ch[i]; let m;
+      if ((m = ln.match(/^\s*(`{3,}|~{3,})\s*(\S*)\s*(.*)$/))) {          // fenced block
+        flush(); const lang = m[2].toLowerCase(), cap = m[3].trim(); const body = [];
+        for (i++; i < ch.length && !ch[i].match(new RegExp('^\\s*' + m[1][0] + '{' + m[1].length + ',}\\s*$')); i++) body.push(ch[i]);
+        const content = body.join('\n');
+        if (lang === 'media') { for (const l of body) { const mm = l.match(/^(\S+)\s+(\S+)$/); if (mm) (deck.media ||= {})[mm[1]] = mm[2]; } continue; }
+        if (lang === 'diagram' || lang === 'graph' || lang === 'mermaid') sl.items.push({ type: 'diagram', content, caption: cap });
+        else if (lang === 'chart') sl.items.push({ type: 'chart', content, caption: cap });
+        else if (lang === 'quiz') sl.items.push({ type: 'quiz', ...parseQuiz(content) });
+        else if (/^(algo|algorithm|pseudo|pseudocode)$/.test(lang)) sl.items.push({ type: 'algorithm', content });
+        else if (lang === 'math') sl.items.push({ type: 'text', text: `$$\n${content}\n$$`, depth: 0 });
+        else if (lang === 'html') sl.items.push({ type: 'html', content, caption: cap });
+        else sl.items.push({ type: 'code', language: lang || 'plaintext', content, label: cap || undefined });
+        continue;
+      }
+      if (/^\s*<!--/.test(ln)) { flush(); while (i < ch.length - 1 && !ch[i].includes('-->')) i++; continue; }   // a comment is for the author
+      if ((m = ln.match(/^\s*(\$\$|\\\[)/))) {                          // display math spans lines verbatim until it closes
+        const end = m[1] === '$$' ? /\$\$\s*$/ : /\\\]\s*$/; let j = i;
+        if (!(ln.trim().length > 2 && end.test(ln))) for (j = i + 1; j < ch.length && ch[j].trim() && !end.test(ch[j]); j++);
+        if (j < ch.length && end.test(ch[j])) {                                  // no closing line before a blank one: not a block
+          const text = ch.slice(i, j + 1).map(s => s.trim()).join('\n'); i = j;
+          if (para) para.text += '\n' + text; else { flush(); para = { type: 'text', text, depth: 0 }; }
+          continue;
+        }
+      }
+      if ((m = ln.match(/^#\s+(.*)$/))) { flush(); if (sl.title) para = { type: 'text', text: m[1], depth: 0 }; else sl.title = m[1].trim(); continue; }
+      if ((m = ln.match(/^##\s+(.*)$/))) { flush(); sl.subtitle = m[1].trim(); continue; }
+      if ((m = ln.match(/^#{3,6}\s+(.*)$/))) { flush(); para = { type: 'text', text: `**${m[1].trim()}**`, depth: 0 }; continue; }   // a label inside the slide
+      if ((m = ln.match(/^@(\w+)\s*(.*)$/))) {
+        flush(); const k = m[1].toLowerCase(), v = m[2].trim();
+        const deckLevel = ci === 0 && !sl.title && !sl.items.length && DECK_KEYS.includes(k);
+        if (deckLevel) deck[k] = k === 'macros' && deck[k] ? deck[k] + '\n' + v : v;
+        else if (k === 'type') sl._type = v.toLowerCase(); else if (k === 'notes') notes.push(v);
+        else if (k === 'audio' || k === 'narration') { const m2 = v.match(/^(\S+)\s*(?:@|\|)\s*(.+)$/); sl.audio = m2 ? m2[1] : v; if (m2) sl.cues = parseCues(m2[2]); }
+        else if (k === 'cues') sl.cues = parseCues(v); else sl[k] = v;
+        continue;
+      }
+      if ((m = ln.match(/^>\s?(.*)$/))) { flush(); notes.push(m[1]); continue; }
+      if ((m = ln.match(/^!\[([^\]]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\)\s*$/))) { flush(); sl.items.push(mediaItem(m[1], m[2])); continue; }
+      if ((m = ln.match(/^\[demo:\s*([^\]]*)\]\(([^)\s]+)\)\s*$/i))) { flush(); sl.items.push({ type: 'demo', file: m[2], label: m[1] }); continue; }
+      if (/^\s*\|/.test(ln)) {
+        if (para) flush();
+        const P = '\u0005', cells = ln.trim().replace(MATH_RE, x => x.replaceAll('|', P)).replace(/\\\|/g, P)   // | inside $math$, \| and `code` stay in the cell
+          .replace(/`[^`\n]+`/g, x => x.replaceAll('|', P)).replace(/^\||\|$/g, '').split('|').map(c => c.replaceAll(P, '|').trim());
+        if (cells.every(c => /^:?-{2,}:?$/.test(c))) continue;
+        if (!table) table = { type: 'table', headers: cells, rows: [] }; else table.rows.push(cells);
+        continue;
+      }
+      if ((m = ln.match(/^(\s*)(?:[-*+]|\d+[.)])\s+(.*)$/))) { flush(); para = { type: 'text', text: m[2], depth: Math.min(2, Math.floor(m[1].replace(/\t/g, '  ').length / 2)) }; continue; }
+      if (!ln.trim()) { flush(); continue; }
+      if (para && para.type === 'text') para.text += ' ' + ln.trim();
+      else { flush(); para = { type: 'text', text: ln.trim(), depth: 0 }; }
+    }
+    flush();
+    sl.notes = notes.join('\n');
+    if (!sl.title && !sl.items.length && !sl.subtitle) return;
+    const t = sl._type;
+    if (t === 'title' || (!t && !sl.items.length && deck.slides.length === 0)) sl.kind = 'title';
+    else if (t === 'section' || t === 'section_header' || (!t && !sl.items.length)) sl.kind = 'section';
+    delete sl._type;
+    deck.slides.push(sl);
+  });
+  if (!deck.title) deck.title = deck.slides[0]?.title || 'Slides';
+  return deck;
+}
+
+// Auto-detect: JSON if the text (or file name) says so, otherwise Markdown.
+function parseDeck(text, name = '') {
+  const deck = (/\.json$/i.test(name) || /^\s*\{/.test(text)) ? parseJSON(text) : parseMarkdown(text);
+  if (!deck.slides.length) throw new Error('no slides found');
+  return deck;
+}
+
+
+/* ── blocks/registry.js ── */
+
+
+// A block type is { render(item) → html, steps?(item, el) → n, show?(item, el, sub, n, isCurrent) }.
+// Add your own:  Slides.register('poll', { render: it => `<div class="poll">…</div>` })
+const Blocks = {};
+const register = (types, def) => { [].concat(types).forEach(t => Blocks[t] = def); return def; };
+const cap = c => c ? `<div class="cap">${inline(c)}</div>` : '';
+const svgSteps = (it, el) => Number(el.querySelector('svg')?.dataset.steps || 1);
+const svgShow = (it, el, sub, total, cur) => el.querySelectorAll('[data-step]').forEach(n => {
+  const s = +n.dataset.step; n.classList.toggle('on', s < sub); n.classList.toggle('new', cur && s === sub - 1 && total > 1);
+});
+register('unknown', { render: it => `<div class="err">Unknown block type: ${esc(it.type)}</div>` });
+
+
+/* ── blocks/highlight.js ── */
+
+// ~40-line syntax highlighter: comments, strings, preprocessor/decorators,
+// numbers, keywords, calls. Good enough for lecture slides, zero bytes of dependency.
+// `Slides.highlight = (code, lang) => html | null` plugs in an external one (highlight.js, Shiki…):
+// code blocks use it when it returns a string and fall back to the built-in when it returns
+// nothing or throws, so a deck never depends on the library having loaded.
+const hlHook = { fn: null };
+const hlRun = (code, lang) => { if (hlHook.fn) { try { const h = hlHook.fn(code, lang); if (typeof h === 'string') return h; } catch { } } return highlight(code, lang); };
+const KW = new Set(('if else elif for while do return break continue function def class new this self true false null none undefined import from export ' +
+  'default try catch except finally throw raise switch case in of let const var async await yield static void lambda pass with as global nonlocal del assert ' +
+  'and or not is int float double char long short unsigned struct typedef enum union sizeof template typename namespace using public private protected virtual ' +
+  'override inline extern auto bool string nullptr package interface extends implements boolean byte synchronized instanceof func go chan defer select map range ' +
+  'type fn let mut impl trait pub use mod match where crate select from where insert into update delete join left right inner on group by order having limit ' +
+  'create table primary key values set begin end then loop until each print').split(/\s+/));
+const BUILTIN = new Set('True False None null undefined this self nullptr NULL Some Ok Err'.split(' '));
+const cache = {};
+function highlight(code, lang = '') {
+  lang = String(lang).toLowerCase();
+  if (/^(|text|plaintext|txt|plain|output|console|md|markdown|diff|csv|tsv)$/.test(lang)) return esc(code);
+  const hashy = /^(py|python|py3|sh|bash|shell|zsh|r|rb|ruby|yaml|yml|toml|perl|make|makefile|dockerfile|ini|conf|ps1)$/.test(lang);
+  const dashy = /^(sql|lua|haskell|hs|ada|elm)$/.test(lang);
+  const re = cache[lang] ||= new RegExp(
+    `(${hashy ? '#[^\\n]*' : dashy ? '--[^\\n]*' : '\\/\\*[\\s\\S]*?\\*\\/|\\/\\/[^\\n]*'}|"""[\\s\\S]*?"""|'''[\\s\\S]*?''')` +
+    `|("(?:\\\\.|[^"\\\\\\n])*"|'(?:\\\\.|[^'\\\\\\n])*'|\`(?:\\\\.|[^\`\\\\])*\`)` +
+    `|(${hashy ? '@\\w+' : '#\\s*\\w+|@\\w+'})` +
+    `|(\\b0[xX][\\da-fA-F_]+\\b|\\b\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?\\b)` +
+    `|([A-Za-z_]\\w*)(?=\\s*\\()|([A-Za-z_]\\w*)`, 'g');
+  // Text between tokens is escaped too: `List<String>` and `a<b` are code, not markup.
+  let out = '', at = 0;
+  for (const match of code.matchAll(re)) {
+    const [m, c, s, p, n, f, w] = match;
+    const t = c ? 'c' : s ? 's' : p ? 'p' : n ? 'n' : f ? (KW.has(f) ? 'k' : 'f') : w ? (BUILTIN.has(w) ? 'b' : KW.has(w) ? 'k' : '') : '';
+    out += esc(code.slice(at, match.index)) + (t ? `<span class="tk-${t}">${esc(m)}</span>` : esc(m));
+    at = match.index + m.length;
+  }
+  return out + esc(code.slice(at));
+}
+// Pseudocode: keywords bold, comments dim, math left alone.
+function algorithm(text) {
+  return protectMath(text, t => esc(t).replace(/(\/\/.*$|#.*$|--.*$|▷.*$)/gm, '<span class="cm">$1</span>')
+    .replace(/(<span class="cm">.*?<\/span>)|(\b(?:if|then|else|elsif|elif|end|endif|for|foreach|while|do|done|return|function|procedure|algorithm|input|output|begin|to|downto|step|repeat|until|each|in|and|or|not|true|false|null|nil|break|continue|let|set|initialize)\b)/gi,
+      (m, cm, kw) => cm || `<span class="kw">${kw}</span>`));
+}
+
+
+/* ── blocks/basic.js ── */
+
+
+
+
+register('text', { render: it => `<div class="text">${inline(it.text)}</div>` });
+register('code', { render: it => `<div class="code">${it.label ? `<div class="lbl">${esc(it.label)}</div>` : ''}<pre><code>${hlRun(it.content || '', it.language)}</code></pre></div>` });
+register(['algorithm', 'pseudo'], { render: it => `<div class="algo" role="figure">${algorithm(it.content || '')}</div>` });
+register('image', { render: it => `<figure class="fig"><img src="${esc(ctx.resolve(it.url))}" alt="${esc(it.alt || it.caption || '')}" loading="lazy" decoding="async" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'err',textContent:'Image not found: ${esc(it.url)}'}))">${cap(it.caption)}</figure>` });
+register('audio', { render: it => `<figure class="fig"><audio controls preload="metadata" src="${esc(ctx.resolve(it.url))}"></audio>${cap(it.caption)}</figure>` });
+// Video: `youtube` / `vimeo` may be an id or any URL of that site; `url` is auto-detected. `start` = seconds.
+const ytId = s => (String(s || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/) || [])[1] || (/^[\w-]{11}$/.test(s) ? s : null);
+const vmId = s => (String(s || '').match(/vimeo\.com\/(?:video\/)?(\d+)/) || [])[1] || (/^\d+$/.test(s) ? s : null);
+register('video', {
+  render: it => {
+    const u = it.url || '', yt = ytId(it.youtube) || ytId(u), vm = vmId(it.vimeo) || vmId(u), t = it.start ? `&start=${+it.start}` : '';
+    const body = yt ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(yt)}?rel=0${t}" title="${esc(it.caption || 'Video')}" allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>`
+      : vm ? `<iframe src="https://player.vimeo.com/video/${esc(vm)}?title=0&byline=0&portrait=0${it.start ? `#t=${+it.start}s` : ''}" title="${esc(it.caption || 'Video')}" allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>`
+        : u ? `<video controls preload="metadata" src="${esc(ctx.resolve(u))}${it.start ? `#t=${+it.start}` : ''}"${it.poster ? ` poster="${esc(ctx.resolve(it.poster))}"` : ''}></video>` : `<div class="err">Video needs a url</div>`;
+    return `<figure class="fig">${body}${cap(it.caption)}</figure>`;
+  }
+});
+register('demo', {
+  render: it => { const f = it.file || it.url || ''; const icon = /\.ipynb$/.test(f) ? '📓' : /\.html?$/.test(f) ? '🚀' : '📄'; return `<a class="demo" href="${esc(ctx.resolve(f))}" target="_blank" rel="noopener">${icon} ${esc(it.label || f.split('/').pop())}</a>`; }
+});
+register('table', {
+  render: it => `<div class="tblw"><table class="tbl">${it.headers?.length ? `<thead><tr>${it.headers.map(h => `<th>${inline(h)}</th>`).join('')}</tr></thead>` : ''}<tbody>${(it.rows || []).map(r => `<tr>${[].concat(r).map(c => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>${cap(it.caption)}</div>`
+});
+
+
+/* ── blocks/html.js ── */
+
+
+
+/* The escape hatch for anything the built-in blocks do not draw (AUTHORING.md → Custom visuals).
+   ```html is inline markup with data-step fragments; with a <script> it runs in a sandboxed frame;
+   ![caption](page.html) embeds a page. Frames get { slides: 'step', step, steps, theme, vars, px } on every
+   step and may post { slides: 'steps', n } or { slides: 'key', key }. Steps count from 0 (-1: not shown yet). */
+const FRAME_TOKENS = 'paper ink ink-2 mist rule rule-2 code-bg accent accent-ink accent-tint mark mark-ink math c1 c2 c3 c4 c5 c6 sans mono'.split(' ').concat(...'blue green amber rose violet gray'.split(' ').map(t => [t, t + '-ink']));
+const frameLook = (root, at) => { const cs = getComputedStyle(root); return { theme: root.dataset.theme, px: at ? parseFloat(getComputedStyle(at).fontSize) : parseFloat(cs.fontSize) * 1.38, vars: Object.fromEntries(FRAME_TOKENS.map(k => [k, cs.getPropertyValue('--' + k).trim()])) }; };
+const FRAME_BOOT = `<script>(()=>{const d=document.documentElement,s=window.slides={step:-1,steps:1};
+addEventListener('message',e=>{const m=e.data;if(m?.slides!=='step')return;for(const k in m.vars)d.style.setProperty('--'+k,m.vars[k]);
+d.style.colorScheme=m.theme;d.style.fontSize=m.px+'px';Object.assign(s,m);document.querySelectorAll('[data-step]').forEach(n=>n.classList.toggle('on',n.dataset.step<=m.step));dispatchEvent(new CustomEvent('step',{detail:s}))});
+addEventListener('keydown',e=>setTimeout(()=>e.defaultPrevented||e.target.closest?.('input,textarea,select,[contenteditable]')||parent.postMessage({slides:'key',key:e.key,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,metaKey:e.metaKey,altKey:e.altKey},'*')))})()<\/script>`;
+const frameDoc = (html, L) => `<!doctype html><base href="${esc(ctx.resolve('./'))}"><style>:root{${Object.entries(L.vars).map(([k, v]) => `--${k}:${v}`).join(';')};color-scheme:${L.theme};font-size:${L.px}px}` +
+  `html,body{margin:0;height:100%}body{color:var(--ink);font-family:var(--sans);line-height:1.5}[data-step]{opacity:0;transition:opacity .35s}[data-step].on{opacity:1}@media(prefers-reduced-motion:reduce){[data-step]{transition:none}}</style>${FRAME_BOOT}${html}`;
+// $math$ in the text of inline html, but not inside svg (a span would break out of it), code, pre or textarea.
+const rawMath = h => { let skip = 0; return h.split(/(<[^>]*>)/).map((s, i) => { if (!(i % 2)) return skip ? s : s.replace(MATH_RE, '<span class="tex">$&</span>'); const m = s.match(/^<(\/?)(svg|code|pre|textarea)\b/i); if (m) skip += m[1] ? -1 : 1; return s; }).join(''); };
+const htmlSteps = s => Math.max(1, ...[...String(s).matchAll(/data-step(s?)="(\d+)"/g)].map(m => +m[2] + !m[1]));
+const framePost = (f, step, steps) => { f._s = [step, steps]; const r = f.closest('.sv'); if (r) f.contentWindow?.postMessage({ slides: 'step', step, steps, ...frameLook(r, f.closest('.item')) }, '*'); };
+const frameShow = (it, el, sub, n, cur) => { svgShow(it, el, sub, n, cur); const f = el.querySelector('iframe'); if (f) framePost(f, sub - 1, n); };
+
+register('html', {
+  render: it => {
+    const h = it.content || it.html || '';
+    return /<script[\s>]/i.test(h)
+      ? `<figure class="fig emb"><iframe class="hf" sandbox="allow-scripts allow-popups allow-forms allow-modals" srcdoc="${esc(frameDoc(h, frameLook(ctx.root || document.documentElement)))}" title="${esc(it.caption || 'Interactive figure')}"></iframe>${cap(it.caption)}</figure>`
+      : `<div class="raw">${rawMath(h)}</div>${cap(it.caption)}`;
+  },
+  steps: (it, el) => el.querySelector('iframe')?._n || htmlSteps(it.content || it.html),
+  show: frameShow
+});
+register('embed', {
+  render: it => `<figure class="fig emb"><iframe src="${esc(ctx.resolve(it.url))}" title="${esc(it.caption || it.url)}" loading="lazy" allow="autoplay; fullscreen"></iframe>${cap(it.caption)}</figure>`,
+  steps: (it, el) => el.querySelector('iframe')?._n || 1,
+  show: frameShow
+});
+
+// Viewer side: a late load, a new theme or size resends the state; a frame's messages set its steps or press a key.
+function installFrames(v) {
+  const { root, el, S } = v, cleanups = v.cleanups ||= [];
+  const on = (t, ev, fn, o) => { t.addEventListener(ev, fn, o); cleanups.push(() => t.removeEventListener(ev, fn, o)); };
+  const frames = () => [...el.stage.querySelectorAll('iframe')], again = f => f.matches?.('.emb iframe') && framePost(f, ...f._s || [0, 1]);
+  let rz; cleanups.push(() => clearTimeout(rz));
+  on(root, 'load', e => again(e.target), true);            // also the presenter's preview, at its first state
+  on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => frames().forEach(again), 150); });
+  v.on('theme', () => frames().forEach(again));
+  on(window, 'message', e => {
+    const m = e.data, f = m?.slides && frames().find(x => x.contentWindow === e.source); if (!f) return;
+    if (m.slides === 'key') (v.isBody ? document.body : root).dispatchEvent(new KeyboardEvent('keydown', { ...m, bubbles: true, cancelable: true }));
+    else if (m.slides === 'steps' && m.n >= 1) {
+      f._n = Math.round(m.n);
+      if (v.mode === 'scroll') framePost(f, f._n - 1, f._n); else { v.restep(); S.p = clamp(S.p, S.minP, S.end); v.applyP(); }
+    }
+  });
+}
+
+
+/* ── blocks/diagram.js ── */
+
+
+// Diagram engine — text → layered graph → animated SVG. Pure functions, no DOM except a canvas
+// for text measurement. Syntax: docs/AUTHORING.md → Diagrams.
+const dctx = { fontFamily: null };   // the viewer sets this to its own font so measurements match
+const TINTS = new Set(['blue', 'green', 'amber', 'rose', 'violet', 'gray', 'em']);
+const ARROW = /\s*(<)?([-.=]{2,}|[-.=](?=[>\u0001|])|(?<=<)[-.=])(?:\u0001(\d+)\u0001|\|([^|]*)\|)?([-.=]*)(>)?(?:\|([^|]*)\|)?\s*/;  // 7 groups → stride 8 in split()
+function protectBrackets(s) {
+  const ph = []; let out = '';
+  for (let i = 0; i < s.length;) {
+    const c = s[i], close = { '[': ']', '(': ')', '{': '}', '"': '"' }[c];
+    if (!close) { out += s[i++]; continue; }
+    let j = i + 1, depth = 1;
+    for (; j < s.length; j++) { if (c !== '"' && s[j] === c) depth++; else if (s[j] === close && --depth === 0) break; }
+    ph.push(s.slice(i, j + 1)); out += `\u0001${ph.length - 1}\u0001`; i = j + 1;
+  }
+  return { text: out, ph };
+}
+const unprotect = (t, ph) => t.replace(/\u0001(\d+)\u0001/g, (_, i) => ph[+i]);
+function unwrapShape(raw) {
+  let shape = 'box', label = raw;
+  if (/^\(\(.*\)\)$/s.test(raw)) { shape = 'circle'; label = raw.slice(2, -2); }
+  else if (raw[0] === '(') { shape = 'round'; label = raw.slice(1, -1); }
+  else if (raw[0] === '{') { shape = 'diamond'; label = raw.slice(1, -1); }
+  else if (raw[0] === '[') { label = raw.slice(1, -1).replace(/^\[|\]$/g, ''); }
+  else if (raw[0] === '"') { label = raw.slice(1, -1); }
+  return { shape, label: label.trim().replace(/^"|"$/g, '') };
+}
+function parseDiagram(src) {
+  const g = { dir: 'LR', reveal: 'edge', scale: 1, nodes: new Map(), edges: [], groups: [], focus: {}, captions: {} };
+  let edgeCtr = 0, lineCtr = 0, manual = 0, openGroup = null;
+  const node = id => { let n = g.nodes.get(id); if (!n) g.nodes.set(id, n = { id, label: id, shape: 'box', cls: [], em: false, step: Infinity }); return n; };
+  const parseNode = (tok, ph) => {
+    let t = tok.trim(), em = false;
+    if (t.startsWith('!')) { em = true; t = t.slice(1).trim(); }
+    if (t.endsWith('!')) { em = true; t = t.slice(0, -1).trim(); }
+    const cls = [];
+    t = t.replace(/((?:\.[A-Za-z]\w*)+)$/, m => { const cs = m.split('.').filter(Boolean); if (!cs.every(c => TINTS.has(c))) return m; cls.push(...cs); return ''; }).trim();
+    const m = t.match(/^(.*?)\u0001(\d+)\u0001$/);
+    let id, n;
+    if (m) { const { shape, label } = unwrapShape(ph[+m[2]]); id = m[1].trim() || label; n = node(id); n.label = label; n.shape = shape; }
+    else { id = unprotect(t, ph); if (!id) return null; n = node(id); }
+    n.label = n.label.replace(/\\n|\|/g, '\n');
+    n.cls.push(...cls); if (cls.includes('em')) em = true; n.em ||= em;
+    if (openGroup && !openGroup.members.includes(id)) openGroup.members.push(id);
+    return n;
+  };
+  src.replace(/\r/g, '').split('\n').forEach(raw => {
+    let line = raw.trim(), m, lineStep = null;
+    const st = () => g.reveal === 'edge' ? edgeCtr++ : g.reveal === 'line' ? (lineStep ??= lineCtr++) : g.reveal === 'manual' ? manual : 0;
+    if (!line || /^(#|%%|\/\/)/.test(line)) return;
+    if ((m = line.match(/^(?:graph|flowchart)\s+(LR|RL|TB|TD|BT)\b/i)) || (m = line.match(/^@?dir(?:ection)?\s*[:=]?\s*(LR|RL|TB|TD|BT)\b/i))) { g.dir = m[1].toUpperCase().replace('TD', 'TB'); return; }
+    if ((m = line.match(/^@reveal\s+(\w+)/i))) { g.reveal = m[1].toLowerCase(); return; }
+    if ((m = line.match(/^@scale\s+([\d.]+)/i))) { g.scale = +m[1]; return; }
+    if ((m = line.match(/^-{3,}\s*(.*)$/))) { if (m[1]) g.captions[manual] = m[1]; manual++; return; }   // step break; text after --- captions the step just described
+    if ((m = line.match(/^@?focus\s+(.*)$/i))) {                                                   // dim everything except these nodes at this step
+      const step = g.reveal === 'manual' ? manual : g.reveal === 'line' ? lineCtr : edgeCtr;
+      g.focus[step] = m[1].split(/[\s,]+/).filter(Boolean); return;
+    }
+    if ((m = line.match(/^@?caption\s+(.*)$/i))) { g.captions[g.reveal === 'manual' ? manual : g.reveal === 'line' ? lineCtr : edgeCtr] = m[1]; return; }
+    if (/^(classDef|class|style|linkStyle|click|accTitle|accDescr)\b/.test(line)) return;
+    if ((m = line.match(/^(?:subgraph|group)\s+(.+?)\s*(?:\{\s*(.*?)\s*\})?$/i))) {
+      const grp = { label: m[1].replace(/^"|"$/g, '').replace(/\[|\]/g, ''), members: [], step: Infinity };
+      g.groups.push(grp);
+      if (m[2] !== undefined) m[2].split(/[\s,]+/).filter(Boolean).forEach(tok => { const n = parseNode(tok, []); if (n && !grp.members.includes(n.id)) grp.members.push(n.id); });
+      else openGroup = grp;
+      return;
+    }
+    if (/^(end|\})$/i.test(line)) { openGroup = null; return; }
+    line.split(';').map(s => s.trim()).filter(Boolean).forEach(stmt => {
+      let { text, ph } = protectBrackets(stmt), tail = null;
+      const tm = text.match(/^(.+?)\s*:\s*(\S.*)$/);
+      if (tm && ARROW.test(tm[1])) { text = tm[1]; tail = unprotect(tm[2], ph).trim(); }
+      const parts = text.split(new RegExp(ARROW.source, 'g'));
+      const chain = [];
+      const STR = 8;
+      for (let i = 0; i < parts.length; i += STR) chain.push(parts[i]?.trim() ? parseNode(parts[i], ph) : null);
+      if (parts.length === 1) { if (chain[0]) chain[0].step = Math.min(chain[0].step, st()); return; }
+      for (let i = STR, k = 1; i < parts.length; i += STR, k++) {
+        let a = chain[k - 1], b = chain[k]; if (!a || !b) continue;
+        const [lt, d1, phLbl, pipeLbl, d2, gt, pipeAfter] = parts.slice(i - 7, i);
+        const dashes = (d1 || '') + (d2 || '');
+        let bi = lt === '<', head = gt === '>';
+        if (bi && !head) { [a, b] = [b, a]; bi = false; head = true; }
+        const label = phLbl !== undefined ? unwrapShape(ph[+phLbl]).label : (pipeLbl ?? pipeAfter)?.trim() ?? null;
+        const e = { from: a.id, to: b.id, label, dashed: /\./.test(dashes), thick: /=/.test(dashes), bi, head: head || bi, step: st() };
+        if (k === Math.floor((parts.length - 1) / STR) && tail) e.label = tail;
+        a.step = Math.min(a.step, e.step); b.step = Math.min(b.step, e.step);
+        g.edges.push(e);
+      }
+    });
+  });
+  g.nodes.forEach(n => { if (n.step === Infinity) n.step = 0; });
+  g.groups.forEach(gr => { gr.step = gr.members.length ? Math.min(...gr.members.map(id => g.nodes.get(id)?.step ?? 0)) : 0; });
+  g.steps = 1 + Math.max(0, ...g.edges.map(e => e.step), ...[...g.nodes.values()].map(n => n.step), ...Object.keys(g.focus).map(Number), ...Object.keys(g.captions).map(Number));
+  return g;
+}
+let _mc;
+function measure(text, font) { _mc ||= document.createElement('canvas').getContext('2d'); _mc.font = font; return _mc.measureText(text).width; }
+function layout(g) {
+  const font = `500 16px ${dctx.fontFamily || getComputedStyle(document.body).fontFamily}`;
+  const N = [...g.nodes.values()], n = N.length, ix = new Map(N.map((d, i) => [d.id, i]));
+  N.forEach(d => {
+    const lines = d.label.split('\n'); const tw = Math.max(...lines.map(l => measure(l, font)), 20);
+    d.lines = lines; d.w = Math.ceil(tw + 30); d.h = lines.length * 20 + 18;
+    if (d.shape === 'diamond') { d.w = Math.ceil(d.w * 1.35); d.h = Math.ceil(d.h * 1.6); }
+    if (d.shape === 'circle') { d.w = d.h = Math.max(d.w, d.h); }
+    if (d.shape === 'round') d.w += 8;
+  });
+  const out = N.map(() => []), inn = N.map(() => []);
+  g.edges.forEach(e => { const a = ix.get(e.from), b = ix.get(e.to); if (a !== b) { out[a].push(b); inn[b].push(a); } });
+  const st = new Array(n).fill(0), order = [], back = new Set();
+  const dfs = u => { st[u] = 1; for (const v of out[u]) { if (st[v] === 1) back.add(u * n + v); else if (!st[v]) dfs(v); } st[u] = 2; order.push(u); };
+  for (let i = 0; i < n; i++) if (!st[i]) dfs(i);
+  order.reverse();
+  const rank = new Array(n).fill(0);
+  order.forEach(u => out[u].forEach(v => { if (!back.has(u * n + v)) rank[v] = Math.max(rank[v], rank[u] + 1); }));
+  const R = n ? Math.max(...rank) + 1 : 0, layers = Array.from({ length: R }, () => []);
+  N.forEach((d, i) => layers[rank[i]].push(i));
+  const G = g.groups.length, grp = N.map(d => { const k = g.groups.findIndex(gr => gr.members.includes(d.id)); return k < 0 ? G : k; });
+  const pos = new Array(n); layers.forEach(L => { L.sort((a, b) => grp[a] - grp[b]); L.forEach((u, j) => pos[u] = j); });
+  const bary = (u, nb) => { const ns = nb[u].filter(v => rank[v] !== rank[u]); return ns.length ? ns.reduce((s, v) => s + pos[v], 0) / ns.length : pos[u]; };
+  for (let it = 0; it < 4; it++) {                                     // barycenter sweeps; a group moves as one block
+    const down = it % 2 === 0;
+    for (let r = down ? 1 : R - 2; down ? r < R : r >= 0; r += down ? 1 : -1) {
+      const L = layers[r], b = new Map(L.map(u => [u, bary(u, down ? inn : out)])), gb = new Map();
+      L.forEach(u => { if (grp[u] < G) { const a = gb.get(grp[u]) || [0, 0]; a[0] += b.get(u); a[1]++; gb.set(grp[u], a); } });
+      const key = u => grp[u] < G ? gb.get(grp[u])[0] / gb.get(grp[u])[1] : b.get(u);
+      L.sort((x, y) => (key(x) - key(y)) || (grp[x] - grp[y]) || (b.get(x) - b.get(y)));
+      L.forEach((u, j) => pos[u] = j);
+    }
+  }
+  // Groups become bands that line up across ranks, so group boxes never overlap; ungrouped nodes sit between bands.
+  const np = new Array(n); layers.forEach(L => L.forEach((u, j) => np[u] = L.length > 1 ? j / (L.length - 1) : .5));
+  const gmean = g.groups.map((_, k) => { const ms = N.map((_, i) => i).filter(i => grp[i] === k); return ms.length ? ms.reduce((s, i) => s + np[i], 0) / ms.length : .5; });
+  const slotOf = []; gmean.map((m, k) => [m, k]).sort((a, b) => a[0] - b[0]).forEach(([, k], s) => slotOf[k] = s);
+  const region = N.map((_, i) => grp[i] < G ? 2 * slotOf[grp[i]] + 1 : 2 * gmean.filter(m => m < np[i]).length);
+  layers.forEach(L => { L.sort((a, b) => (region[a] - region[b]) || (pos[a] - pos[b])); L.forEach((u, j) => pos[u] = j); });
+  const horiz = g.dir === 'LR' || g.dir === 'RL', GX = 70, GY = 26, BG = GY * 2.2, along = [];
+  const size = u => horiz ? N[u].h : N[u].w;
+  let acc = 0;
+  layers.forEach((L, r) => { const w = Math.max(...L.map(u => horiz ? N[u].w : N[u].h)); along[r] = acc + w / 2; acc += w + GX; });
+  const NR = 2 * G + 1, rh = new Array(NR).fill(0), stackH = L => L.reduce((s, v, j) => s + size(v) + (j ? GY : 0), 0);
+  layers.forEach(L => { for (let rg = 0; rg < NR; rg++) rh[rg] = Math.max(rh[rg], stackH(L.filter(u => region[u] === rg))); });
+  const rs = []; let cur = 0; rh.forEach((h, rg) => { if (h) { rs[rg] = cur; cur += h + BG; } });
+  const total = cur - BG;
+  layers.forEach((L, r) => {
+    const c = {};
+    L.forEach(u => {
+      const rg = region[u]; if (c[rg] === undefined) c[rg] = rs[rg] + (rh[rg] - stackH(L.filter(v => region[v] === rg))) / 2;
+      const cc = c[rg] + size(u) / 2 - total / 2; c[rg] += size(u) + GY;
+      if (horiz) { N[u].x = along[r]; N[u].y = cc; } else { N[u].x = cc; N[u].y = along[r]; }
+    });
+  });
+  if (g.dir === 'RL') N.forEach(d => d.x = acc - GX - d.x);
+  if (g.dir === 'BT') N.forEach(d => d.y = acc - GX - d.y);
+  N.forEach((d, i) => d.rank = rank[i]);
+  return { N, horiz, sign: (g.dir === 'RL' || g.dir === 'BT') ? -1 : 1 };
+}
+const bez = (p0, c1, c2, p3, t) => { const u = 1 - t; return { x: u * u * u * p0.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * p3.x, y: u * u * u * p0.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * p3.y }; };
+function edgeGeom(e, A, B, horiz, sign, N) {
+  let p0, c1, c2, p3;
+  const lo = Math.min(A.rank, B.rank), hi = Math.max(A.rank, B.rank), span = N.filter(d => d.rank >= lo && d.rank <= hi);
+  if (A === B) { p0 = { x: A.x + A.w * .3, y: A.y - A.h / 2 }; p3 = { x: A.x + A.w / 2, y: A.y - A.h * .2 }; c1 = { x: p0.x + 10, y: p0.y - 44 }; c2 = { x: p3.x + 44, y: p3.y - 10 }; }
+  else if (B.rank > A.rank) {
+    if (horiz) { p0 = { x: A.x + sign * A.w / 2, y: A.y }; p3 = { x: B.x - sign * B.w / 2, y: B.y }; const dx = (p3.x - p0.x) * .5; c1 = { x: p0.x + dx, y: p0.y }; c2 = { x: p3.x - dx, y: p3.y }; }
+    else { p0 = { x: A.x, y: A.y + sign * A.h / 2 }; p3 = { x: B.x, y: B.y - sign * B.h / 2 }; const dy = (p3.y - p0.y) * .5; c1 = { x: p0.x, y: p0.y + dy }; c2 = { x: p3.x, y: p3.y - dy }; }
+  } else {                                                   // back or same-rank edge: arc around the outside
+    const ext = 26, mx = ext + Math.abs(horiz ? A.x - B.x : A.y - B.y) * .05;
+    if (horiz) {                                           // arc over the top or under the bottom, whichever is clearer
+      const top = Math.min(...span.map(d => d.y - d.h / 2)), bot = Math.max(...span.map(d => d.y + d.h / 2));
+      const aT = Math.min(A.y - A.h / 2, B.y - B.h / 2), aB = Math.max(A.y + A.h / 2, B.y + B.h / 2), sd = (aT - top) <= (bot - aB) ? -1 : 1;
+      p0 = { x: A.x, y: A.y + sd * A.h / 2 }; p3 = { x: B.x, y: B.y + sd * B.h / 2 };
+      const lift = Math.max(34, (sd < 0 ? Math.max(p0.y, p3.y) - top : bot - Math.min(p0.y, p3.y)) * 1.34 + mx);
+      c1 = { x: p0.x, y: p0.y + sd * lift }; c2 = { x: p3.x, y: p3.y + sd * lift };
+    } else {                                                 // arc around the right or left side
+      const left = Math.min(...span.map(d => d.x - d.w / 2)), right = Math.max(...span.map(d => d.x + d.w / 2));
+      const aL = Math.min(A.x - A.w / 2, B.x - B.w / 2), aR = Math.max(A.x + A.w / 2, B.x + B.w / 2), sd = (right - aR) <= (aL - left) ? 1 : -1;
+      p0 = { x: A.x + sd * A.w / 2, y: A.y }; p3 = { x: B.x + sd * B.w / 2, y: B.y };
+      const lift = Math.max(34, (sd > 0 ? right - Math.min(p0.x, p3.x) : Math.max(p0.x, p3.x) - left) * 1.34 + mx);
+      c1 = { x: p0.x + sd * lift, y: p0.y }; c2 = { x: p3.x + sd * lift, y: p3.y };
+    }
+  }
+  let len = 0, prev = p0; for (let i = 1; i <= 24; i++) { const q = bez(p0, c1, c2, p3, i / 24); len += Math.hypot(q.x - prev.x, q.y - prev.y); prev = q; }
+  return { p0, c1, c2, p3, len, mid: bez(p0, c1, c2, p3, .5) };
+}
+const arrowHead = (tip, from) => { const d = Math.hypot(tip.x - from.x, tip.y - from.y) || 1, ux = (tip.x - from.x) / d, uy = (tip.y - from.y) / d, bx = tip.x - 10 * ux, by = tip.y - 10 * uy; return `<polygon class="ah" points="${tip.x},${tip.y} ${bx + 4.5 * uy},${by - 4.5 * ux} ${bx - 4.5 * uy},${by + 4.5 * ux}"/>`; };
+function renderDiagram(g) {
+  if (!g.nodes.size) return '<div class="err">Empty diagram</div>';
+  const { N, horiz, sign } = layout(g);
+  const byId = new Map(N.map(d => [d.id, d]));
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const grow = (x0, y0, x1, y1) => { minX = Math.min(minX, x0); minY = Math.min(minY, y0); maxX = Math.max(maxX, x1); maxY = Math.max(maxY, y1); };
+  N.forEach(d => grow(d.x - d.w / 2, d.y - d.h / 2, d.x + d.w / 2, d.y + d.h / 2));
+  const groups = g.groups.map(gr => {
+    const ms = gr.members.map(id => byId.get(id)).filter(Boolean); if (!ms.length) return null;
+    const x0 = Math.min(...ms.map(d => d.x - d.w / 2)) - 14, y0 = Math.min(...ms.map(d => d.y - d.h / 2)) - 30, x1 = Math.max(...ms.map(d => d.x + d.w / 2)) + 14, y1 = Math.max(...ms.map(d => d.y + d.h / 2)) + 14;
+    grow(x0, y0, x1, y1); return { ...gr, x0, y0, x1, y1 };
+  }).filter(Boolean);
+  const edges = g.edges.map(e => { const geo = edgeGeom(e, byId.get(e.from), byId.get(e.to), horiz, sign, N); grow(Math.min(geo.c1.x, geo.c2.x), Math.min(geo.c1.y, geo.c2.y), Math.max(geo.c1.x, geo.c2.x), Math.max(geo.c1.y, geo.c2.y)); return { e, geo }; });
+  const PAD = 18, W = Math.ceil(maxX - minX + PAD * 2), H = Math.ceil(maxY - minY + PAD * 2), ox = PAD - minX, oy = PAD - minY;
+  const f = v => +(v.toFixed(1));
+  const meta = Object.keys(g.focus).length || Object.keys(g.captions).length ? ` data-focus='${esc(JSON.stringify(g.focus))}' data-captions='${esc(JSON.stringify(g.captions))}'` : '';
+  let svg = `<svg class="dg" viewBox="0 0 ${W} ${H}" data-steps="${g.steps}"${meta} style="max-width:${Math.round(W * 1.3 * g.scale)}px" role="img">`;
+  svg += `<g>${groups.map(gr => `<g class="grp" data-step="${gr.step}"><rect x="${f(gr.x0 + ox)}" y="${f(gr.y0 + oy)}" width="${f(gr.x1 - gr.x0)}" height="${f(gr.y1 - gr.y0)}"/><text x="${f(gr.x0 + ox + 12)}" y="${f(gr.y0 + oy + 15)}">${esc(gr.label)}</text></g>`).join('')}</g>`;
+  svg += `<g>${edges.map(({ e, geo: q }) => {
+    const P = p => `${f(p.x + ox)},${f(p.y + oy)}`;
+    const cls = ['ed', e.dashed && 'dash', e.thick && 'thick'].filter(Boolean).join(' ');
+    return `<g class="${cls}" data-step="${e.step}" data-from="${esc(e.from)}" data-to="${esc(e.to)}" style="--len:${Math.ceil(q.len + 2)}"><path d="M${P(q.p0)} C${P(q.c1)} ${P(q.c2)} ${P(q.p3)}"/>` +
+      (e.head ? arrowHead({ x: q.p3.x + ox, y: q.p3.y + oy }, { x: q.c2.x + ox, y: q.c2.y + oy }) : '') +
+      (e.bi ? arrowHead({ x: q.p0.x + ox, y: q.p0.y + oy }, { x: q.c1.x + ox, y: q.c1.y + oy }) : '') +
+      (e.label ? `<text x="${f(q.mid.x + ox)}" y="${f(q.mid.y + oy)}">${esc(e.label)}</text>` : '') + `</g>`;
+  }).join('')}</g>`;
+  svg += `<g>${N.map(d => {
+    const x = d.x + ox, y = d.y + oy, cls = ['nd', d.em && 'em', ...d.cls].filter(Boolean).join(' ');
+    const shp = d.shape === 'circle' ? `<circle class="shp" cx="${f(x)}" cy="${f(y)}" r="${f(d.w / 2)}"/>`
+      : d.shape === 'diamond' ? `<polygon class="shp" points="${f(x)},${f(y - d.h / 2)} ${f(x + d.w / 2)},${f(y)} ${f(x)},${f(y + d.h / 2)} ${f(x - d.w / 2)},${f(y)}"/>`
+        : `<rect class="shp" x="${f(x - d.w / 2)}" y="${f(y - d.h / 2)}" width="${d.w}" height="${d.h}" rx="${d.shape === 'round' ? d.h / 2 : 8}"/>`;
+    const lh = 20, txt = `<text x="${f(x)}" y="${f(y)}">${d.lines.map((l, i) => `<tspan x="${f(x)}" dy="${i === 0 ? -(d.lines.length - 1) * lh / 2 : lh}">${esc(l)}</tspan>`).join('')}</text>`;
+    return `<g class="${cls}" data-step="${d.step}" data-id="${esc(d.id)}">${shp}${txt}</g>`;
+  }).join('')}</g></svg>`;
+  return svg;
+}
+
+// Focus + captions: at each step, `focus A B` dims everything else and `--- text` / `caption text` shows a line under the diagram.
+function diagramShow(it, el, sub, total, cur) {
+  svgShow(it, el, sub, total, cur);
+  const svg = el.querySelector('svg'); if (!svg?.dataset.focus) return;
+  const focus = JSON.parse(svg.dataset.focus), caps = JSON.parse(svg.dataset.captions), step = sub - 1;
+  const f = cur && focus[step] ? new Set(focus[step]) : null;
+  svg.querySelectorAll('.nd').forEach(n => n.classList.toggle('dim', !!f && !f.has(n.dataset.id)));
+  svg.querySelectorAll('.ed').forEach(e => e.classList.toggle('dim', !!f && !(f.has(e.dataset.from) && f.has(e.dataset.to))));
+  const c = el.querySelector('.dcap'); if (c) c.textContent = caps[step] ?? (cur ? c.textContent : '');
+}
+register('diagram', {
+  render: it => { try { const g = parseDiagram(it.content || ''); return `<div class="dgw">${renderDiagram(g)}${Object.keys(g.captions).length ? '<div class="dcap"></div>' : ''}${cap(it.caption)}</div>`; } catch (e) { return `<div class="err">Diagram error: ${esc(e.message)}</div>`; } },
+  steps: svgSteps, show: diagramShow
+});
+
+
+/* ── blocks/chart.js ── */
+
+
+// Chart engine —  type: bar|line   x: a, b, c   title: …   ymin/ymax   ylabel   reveal: series|all
+//                 Series name: 1, 2, 3   (one series per reveal step)
+function parseChart(src) {
+  const c = { type: 'bar', x: [], series: [], title: '', ymin: null, ymax: null, reveal: 'series', ylabel: '' };
+  src.split('\n').forEach(ln => {
+    const m = ln.match(/^\s*([^:=]+?)\s*[:=]\s*(.+?)\s*$/); if (!m) return;
+    const k = m[1].trim().toLowerCase(), v = m[2];
+    if (k === 'type' || k === 'kind') c.type = v.trim().toLowerCase();
+    else if (k === 'x' || k === 'labels' || k === 'categories') c.x = v.split(',').map(s => s.trim());
+    else if (k === 'title') c.title = v.trim(); else if (k === 'ylabel' || k === 'y') c.ylabel = v.trim();
+    else if (k === 'ymax' || k === 'max') c.ymax = +v; else if (k === 'ymin' || k === 'min') c.ymin = +v;
+    else if (k === 'reveal') c.reveal = v.trim().toLowerCase();
+    else c.series.push({ name: m[1].trim(), values: v.split(',').map(s => parseFloat(s)) });
+  });
+  if (!c.series.length) throw new Error('no data series (use  Name: 1, 2, 3)');
+  return c;
+}
+function renderChart(c) {
+  const W = 640, H = 340, ml = 52, mr = 20, mt = c.title ? 40 : 18, mb = 42, pw = W - ml - mr, ph = H - mt - mb;
+  const all = c.series.flatMap(s => s.values).filter(Number.isFinite);
+  let lo = c.ymin ?? Math.min(0, ...all), hi = c.ymax ?? Math.max(...all);
+  if (hi === lo) hi = lo + 1;
+  const span = hi - lo, mag = Math.pow(10, Math.floor(Math.log10(span))), stepC = [1, 2, 2.5, 5, 10].map(k => k * mag).find(k => span / k <= 5) || mag;
+  hi = c.ymax ?? Math.ceil(hi / stepC) * stepC; lo = c.ymin ?? Math.floor(lo / stepC) * stepC;
+  const X = i => ml + (i + .5) * pw / Math.max(1, c.x.length || c.series[0].values.length), Y = v => mt + ph - (v - lo) / (hi - lo) * ph;
+  const nX = c.x.length || c.series[0].values.length, f = v => +v.toFixed(1);
+  let s = `<svg class="ch" viewBox="0 0 ${W} ${H}" data-steps="${c.reveal === 'all' ? 1 : c.series.length}" style="max-width:${W * 1.2}px" role="img">`;
+  if (c.title) s += `<text class="ttl" x="${ml}" y="20">${esc(c.title)}</text>`;
+  for (let v = lo; v <= hi + 1e-9; v += stepC) s += `<line class="grid" x1="${ml}" x2="${W - mr}" y1="${f(Y(v))}" y2="${f(Y(v))}"/><text x="${ml - 8}" y="${f(Y(v))}" text-anchor="end" dominant-baseline="central">${+v.toFixed(6)}</text>`;
+  s += `<line class="axis" x1="${ml}" x2="${W - mr}" y1="${f(Y(lo))}" y2="${f(Y(lo))}"/>`;
+  for (let i = 0; i < nX; i++) s += `<text x="${f(X(i))}" y="${H - mb + 18}" text-anchor="middle">${esc(c.x[i] ?? i + 1)}</text>`;
+  if (c.ylabel) s += `<text transform="translate(14 ${mt + ph / 2}) rotate(-90)" text-anchor="middle">${esc(c.ylabel)}</text>`;
+  const gw = pw / nX, bw = gw * .7 / c.series.length;
+  c.series.forEach((sr, k) => {
+    const col = `var(--c${(k % 6) + 1})`, step = c.reveal === 'all' ? 0 : k;
+    s += `<g class="sr" data-step="${step}">`;
+    if (c.type === 'line') {
+      const pts = sr.values.map((v, i) => ({ x: X(i), y: Y(v) })); let len = 0;
+      pts.forEach((p, i) => { if (i) len += Math.hypot(p.x - pts[i - 1].x, p.y - pts[i - 1].y); });
+      s += `<path class="ln" style="--len:${Math.ceil(len + 2)}" stroke="${col}" d="${pts.map((p, i) => `${i ? 'L' : 'M'}${f(p.x)},${f(p.y)}`).join(' ')}"/>` + pts.map(p => `<circle class="pt" cx="${f(p.x)}" cy="${f(p.y)}" r="4" fill="${col}"/>`).join('');
+    } else sr.values.forEach((v, i) => { const x = X(i) - gw * .35 + k * bw, y0 = Y(Math.max(lo, 0)), y1 = Y(v); s += `<rect class="bar" x="${f(x)}" y="${f(Math.min(y0, y1))}" width="${f(bw - 2)}" height="${f(Math.abs(y0 - y1))}" rx="2" fill="${col}"/>`; });
+    if (c.series.length > 1) s += `<g class="lg"><rect x="${W - mr - 150}" y="${mt - 6 + k * 16}" width="10" height="10" rx="2" fill="${col}"/><text x="${W - mr - 134}" y="${mt - 1 + k * 16}" dominant-baseline="central">${esc(sr.name)}</text></g>`;
+    s += `</g>`;
+  });
+  return s + '</svg>';
+}
+
+register('chart', {
+  render: it => { try { return `<div class="dgw">${renderChart(parseChart(it.content || ''))}${cap(it.caption)}</div>`; } catch (e) { return `<div class="err">Chart error: ${esc(e.message)}</div>`; } },
+  steps: svgSteps, show: svgShow
+});
+
+
+/* ── blocks/quiz.js ── */
+
+
+
+/* Quiz: one question, its options, `- [x]` on the right one; content only, no score, no timer. Two steps:
+   the question, then the answer marked. A click or 1–9 answers, reveals and emits
+   `answer` { slide, item, choice, correct }; in scroll mode only answering reveals. */
+
+// Pure: quiz text → { question, options[], answer } (answer = index, -1 if none is marked).
+function parseQuiz(text) {
+  const q = { question: '', options: [], answer: -1 }, ql = [];
+  for (const ln of String(text || '').split('\n')) {
+    const m = ln.match(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[([ xX])\]\s*)?(.*)$/);
+    if (m) { if (m[1] && m[1] !== ' ') q.answer = q.options.length; q.options.push(m[2].trim()); }
+    else if (!q.options.length && ln.trim()) ql.push(ln.trim());
+  }
+  q.question = ql.join(' ');
+  return q;
+}
+const norm = it => it.options ? it : parseQuiz(it.content);
+
+register('quiz', {
+  render: it => {
+    const q = norm(it), a = +q.answer;
+    return `<div class="quiz" role="group" aria-label="Quiz"><div class="qq">${inline(q.question)}</div><ol class="qo">${q.options.map((o, i) =>
+      `<li${i === a ? ' data-ok' : ''}><button type="button" data-o="${i}">${inline(o)}</button></li>`).join('')}</ol></div>`;
+  },
+  steps: it => norm(it).answer >= 0 ? 2 : 1,
+  show: (it, el, sub) => { const z = $('.quiz', el); if (z) z.classList.toggle('revealed', !!z.dataset.answered || (sub >= 2 && !el.closest('.sv-scroll'))); }
+});
+
+// Viewer side: v.answer(choice, k, i) is the action; clicks and the digit keys call it.
+function installQuiz(v) {
+  const { root, el, S, o } = v;
+  const cleanups = v.cleanups ||= [];
+  const on = (t, ev, fn) => { t.addEventListener(ev, fn); cleanups.push(() => t.removeEventListener(ev, fn)); };
+  const mark = (i, k) => {
+    const z = $(`.slide[data-i="${i}"] .item[data-k="${k}"] .quiz`, el.stage), c = S.answers[i]?.[k]; if (!z || c == null) return;
+    z.dataset.answered = '1'; z.classList.add('revealed'); $$('li', z).forEach((li, j) => li.classList.toggle('chosen', j === c));
+  };
+  v.answer = (choice, k, i = S.i) => {
+    const sl = S.slides[i]; if (!sl) return;
+    if (k == null) k = sl.items.findIndex(it => it.type === 'quiz');
+    const it = sl.items[k]; if (!it || it.type !== 'quiz') return;
+    const q = norm(it); choice = +choice; if (!(choice >= 0 && choice < q.options.length)) return;
+    (S.answers[i] ||= {})[k] = choice; mark(i, k);
+    v.emit('answer', { slide: i, item: k, choice, correct: choice === +q.answer });
+  };
+  v.on('slide', i => { for (const k in S.answers[i] || {}) mark(i, +k); });   // a re-rendered slide keeps its answer
+  on(el.stage, 'click', e => {
+    const b = e.target.closest('.quiz button'); if (!b) return;
+    v.answer(+b.dataset.o, +b.closest('.item').dataset.k, +b.closest('.slide').dataset.i);
+  });
+  if (o.keys && v.mode !== 'scroll') on(v.isBody ? document : root, 'keydown', e => {   // 1–9: only on a slide that has a quiz
+    if (!/^[1-9]$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey || e.target.matches('input,textarea,select') || v.anyOv()) return;
+    const k = S.slides[S.i]?.items.findIndex(it => it.type === 'quiz'); if (k == null || k < 0) return;
+    e.preventDefault(); v.answer(+e.key - 1, k);
+  });
+}
+
+
+/* ── viewer/dom.js ── */
+// The viewer builds its own markup inside whatever element it is mounted on.
+// Help card rows: keys|what they do; {x} is a key.
+const KEYS = `{→} {Space} {J}|next step / slide
+{←} {⌫} {K}|previous step / slide
+{Home} {End}|first / last slide
+{G}|go to slide number
+{Tab}|overview of all slides
+{R}|reveal mode: fade · keep · hide · none
+{C}|slide counter &amp; progress
+{N}|speaker notes &amp; timer
+{A}|narration: play / pause · {[} {]} speed · {'} stamp a cue · {"} clear the slide's cues
+{V}|captions while narrating (<code>@vtt</code> file, else the notes)
+{1}–{9}|answer the quiz on this slide
+{P}|play / pause auto-advance
+{I}|dark / light theme
+{B} {.}|black screen
+{F}|fullscreen
+{T}|presenter toolbar
+{W}|presenter window (notes, next slide, clock)
+{E}|edit the source live
+{Ctrl}+{S} {Ctrl}+{Shift}+{S}|save the source · save the lesson as one file (media inlined)
+{L} {S} {D} {M}|laser · spotlight · pen · marker
+{Ctrl}+{Z} {X}|undo stroke · clear drawings
+{Esc}|close overlays, drop tool
+{?}|this list`;
+const TEMPLATE = `
+<div class="prog" aria-hidden="true"></div>
+<main class="stage" aria-live="polite"></main>
+<div class="count" aria-label="Slide position"></div>
+<div class="toast" role="status"></div>
+<div class="spot"></div>
+<canvas class="ink"></canvas>
+<div class="laser"></div>
+<div class="tbar" role="toolbar" aria-label="Presenter tools">
+  <span class="grip" title="Drag to move">⋮⋮</span>
+  <button data-tool="laser">Laser<kbd>L</kbd></button>
+  <button data-tool="spot">Spotlight<kbd>O</kbd></button>
+  <button data-tool="pen">Pen<kbd>D</kbd></button>
+  <button data-tool="mark">Marker<kbd>M</kbd></button>
+  <span class="sep"></span>
+  <span class="swatches"></span>
+  <input type="range" class="size" min="1" max="30" value="3" aria-label="Stroke size">
+  <button data-act="undo" title="Undo (Ctrl+Z)">Undo</button>
+  <button data-act="clear" title="Clear drawings (X)">Clear</button>
+  <span class="sep"></span>
+  <button data-act="reveal" title="Cycle reveal mode (R)">Reveal<kbd>R</kbd></button>
+  <button data-act="theme" title="Toggle dark/light (I)">Theme<kbd>I</kbd></button>
+  <button data-act="notes" title="Speaker notes (N)">Notes<kbd>N</kbd></button>
+  <button data-act="narrate" title="Narration (A)">Listen<kbd>A</kbd></button>
+  <button data-act="help" title="Keyboard shortcuts (?)">?</button>
+</div>
+<div class="nar" role="group" aria-label="Narration"><button class="nPlay">▶</button><div class="nTrack"><div class="nFill"></div></div><span class="nTime"></span><button class="nRate">1×</button></div>
+<button class="narGo">▶ Listen</button>
+<div class="cc" aria-live="polite"></div>
+<textarea class="src" spellcheck="false" aria-label="Deck source" hidden></textarea>
+<div class="pv"><div class="pvLbl"></div><div class="pvBox"></div></div>
+<div class="ovl blank"></div>
+<div class="ovl picker">
+  <div class="card">
+    <h2>Open a lecture</h2>
+    <p>Choose its <code>.md</code> or <code>.json</code> file, or drop it here.<br>Teachers can also add <code>?src=lecture02/slides.md</code> to the address.</p>
+    <button class="btn pick">Choose a file</button>
+    <button class="btn ghost sample" hidden>View the sample deck</button>
+    <input type="file" class="file" accept=".md,.markdown,.json,text/markdown,application/json" hidden>
+  </div>
+</div>
+<div class="ovl help">
+  <div class="card">
+    <h2>Keyboard</h2>
+    <div class="keys">${KEYS.split('\n').map(r => r.split('|').map(c => `<span>${c.replace(/\{(.+?)\}/g, '<kbd>$1</kbd>')}</span>`).join('')).join('')}</div>
+    <p style="margin-top:16px">Add <code>?mode=scroll</code> to the URL for a scrollable, printable version.</p>
+  </div>
+</div>
+<div class="ovl goto">
+  <div class="card" style="min-width:280px;text-align:center">
+    <h2>Go to slide</h2>
+    <input class="gotoIn" type="number" min="1" inputmode="numeric">
+    <button class="btn gotoOk">Go</button>
+  </div>
+</div>
+<div class="ovl ov"><div class="card"><div class="ovgrid"></div></div></div>
+<div class="notes"><div class="meta"><span class="nClock">00:00</span><span class="nPos"></span><span class="nNext"></span></div><div class="body nBody"></div></div>
+`;
+
+
+/* ── viewer/tools.js ── */
+
+const COLORS = ['#e5484d', '#2e63a6', '#2f7a4d', '#e0a010', '#7c4dcc', '#1b1d20', '#ffffff'];
+
+/* Laser, spotlight, pen and marker. Coordinates are relative to the mounted
+   root, so the tools work full-screen and inside an embedded box alike. */
+function installTools(v) {
+  const { root, el, S, o } = v, ink = el.ink, ctx = ink.getContext('2d'), bar = el.tbar;
+  const t = v.tools = { color: (o.persist && store.get('color')) || COLORS[0], size: +((o.persist && store.get('size')) || 3), spot: 150 };
+  t.spot = 80 + t.size * 12;
+  const box = () => root.getBoundingClientRect();
+  const rel = e => { const r = box(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  const cleanups = v.cleanups ||= [];
+  const on = (target, ev, fn, opt) => { target.addEventListener(ev, fn, opt); cleanups.push(() => target.removeEventListener(ev, fn, opt)); };
+
+  if (bar) { $('.swatches', bar).innerHTML = COLORS.map(c => `<button class="sw${c === t.color ? ' act' : ''}" data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join(''); $('.size', bar).value = t.size; }
+
+  v.sizeInk = () => { const r = box(), d = devicePixelRatio || 1; ink.width = r.width * d; ink.height = r.height * d; ink.style.width = r.width + 'px'; ink.style.height = r.height + 'px'; ctx.setTransform(d, 0, 0, d, 0, 0); v.redrawInk(); };
+  const strokePath = st => { ctx.beginPath(); ctx.lineCap = ctx.lineJoin = 'round'; ctx.strokeStyle = st.color; ctx.lineWidth = st.size; ctx.globalAlpha = st.tool === 'mark' ? .45 : 1; st.pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke(); ctx.globalAlpha = 1; };
+  v.redrawInk = () => { const r = box(); ctx.clearRect(0, 0, r.width, r.height); (S.strokes[S.i] || []).forEach(strokePath); };
+  let drawing = null;
+  on(ink, 'pointerdown', e => { if (S.tool !== 'pen' && S.tool !== 'mark') return; ink.setPointerCapture(e.pointerId); drawing = { tool: S.tool, color: t.color, size: S.tool === 'mark' ? t.size * 4 : t.size, pts: [rel(e)] }; });
+  on(ink, 'pointermove', e => { if (!drawing) return; drawing.pts.push(rel(e)); v.redrawInk(); strokePath(drawing); });
+  const endStroke = () => { if (!drawing) return; (S.strokes[S.i] ||= []).push(drawing); drawing = null; v.redrawInk(); };
+  on(ink, 'pointerup', endStroke); on(ink, 'pointercancel', endStroke);
+  v.undoInk = () => { (S.strokes[S.i] || []).pop(); v.redrawInk(); };
+  v.clearInk = () => { S.strokes[S.i] = []; v.redrawInk(); };
+  v.setTool = tool => {
+    S.tool = S.tool === tool ? null : tool;
+    [...root.classList].filter(c => c.startsWith('tool-')).forEach(c => root.classList.remove(c)); if (S.tool) root.classList.add('tool-' + S.tool);
+    ink.classList.toggle('live', S.tool === 'pen' || S.tool === 'mark');
+    el.laser.classList.toggle('on', S.tool === 'laser'); el.spot.classList.toggle('on', S.tool === 'spot');
+    if (bar) $$('[data-tool]', bar).forEach(b => b.classList.toggle('act', b.dataset.tool === S.tool));
+    if (S.tool) v.showBar();
+  };
+  let barT, idleT;
+  v.showBar = sticky => { if (!bar) return; bar.classList.add('on'); clearTimeout(barT); if (!sticky) barT = setTimeout(() => { if (!bar.matches(':hover')) bar.classList.remove('on'); }, 3000); };
+  v.toggleBar = () => { if (!bar) return; bar.classList.contains('on') ? bar.classList.remove('on') : v.showBar(true); };
+  on(root, 'pointermove', e => {
+    root.classList.remove('idle'); clearTimeout(idleT); if (o.hideCursor && !S.tool) idleT = setTimeout(() => root.classList.add('idle'), 2500);
+    const p = rel(e), r = box();
+    if (o.toolbarHover && p.y > r.height - 70 && !v.anyOv()) v.showBar();
+    if (S.tool === 'laser') { const l = el.laser; l.style.left = p.x + 'px'; l.style.top = p.y + 'px'; l.style.setProperty('--lc', t.color); l.style.setProperty('--d', (t.size * 3 + 8) + 'px'); }
+    if (S.tool === 'spot') { const s = el.spot; s.style.setProperty('--x', p.x + 'px'); s.style.setProperty('--y', p.y + 'px'); s.style.setProperty('--r', t.spot + 'px'); }
+  }, { passive: true });
+  on(root, 'pointerleave', () => { root.classList.remove('idle'); clearTimeout(idleT); });
+  if (bar) {
+    on(bar, 'click', e => {
+      const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
+      if (b.dataset.tool) v.setTool(b.dataset.tool);
+      else if (b.dataset.c) { t.color = b.dataset.c; if (o.persist) store.set('color', t.color); $$('.sw', bar).forEach(s => s.classList.toggle('act', s === b)); }
+      else ({ undo: v.undoInk, clear: v.clearInk, reveal: () => v.cycleReveal(), theme: () => v.toggleTheme(), notes: () => v.toggleNotes(), narrate: () => v.toggleNarration(), help: () => v.openOv('help') })[b.dataset.act]?.();
+      v.showBar();
+    });
+    on($('.size', bar), 'input', e => { t.size = +e.target.value; t.spot = 80 + t.size * 12; if (o.persist) store.set('size', t.size); v.showBar(); });
+    const grip = $('.grip', bar); let d = null;
+    on(grip, 'pointerdown', e => { const r = bar.getBoundingClientRect(), b = box(); d = { dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, h: r.height }; grip.setPointerCapture(e.pointerId); bar.style.transform = 'none'; });
+    on(grip, 'pointermove', e => { if (!d) return; const b = box(); bar.style.left = clamp(e.clientX - b.left - d.dx, 0, b.width - d.w) + 'px'; bar.style.top = clamp(e.clientY - b.top - d.dy, 0, b.height - d.h) + 'px'; bar.style.bottom = 'auto'; });
+    on(grip, 'pointerup', () => d = null);
+  }
+  const ro = new ResizeObserver(() => { clearTimeout(v.rzT); v.rzT = setTimeout(() => { v.sizeInk(); if (S.slides.length && S.node && v.mode !== 'scroll') S.node.style.setProperty('--scale', v.scaleFor(S.slides[S.i])); }, 120); });
+  ro.observe(root); cleanups.push(() => ro.disconnect());
+  v.sizeInk();
+}
+
+
+/* ── viewer/input.js ── */
+
+/* Keyboard, click zones, swipe, hash, drag-and-drop, file picker. */
+function installInput(v) {
+  const { root, el, S, o } = v;
+  const cleanups = v.cleanups ||= [];
+  const on = (target, ev, fn, opt) => { target.addEventListener(ev, fn, opt); cleanups.push(() => target.removeEventListener(ev, fn, opt)); };
+  const scroll = v.mode === 'scroll';
+
+  v.keymap = {
+    arrowright: 'advance', arrowdown: 'advance', ' ': 'advance', enter: 'advance', pagedown: 'advance', j: 'advance',
+    arrowleft: 'retreat', arrowup: 'retreat', backspace: 'retreat', pageup: 'retreat', k: 'retreat',
+    home: 'first', end: 'last', g: 'gotoPrompt', tab: 'overview', r: 'cycleReveal', c: 'toggleChrome', n: 'toggleNotes', p: 'play',
+    i: 'toggleTheme', b: 'blank', '.': 'blank', '?': 'help', h: 'help', f: 'fullscreen', t: 'toggleBar',
+    l: 'laser', o: 'spot', s: 'spot', d: 'pen', m: 'mark', x: 'clearInk', escape: 'escape',
+    a: 'toggleNarration', '[': 'narrateSlower', ']': 'narrateFaster', "'": 'stampCue', '"': 'clearCues', v: 'toggleCaptions', e: 'toggleEdit', w: 'openPresenter'
+  };
+  const actions = {
+    blank: () => v.openOv('blank'), help: () => v.openOv('help'),
+    laser: () => v.setTool('laser'), spot: () => v.setTool('spot'), pen: () => v.setTool('pen'), mark: () => v.setTool('mark'),
+    escape: () => { v.setTool(null); if (!o.presenter) el.notes.classList.remove('on'); el.tbar?.classList.remove('on'); v.stop(); if (v.narration?.on) v.narration.set(false); if (root.classList.contains('editing')) v.toggleEdit(); }
+  };
+  v.run = name => { const fn = actions[name] || (typeof v[name] === 'function' && (() => v[name]())); if (fn) fn(); };
+
+  if (o.keys) {
+    const keyTarget = v.isBody ? document : root;
+    on(keyTarget, 'keydown', e => {
+      if (e.target.matches('input,textarea,select')) { if (e.key === 'Escape') { v.openOv(null); e.target.blur(); } return; }
+      if (!S.slides.length) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); v.undoInk(); return; }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); e.shiftKey ? v.bundle() : v.download(); return; }   // save the source · save the lesson as one file
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key, K = k.toLowerCase();
+      if (v.anyOv()) { if (K === 'escape' || K === 'tab' || K === 'b' || k === '.' || K === '?' || K === 'h') { e.preventDefault(); v.openOv(null); } return; }
+      if (scroll && ['arrowdown', 'arrowup', ' ', 'pagedown', 'pageup', 'home', 'end'].includes(K)) return;   // let the page scroll
+      const name = v.keymap[K]; if (!name) return;
+      e.preventDefault(); v.run(name);
+    });
+    if (!v.isBody) on(root, 'pointerdown', () => root.focus({ preventScroll: true }));
+  }
+  on(el.gotoOk, 'click', () => { const n = +el.gotoIn.value; v.openOv(null); if (n) v.go(n - 1); });
+  on(el.gotoIn, 'keydown', e => { if (e.key === 'Enter') el.gotoOk.click(); });
+  on(el.ovgrid, 'click', e => { const b = e.target.closest('.ovc'); if (b) { v.openOv(null); v.go(+b.dataset.i, 1); } });
+  if (o.click && !scroll) on(el.stage, 'click', e => { if (!S.slides.length || S.tool || e.target.closest('a,audio,video,button,input,iframe,summary,details')) return; const r = root.getBoundingClientRect(); (e.clientX - r.left > r.width / 2 ? v.advance : v.retreat).call(v); });
+  if (o.touch && !scroll) {
+    let tx = 0, ty = 0;
+    on(el.stage, 'touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    on(el.stage, 'touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { e.preventDefault(); (dx < 0 ? v.advance : v.retreat).call(v); } }, { passive: false });
+  }
+  if (o.hash) on(window, 'hashchange', () => { const n = +location.hash.slice(1); if (n && n - 1 !== S.i) v.go(n - 1); });
+  on(document, 'visibilitychange', () => { if (document.hidden) root.querySelectorAll('audio,video').forEach(m => m.pause()); });
+  on(document, 'fullscreenchange', () => v.sizeInk?.());
+
+  // file picker + drag-and-drop (standalone use)
+  const picker = v.ov.picker;
+  const readFile = f => { const r = new FileReader(); r.onload = () => { try { S.base = ''; S.srcUrl = null; v.loadText(r.result, f.name); } catch (err) { v.toast(`Could not read ${f.name}: ${err.message}`, 4000); } }; r.readAsText(f); };
+  ['dragenter', 'dragover'].forEach(ev => on(root, ev, e => { e.preventDefault(); picker.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => on(root, ev, e => { e.preventDefault(); picker.classList.remove('drag'); }));
+  on(root, 'drop', e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+  on(el.pick, 'click', () => el.file.click());
+  on(el.file, 'change', e => { const f = e.target.files[0]; if (f) readFile(f); e.target.value = ''; });
+  on(el.sample, 'click', () => { S.base = ''; v.loadText(o.sample, 'sample.md'); });
+}
+
+
+/* ── viewer/narrate.js ── */
+
+
+
+/* Narration: @audio + @cues reveal the steps in time with the voice (@cues auto spreads them); @tts reads
+   the notes aloud (|| = next step); V shows captions (@vtt, else the notes segment of the current step).
+   Nothing is on screen until A. Mechanics: docs/ARCHITECTURE.md → Narration. */
+function installNarration(v) {
+  const { root, el, S, o } = v;
+  const cleanups = v.cleanups ||= [];
+  const on = (t, ev, fn) => { t.addEventListener(ev, fn); cleanups.push(() => t.removeEventListener(ev, fn)); };
+  const audio = new Audio(); audio.preload = 'auto';
+  const N = v.narration = { on: false, playing: false, mode: null, rate: +o.rate || 1, audio, k: 0, seg: 0, captions: !!(o.persist && store.get('captions') === '1'), track: null };
+  root.classList.toggle('captions', N.captions);
+  const bar = el.nar, go = el.narGo, play = $('.nPlay', bar), fill = $('.nFill', bar), time = $('.nTime', bar), rateEl = $('.nRate', bar), track = $('.nTrack', bar);
+  let silentT = null, cur = null;                       // pending silent-slide timer, current utterance
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const ttsOn = () => { const t = S.deck?.tts ?? o.tts; return (t === true || t === 'auto' || t === 'true') && typeof speechSynthesis !== 'undefined'; };
+  const src = i => S.slides[i]?.audio ? v.resolve(S.slides[i].audio) : null;
+  N.has = i => !!(src(i) || (ttsOn() && S.slides[i]?.notes));
+  N.available = () => S.slides.some((_, i) => N.has(i));
+
+  const segsOf = notes => String(notes || '').split(/\s*\|\|\s*/).map(x => x.trim()).filter(Boolean);
+  const vttCache = {};
+  const loadTrack = () => {                          // the slide's VTT, fetched once per URL and only while captions are on
+    const i = S.i, u = S.slides[i]?.vtt ? v.resolve(S.slides[i].vtt) : null; N.track = null;
+    if (!u || !N.captions) return;
+    (vttCache[u] ||= fetch(u).then(r => r.ok ? r.text() : '').then(parseVTT).catch(() => [])).then(t => { if (S.i === i && N.captions) { N.track = t; caption(); } });
+  };
+  const caption = () => {
+    let html = '';
+    if (N.on && N.captions) {
+      if (N.track) { const t = audio.currentTime, c = N.track.find(x => x.start <= t && t < x.end); html = c ? esc(c.text) : ''; }
+      else { const segs = segsOf(S.slides[S.i]?.notes); html = segs.length ? inline(segs[clamp(N.mode === 'tts' ? N.seg : N.k, 0, segs.length - 1)]) : ''; }
+    }
+    if (el.cc && el.cc.innerHTML !== html) { el.cc.innerHTML = html; if (html) v.typeset(el.cc); }
+  };
+  N.setCaptions = on => { N.captions = !!on; root.classList.toggle('captions', N.captions); if (o.persist) store.set('captions', N.captions ? '1' : '0'); loadTrack(); caption(); };
+  N.caption = () => el.cc?.textContent || '';
+  v.toggleCaptions = () => { N.setCaptions(!N.captions); v.toast(N.captions ? 'Captions on · shown while narrating' : 'Captions off'); };
+  const cues = () => { const c = S.slides[S.i]?.cues; if (c !== 'auto') return c || []; const d = audio.duration; return isFinite(d) ? Array.from({ length: S.end }, (_, k) => d * (k + 1) / (S.end + 1)) : []; };
+  const revealTo = p => { p = clamp(p, S.minP, S.end); if (p > S.p) { S.p = p; v.applyP(); } };
+  const paint = () => {
+    caption(); if (!bar) return;
+    bar.classList.toggle('on', N.on); go.classList.toggle('on', !!N.needGesture && !N.playing);
+    play.textContent = N.playing ? '❚❚' : '▶'; play.setAttribute('aria-label', N.playing ? 'Pause narration' : 'Play narration');
+    rateEl.textContent = N.rate === 1 ? '1×' : `${N.rate}×`;
+    if (N.mode === 'tts') { time.textContent = 'reading notes'; fill.style.width = '0'; }
+    else { const d = audio.duration; time.textContent = isFinite(d) ? `${fmt(audio.currentTime)} / ${fmt(d)}` : ''; fill.style.width = isFinite(d) ? `${audio.currentTime / d * 100}%` : '0'; }
+  };
+  const stopTTS = () => { cur = null; if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel(); };
+  const ended = () => { if (!N.on || !N.playing) return; if (S.i < S.slides.length - 1) v.go(S.i + 1, 1); else { N.set(false); v.toast('End of narration'); } };
+
+  const speak = notes => {
+    const segs = segsOf(notes).map(s => s.replace(/\$\$?[^$]*\$\$?/g, ' formula ').replace(/[*_`#>]+/g, '').trim()).filter(Boolean);
+    if (!segs.length) return ended();
+    if (segs.length === 1) revealTo(S.end);
+    const ss = speechSynthesis, want = (S.deck?.voice || o.voice || '').toLowerCase(), voice = want && ss.getVoices().find(x => x.name.toLowerCase().includes(want));
+    let k = 0;
+    const next = () => {
+      if (k >= segs.length) return ended();
+      N.seg = k; caption();
+      const u = new SpeechSynthesisUtterance(segs[k]); u.rate = N.rate; if (voice) u.voice = voice; const lang = S.deck?.lang || o.lang; if (lang) u.lang = lang;
+      let guard;                                   // some browsers never fire onend for a voice they lack: move on anyway
+      u.onend = u.onerror = () => { clearTimeout(guard); if (cur !== u) return; k++; if (segs.length > 1) revealTo(k); next(); };
+      guard = setTimeout(u.onend, (segs[k].split(/\s+/).length * .5 / N.rate + 4) * 1000);
+      cur = u; ss.speak(u);
+    };
+    ss.cancel(); next();
+  };
+
+  // Prepare the current slide's narration; play it if the listener is playing.
+  const start = async () => {
+    clearTimeout(silentT); stopTTS(); N.k = 0; N.seg = 0; loadTrack();
+    const sl = S.slides[S.i], a = src(S.i);
+    if (a) {
+      N.mode = 'audio'; audio.playbackRate = N.rate;
+      if (audio.src !== a) { audio.src = a; audio.load(); } else audio.currentTime = 0;
+      if (!sl.cues) revealTo(S.end);
+      if (N.playing) { try { await audio.play(); N.needGesture = false; } catch { N.needGesture = true; N.playing = false; } }
+    } else if (ttsOn() && sl.notes) { N.mode = 'tts'; audio.pause(); if (N.playing) speak(sl.notes); }
+    else { N.mode = null; audio.pause(); revealTo(S.end); if (N.playing) silentT = setTimeout(ended, (+(S.deck?.autoplay || o.autoplay) || 4) * 1000); }
+    paint();
+  };
+  N.set = play => {                                // true: narrate from here · false: stop
+    N.on = N.playing = !!play; root.classList.toggle('narrating', N.on);
+    if (N.on) start(); else { audio.pause(); stopTTS(); clearTimeout(silentT); }
+    paint(); v.emit('narration', N.on);
+  };
+  N.toggle = () => {                               // A: start · pause · resume
+    if (!N.on) { if (!N.available()) return v.toast('This deck has no narration'); return N.set(true); }
+    if (N.playing) { N.playing = false; audio.pause(); clearTimeout(silentT); if (N.mode === 'tts') stopTTS(); v.toast('Narration paused'); }
+    else { N.playing = true; if (N.mode === 'audio' && !audio.ended) audio.play().catch(() => { N.needGesture = true; N.playing = false; paint(); }); else start(); }
+    paint();
+  };
+  N.setRate = r => { N.rate = Math.round(clamp(r, .5, 3) * 4) / 4; audio.playbackRate = N.rate; if (cur) cur.rate = N.rate; paint(); v.toast(`Speed ${N.rate}×`); };
+  v.toggleNarration = () => N.toggle(); v.narrateFaster = () => N.setRate(N.rate + .25); v.narrateSlower = () => N.setRate(N.rate - .25);
+
+  on(audio, 'timeupdate', () => { if (!N.on) return; const c = cues(); let k = 0; while (k < c.length && c[k] <= audio.currentTime) k++; if (k > N.k) { N.k = k; revealTo(k); } paint(); });
+  on(audio, 'loadedmetadata', paint); on(audio, 'ended', ended);
+  on(audio, 'error', () => { if (N.on) { v.toast(`Audio not found: ${S.slides[S.i]?.audio}`, 2500); N.mode = null; if (N.playing) silentT = setTimeout(ended, 2000); } });
+  if (bar) {
+    on(play, 'click', e => { e.stopPropagation(); N.toggle(); });
+    on(track, 'click', e => { e.stopPropagation(); if (N.mode === 'audio' && isFinite(audio.duration)) { const r = track.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * audio.duration; N.k = 0; } });
+    on(rateEl, 'click', e => { e.stopPropagation(); N.setRate(N.rate >= 2 ? .75 : N.rate + .25); });
+    on(go, 'click', e => { e.stopPropagation(); N.set(true); });
+  }
+  v.on('slide', () => { if (N.on) start(); });
+  v.on('load', () => { N.set(false); N.needGesture = false; if (o.autonarrate && N.available()) { N.on = N.playing = true; root.classList.add('narrating'); } });
+  cleanups.push(() => { audio.pause(); audio.src = ''; stopTTS(); clearTimeout(silentT); });
+}
+
+
+/* ── viewer/edit.js ── */
+
+
+/* Live authoring: E opens the source beside the slide and re-renders on every edit, staying on the slide;
+   Ctrl+S downloads the source from anywhere; Esc closes. `watch` re-fetches src every 1.5 s (or n s). */
+// Slide i of a Markdown source as a text span: { start, end, chunk } (null for JSON).
+const chunkOf = (source, i) => {
+  if (/^\s*\{/.test(source)) return null;
+  // Empty chunks, deck settings and media maps are not slides; use the parser's rule.
+  return markdownChunks(source).filter(c => parseMarkdown(c.chunk).slides.length)[i] || null;
+};
+// Pure: add cue time `t` (seconds) to slide `i` of a Markdown source; returns the new source or null for JSON.
+function stampCue(source, i, t) {
+  const c = chunkOf(source, i); if (!c) return null;
+  const { start, end, chunk } = c;
+  const val = Math.round(t * 10) / 10, lines = [...markdownLines(chunk)].filter(l => !l.fenced);
+  const cm = lines.find(l => /^@cues(?:[ \t]|$)/.test(l.text)), eol = source.includes('\r\n') ? '\r\n' : '\n';
+  let next;
+  if (cm) { const old = cm.text.slice(5).trim(); next = chunk.slice(0, cm.start) + `@cues ${old && old !== 'auto' ? old + ' ' : ''}${val}` + chunk.slice(cm.end); }
+  else {
+    const am = lines.find(l => /^@(?:audio|narration)(?:[ \t]|$)/.test(l.text)) || lines.find(l => /^#\s/.test(l.text));
+    next = am ? chunk.slice(0, am.end) + `${eol}@cues ${val}` + chunk.slice(am.end) : `@cues ${val}${eol}${chunk}`;
+  }
+  return source.slice(0, start) + next + source.slice(end);
+}
+// Pure: drop slide i's cues (its @cues line, or the `| …` / `@ …` part of its @audio line).
+// Returns the source unchanged when the slide has none, null for JSON.
+function clearCues(source, i) {
+  const c = chunkOf(source, i); if (!c) return null;
+  let next = c.chunk;
+  for (const l of [...markdownLines(c.chunk)].reverse()) {
+    if (l.fenced) continue;
+    if (/^@cues(?:[ \t]|$)/.test(l.text)) next = next.slice(0, l.start) + next.slice(l.next);
+    else {
+      const m = l.text.match(/^(@(?:audio|narration)[ \t]+\S+)[ \t]*(?:@|\|)[ \t]*.*$/);
+      if (m) next = next.slice(0, l.start) + m[1] + next.slice(l.end);
+    }
+  }
+  return next === c.chunk ? source : source.slice(0, c.start) + next + source.slice(c.end);
+}
+function installEditor(v) {
+  const { root, el, S, o } = v, ta = el.src;
+  const cleanups = v.cleanups ||= [];
+  const on = (t, ev, fn) => { t.addEventListener(ev, fn); cleanups.push(() => t.removeEventListener(ev, fn)); };
+  v.reload = text => { try { v.loadText(text, S.name || '', { keep: true }); } catch (err) { v.toast(`Parse error: ${err.message}`, 3000); } };
+  v.toggleEdit = () => {
+    const open = !root.classList.contains('editing');
+    root.classList.toggle('editing', open); root.classList.toggle('split', open || root.classList.contains('presenter'));
+    ta.hidden = !open;
+    if (open) {                                    // show the whole slide while writing, and scroll the source to it
+      S.revealWas = S.revealOverride; v.setReveal('none'); ta.value = S.source || '';
+      const at = chunkOf(ta.value, S.i)?.start || 0;
+      ta.focus(); ta.setSelectionRange(at, at); ta.scrollTop = Math.max(0, (ta.value.slice(0, at).split('\n').length - 3) * (parseFloat(getComputedStyle(ta).lineHeight) || 20));
+      v.toast('Editing · Ctrl+S saves the source', 2200);
+    } else { S.revealOverride = S.revealWas ?? null; v.bounds(); v.applyP(); }
+    v.sizeInk?.();
+  };
+  v.download = () => {
+    const name = (S.name || (S.deck?.title || 'slides') + (/^\s*\{/.test(S.source || '') ? '.json' : '.md')).split('/').pop();
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([ta.hidden ? S.source || '' : ta.value], { type: 'text/plain' })), download: name });
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); v.toast(`Saved ${name}`);
+  };
+  v.stampCue = () => {                             // ' while listening: mark "the next step starts now" in the source
+    const N = v.narration; if (!N?.on || N.mode !== 'audio') return v.toast('Play the slide\'s audio first (A), then press \' at each step');
+    const next = stampCue(S.source || '', S.i, N.audio.currentTime);
+    if (!next) return v.toast('Cue stamping works on Markdown sources');
+    S.source = next; if (!ta.hidden) ta.value = next;
+    const n = parseMarkdown(next).slides[S.i].cues.length;
+    v.toast(`Cue ${n} at ${N.audio.currentTime.toFixed(1)} s · Ctrl+S in the editor saves`); if (S.p < S.end) { S.p++; v.applyP(); }
+  };
+  v.clearCues = () => {                            // " (Shift+'): forget this slide's cues, then stamp them again
+    const next = clearCues(S.source || '', S.i);
+    if (next === null) return v.toast('Cue editing works on Markdown sources');
+    if (next === S.source) return v.toast('This slide has no cues');
+    S.source = next; if (!ta.hidden) ta.value = next; S.slides[S.i].cues = null; if (v.narration) v.narration.k = 0;
+    v.toast(`Cues cleared for slide ${S.i + 1} · ' stamps new ones, Ctrl+S saves`, 3000);
+  };
+  let t;
+  on(ta, 'input', () => { clearTimeout(t); t = setTimeout(() => v.reload(ta.value), 250); });
+  on(ta, 'keydown', e => {
+    if (e.key === 'Tab') { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText('  ', s, ta.selectionEnd, 'end'); }
+    else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); e.shiftKey ? v.bundle() : v.download(); }
+    else if (e.key === 'Escape') { ta.blur(); root.focus?.(); v.toggleEdit(); }   // one Esc closes the pane (invariant 1)
+    e.stopPropagation();
+  });
+  if (o.watch) {
+    const ms = (o.watch === true ? 1.5 : +o.watch || 1.5) * 1000;
+    const id = setInterval(async () => {
+      if (!S.srcUrl || document.hidden) return;
+      try { const r = await fetch(S.srcUrl, { cache: 'no-cache' }); if (!r.ok) return; const txt = await r.text(); if (txt !== S.source) { v.reload(txt); if (!ta.hidden) ta.value = txt; v.toast('Reloaded'); } } catch { }
+    }, ms);
+    cleanups.push(() => clearInterval(id));
+  }
+}
+
+
+/* ── viewer/bundle.js ── */
+
+/* Single-file lessons: v.bundle() (Ctrl+Shift+S) inlines the deck's media as data URIs (a ```media fence,
+   or JSON "media"; resolve() prefers it), writes the deck into Slides.shell and downloads one HTML file.
+   Embedded pages are inlined too; demo links, http(s) media and KaTeX are not (ARCHITECTURE.md → Bundle). */
+const bundleEnv = { shell: null };       // Slides.shell reads / writes this
+const LOCAL = u => typeof u === 'string' && u && !/^(https?:|data:|blob:|\/\/|#)/i.test(u);
+
+// Pure: the deck's relative media paths that a bundle has to inline (those not already in deck.media).
+function mediaOf(deck) {
+  const out = [], add = u => { if (LOCAL(u) && !deck.media?.[u] && !out.includes(u)) out.push(u); };
+  for (const s of deck?.slides || []) {
+    add(s.audio); add(s.vtt);
+    for (const it of s.items || []) { if (/^(image|audio|video|embed)$/.test(it.type)) { add(it.url); add(it.poster); } }
+  }
+  return out;
+}
+// Pure: deck source + { path: dataURI } → the source carrying the media (```media fence, or JSON "media").
+function embedMedia(source, media) {
+  const entries = Object.entries(media || {}).filter(([k, v]) => k && typeof v === 'string' && v); if (!entries.length) return source;
+  if (/^\s*\{/.test(source)) { const j = JSON.parse(source); j.media = { ...(j.media || {}), ...Object.fromEntries(entries) }; return JSON.stringify(j, null, 2); }
+  return source.replace(/\s*$/, '') + '\n\n---\n```media\n' + entries.map(([k, v]) => `${k} ${v}`).join('\n') + '\n```\n';
+}
+// Pure: shell HTML + deck source → one HTML file that loads that deck (replaces the #deck or #sample
+// script, else puts the deck before the first <script>). Returns null when the shell has no script.
+function bundleHTML(shell, source, name = 'deck.md') {
+  const tag = `<script type="text/plain" id="deck" data-name="${esc(name)}">\n${source.replace(/<\/script/gi, '<\\/script')}\n<\/script>`;
+  const own = /<script type="text\/plain" id="(?:deck|sample)"[^>]*>[\s\S]*?<\/script>/;
+  let html;
+  if (own.test(shell)) html = shell.replace(own, () => tag);
+  else { const at = shell.search(/<script\b/i); if (at < 0) return null; html = shell.slice(0, at) + tag + '\n' + shell.slice(at); }
+  return /^\s*<!doctype/i.test(html) ? html : '<!DOCTYPE html>\n' + html;
+}
+
+function installBundle(v) {
+  const { S, el } = v;
+  const toDataURL = b => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(b); });
+  const fmt = n => n < 1048576 ? `${Math.round(n / 1024)} kB` : `${(n / 1048576).toFixed(1)} MB`;
+  v.bundle = async (shell = bundleEnv.shell, { download = true } = {}) => {
+    if (!shell) { v.toast('Single-file export needs Slides.html (Slides.shell is not set)', 3500); return null; }
+    if (!S.deck || !S.source) { v.toast('Nothing to export'); return null; }
+    const src = el.src.hidden ? S.source : el.src.value, media = {}, missing = [];
+    for (const p of mediaOf(S.deck)) { try { const r = await fetch(v.resolve(p)); if (!r.ok) throw 0; media[p] = await toDataURL(await r.blob()); } catch { missing.push(p); } }
+    const file = (S.name || '').split('/').pop() || 'deck.md', name = (file.replace(/\.(md|markdown|json)$/i, '') || 'lesson') + '.html';
+    const html = bundleHTML(shell, embedMedia(src, media), file);
+    if (!html) { v.toast('The shell has no <script> to put the deck before', 3000); return null; }
+    if (download) { const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([html], { type: 'text/html' })), download: name }); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+    v.toast(missing.length ? `Saved ${name} · ${fmt(html.length)} — could not inline ${missing.join(', ')}` : html.length > 20 * 1048576 ? `Saved ${name} · ${fmt(html.length)} — too big to email; host it, or trim the media` : `Saved ${name} · ${fmt(html.length)}`, 4500);
+    v.emit('bundle', { name, size: html.length, media: Object.keys(media), missing });
+    return html;
+  };
+}
+
+
+/* ── viewer/sync.js ── */
+
+/* Windows in sync + presenter view (W, ?presenter=1). Windows of the same deck share a BroadcastChannel,
+   or the transport given as sync: { send(msg), onMessage(fn), close?() } (a WebSocket, an LMS bus).
+   Messages: { id, i, p } (slide, step) and { id, hello: true } (a new window asking for the state). */
+function installSync(v) {
+  const { root, el, S, o } = v;
+  const cleanups = v.cleanups ||= [];
+  if (o.sync === 'auto') o.sync = v.isBody;
+  const key = 'slides:' + (o.src || (v.isBody && new URLSearchParams(location.search).get('src')) || location.pathname);
+  const custom = o.sync && typeof o.sync === 'object' && typeof o.sync.send === 'function' && typeof o.sync.onMessage === 'function';
+  const canSync = custom || (o.sync && typeof BroadcastChannel === 'function');
+  v.openPresenter = () => {
+    if (!canSync || !v.isBody) return v.toast('Presenter view works when the viewer owns the page');
+    const u = new URL(location.href); u.searchParams.set('presenter', '1'); u.hash = `#${S.i + 1}`;
+    window.open(u.href, 'slides-presenter-' + key, 'width=1100,height=680,popup=yes'); v.toast('Presenter window opened');
+  };
+  if (o.presenter) {
+    root.classList.add('presenter', 'split', 'chrome'); el.notes.classList.add('on');
+    const preview = () => {
+      const nxt = S.slides[S.i + 1], box = el.pvBox; if (!box) return;
+      $('.pvLbl', root).textContent = nxt ? `Next · ${S.i + 2} / ${S.slides.length}` : 'Last slide';
+      box.replaceChildren(); if (nxt) { const n = v.buildSlide(S.i + 1); n.querySelectorAll('.item').forEach(i => i.classList.add('shown')); box.appendChild(n); v.typeset(box); }
+    };
+    v.on('slide', preview); v.on('load', preview);
+  }
+  if (!canSync) return;
+  const T = custom ? o.sync : (bc => ({ send: m => bc.postMessage(m), onMessage: fn => bc.onmessage = e => fn(e.data), close: () => bc.close() }))(new BroadcastChannel(key));
+  const id = Math.random().toString(36).slice(2);
+  let want = null, quiet = false;                  // quiet: a freshly loaded window asks for the state instead of announcing its own
+  const post = () => T.send({ id, i: S.i, p: S.p });
+  v.on('step', () => { if (quiet) { quiet = false; return; } if (want && want.i === S.i && want.p === S.p) { want = null; return; } if (S.slides.length) post(); });
+  T.onMessage(m => {
+    if (!m || m.id === id || !S.slides.length) return;
+    if (m.hello) return post();
+    want = { i: m.i, p: m.p };
+    if (m.i !== S.i) { S.pendingP = m.p; v.go(m.i, m.i > S.i ? 1 : -1); }
+    else if (m.p !== S.p) { S.p = clamp(m.p, S.minP, S.end); v.applyP(); }
+    else want = null;
+  });
+  v.on('load', () => { quiet = true; T.send({ id, hello: true }); });
+  cleanups.push(() => T.close?.());
+}
+
+
+/* ── viewer/viewer.js ── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* The Viewer owns one mounted deck. Every slide is a list of items; every item
+   has n ≥ 1 sub-steps (diagram edges, chart series…). S.p walks 0…S.end. */
+class Viewer {
+  constructor(root, opts = {}) {
+    this.root = typeof root === 'string' ? $(root) : root;
+    if (!this.root) throw new Error('Slides: mount target not found');
+    this.o = { ...DEFAULTS, ...opts };
+    const o = this.o;
+    this.isBody = this.root === document.body;
+    this.S = { deck: null, slides: [], i: 0, p: 0, total: 0, minP: 0, end: 0, steps: [], base: o.base || '', busy: false, revealOverride: null, strokes: {}, answers: {}, tool: null, t0: Date.now(), playing: false };
+    this.listeners = {};
+    this.mode = o.mode === 'scroll' ? 'scroll' : 'present';
+    if (o.hash === 'auto') o.hash = this.isBody;
+
+    const r = this.root;
+    r.classList.add('sv', this.isBody ? 'sv-body' : 'sv-box', this.mode === 'scroll' ? 'sv-scroll' : 'sv-present');
+    if (o.chrome) r.classList.add('chrome'); if (o.marker) r.classList.add('marker');
+    if (!this.isBody) r.setAttribute('tabindex', '0');
+    r.innerHTML = TEMPLATE;
+    this.el = {};
+    for (const k of ['prog', 'stage', 'count', 'toast', 'spot', 'ink', 'laser', 'tbar', 'notes', 'ovgrid', 'gotoIn', 'gotoOk', 'pick', 'sample', 'file', 'swatches', 'size', 'nar', 'narGo', 'cc', 'src', 'pvBox']) this.el[k] = $('.' + k, r);
+    this.ov = {}; for (const k of ['blank', 'picker', 'help', 'goto', 'ov']) this.ov[k] = $('.ovl.' + k, r);
+    if (!o.toolbar) { this.el.tbar.remove(); this.el.tbar = null; }
+    if (o.sample) this.el.sample.hidden = false;
+
+    this.setTheme(o.theme !== 'auto' ? o.theme : (o.persist && store.get('theme')) || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'), false);
+    installTools(this);
+    installInput(this);
+    installNarration(this);
+    installSync(this);
+    installEditor(this);
+    installQuiz(this);
+    installFrames(this);
+    installBundle(this);
+    this.clock = setInterval(() => { const s = Math.floor((Date.now() - this.S.t0) / 1000); $('.nClock', r).textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }, 1000);
+    this.ready = this.boot();
+    if (o.edit) this.ready.then(() => { if (this.S.slides.length) this.toggleEdit(); });
+  }
+
+  /* ── events ─────────────────────────────────────────────── */
+  on(ev, fn) { (this.listeners[ev] ||= []).push(fn); return this; }
+  emit(ev, ...a) { (this.listeners[ev] || []).forEach(f => f(...a)); const h = this.o['on' + ev[0].toUpperCase() + ev.slice(1)]; if (typeof h === 'function') h(...a); }
+
+  /* ── loading ────────────────────────────────────────────── */
+  async boot() {
+    const o = this.o;
+    try {
+      if (o.deck) return this.loadDeck(o.deck);
+      if (o.text) return this.loadText(o.text, o.name || '');
+      const q = this.isBody ? new URLSearchParams(location.search) : null;
+      const src = o.src || (q && (q.get('src') || q.get('json') || q.get('md') || (q.get('lecture') ? q.get('lecture').replace(/\/?$/, '/') + 'slides_content.json' : null)));
+      const candidates = src ? [src] : this.isBody ? ['slides.md', 'slides_content.json', 'slides.json'] : [];
+      for (const c of candidates) {
+        try {
+          const r = await fetch(c, { cache: 'no-cache' }); if (!r.ok) continue;
+          const text = await r.text(), url = new URL(r.url || c, document.baseURI).href;
+          if (!o.base) this.S.base = url.slice(0, url.lastIndexOf('/') + 1);
+          this.S.srcUrl = url;
+          return this.loadText(text, c);
+        } catch (err) { if (src) this.toast(`Couldn't load ${src}: ${err.message}`, 4000); }
+      }
+    } catch (err) { this.toast(`Could not load deck: ${err.message}`, 4000); console.error(err); }
+    if (o.picker) this.openOv('picker'); else this.stageMessage('No deck loaded.');
+  }
+  loadText(text, name = '', opts) { const deck = parseDeck(text, name); this.S.source = String(text); this.S.name = name; return this.loadDeck(deck, opts); }
+  loadDeck(deck, { keep = false } = {}) {          // keep: re-render in place (live editing), staying on the same slide & step
+    const S = this.S, o = this.o, was = keep && S.deck ? { i: S.i, p: S.p } : null;
+    S.deck = deck; S.slides = deck.slides; S.revealOverride = keep ? S.revealOverride : null; S.i = -1; S.macros = null;
+    if (!keep) { S.strokes = {}; S.answers = {}; S.t0 = Date.now(); this.stop(); }
+    if (this.isBody) document.title = deck.title || 'Slides';
+    if (deck.theme && !(o.persist && store.get('theme')) && o.theme === 'auto') this.setTheme(deck.theme, false);
+    if (o.math === true || (o.math === 'auto' && deck.slides.some(s => HAS_MATH.test([s.title, s.subtitle, s.notes, ...s.items.map(it => it.type === 'text' ? it.text : /^(code|algorithm|pseudo|html)$/.test(it.type) ? '' : (it.caption || '') + JSON.stringify(it.headers || '') + JSON.stringify(it.rows || ''))].join('\n'))))) this.loadMath();
+    this.openOv(null);
+    if (!keep) this.emit('load', deck);
+    if (this.mode === 'scroll') { S.revealOverride = 'none'; this.el.stage.innerHTML = ''; deck.slides.forEach((_, i) => this.render(i)); S.i = clamp(was?.i || 0, 0, S.slides.length - 1); this.markScroll(); return this; }
+    const h = o.hash ? +location.hash.slice(1) : 0, start = was ? was.i + 1 : o.start ? +o.start : (h && h <= S.slides.length ? h : 1);
+    if (was) S.pendingP = was.p;
+    this.render(clamp(start, 1, S.slides.length) - 1, 1);
+    if (o.hint) setTimeout(() => this.toast('Press ? for keyboard shortcuts', 2200), 400);
+    return this;
+  }
+  stageMessage(msg) { this.el.stage.innerHTML = `<div class="err">${esc(msg)}</div>`; }
+
+  /* ── rendering ──────────────────────────────────────────── */
+  resolve(u) { const m = this.S.deck?.media; if (m && u && m[u]) return m[u]; const b = this.S.base; if (!u || /^(https?:|data:|blob:|#|\/)/i.test(u) || !b) return u; try { return new URL(u, b).href; } catch { return u; } }
+  revealMode() { return this.S.revealOverride || this.S.slides[this.S.i]?.reveal || this.S.deck.reveal || this.o.reveal; }
+  scaleFor(sl) {
+    const items = sl.items || []; if (!items.length) return 1;
+    let s = 1, lines = 0, longest = (sl.title || '').length;
+    items.forEach(it => { if (it.type === 'text') { longest = Math.max(longest, it.text.length); lines += 1 + Math.floor(it.text.length / 70); } else lines += it.type === 'code' || it.type === 'algorithm' ? ((it.content || '').split('\n').length * .7) : 6; });
+    if (lines > 9) s -= .08; if (lines > 13) s -= .08; if (lines > 18) s -= .08; if (lines > 24) s -= .08;
+    if (longest > 120) s -= .05;
+    return clamp(s, .62, 1);
+  }
+  buildSlide(i) {                                 // slide → <section> (used by render, the presenter preview and exporters)
+    const S = this.S, sl = S.slides[i];
+    ctx.resolve = u => this.resolve(u); ctx.root = this.root; dctx.fontFamily = getComputedStyle(this.root).fontFamily;
+    const node = document.createElement('section');
+    node.className = `slide ${sl.kind}${(sl.align || S.deck.align || this.o.align) === 'center' ? ' center' : ''}`;
+    node.style.setProperty('--scale', this.scaleFor(sl));
+    node.dataset.i = i;
+    node.setAttribute('aria-label', `Slide ${i + 1} of ${S.slides.length}`);
+    const audio = this.mode === 'scroll' && sl.audio ? `<audio class="slideAudio" controls preload="none" src="${esc(this.resolve(sl.audio))}"></audio>` : '';
+    if (sl.kind !== 'content') node.innerHTML = `<h1>${inline(sl.title)}</h1>${sl.subtitle ? `<p class="sub">${inline(sl.subtitle)}</p>` : ''}${audio}`;
+    else node.innerHTML = (sl.title ? `<h1>${inline(sl.title)}</h1>` : '') + (sl.subtitle ? `<p class="sub">${inline(sl.subtitle)}</p>` : '') + audio +
+      `<div class="items">${sl.items.map((it, k) => `<div class="item d${it.depth || 0}${it.type !== 'text' ? ' block' : ''}" data-k="${k}">${(Blocks[it.type] || Blocks.unknown).render(it)}</div>`).join('')}</div>`;
+    return node;
+  }
+  render(i, dir = 1) {
+    const S = this.S, sl = S.slides[i]; if (!sl) return;
+    S.i = i;
+    const node = this.buildSlide(i);
+    if (this.mode === 'scroll') this.el.stage.appendChild(node); else this.el.stage.replaceChildren(node);
+    S.node = node;
+    this.restep();
+    S.p = S.pendingP != null ? clamp(S.pendingP, S.minP, S.end) : dir < 0 ? S.end : S.minP; S.pendingP = null;
+    this.applyP();
+    this.typeset(node);
+    this.redrawInk?.();
+    this.chrome();
+    S.busy = false;
+    this.emit('slide', i, sl);
+  }
+  restep() {                       // each item's sub-steps → S.steps, S.total and the bounds (again when a frame declares its steps)
+    const S = this.S, els = $$('.item', S.node);
+    S.steps = S.slides[S.i].items.map((it, k) => { const d = Blocks[it.type] || Blocks.unknown; return Math.max(1, d.steps ? d.steps(it, els[k]) : 1); });
+    S.total = S.steps.reduce((a, b) => a + b, 0);
+    this.bounds();
+  }
+  bounds() {                       // S.end = last position; multi-item slides get one extra "everything clean" step
+    const S = this.S, sl = S.slides[S.i], m = this.revealMode(), standalone = sl.items.length === 1 && sl.items[0].type !== 'text';
+    S.end = S.total + (m !== 'none' && sl.items.length > 1 ? 1 : 0);
+    S.minP = m === 'none' ? S.end : standalone ? Math.min(1, S.end) : 0;
+  }
+  applyP() {
+    const S = this.S, sl = S.slides[S.i], m = this.revealMode(), complete = S.p >= S.end; let cum = 0;
+    $$('.item', S.node).forEach((el, k) => {
+      const n = S.steps[k], it = sl.items[k]; let cls, sub;
+      if (complete) { cls = 'shown'; sub = n; }
+      else if (S.p <= cum) { cls = 'future'; sub = 0; }
+      else if (S.p <= cum + n) { cls = 'current'; sub = S.p - cum; }
+      else { cls = 'past'; sub = n; }
+      el.classList.remove('shown', 'past', 'current', 'future', 'm-fade', 'm-keep', 'm-hide', 'm-none');
+      el.classList.add(cls); if (cls === 'past') el.classList.add('m-' + m);
+      const d = Blocks[it.type]; if (d?.show) d.show(it, el, sub, n, cls === 'current');
+      if (cls === 'current' && S.p > S.minP && this.mode !== 'scroll') el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      cum += n;
+    });
+    this.emit('step', S.p, S.end);
+  }
+
+  /* ── navigation ─────────────────────────────────────────── */
+  go(i, dir = 1) {
+    const S = this.S; i = clamp(i, 0, S.slides.length - 1);
+    if (this.mode === 'scroll') { S.i = i; this.markScroll(); $(`.slide[data-i="${i}"]`, this.el.stage)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); this.chrome(); return; }
+    if (S.busy || i === S.i) return;
+    S.busy = true;
+    const cur = $('.slide', this.el.stage);
+    if (cur && !reducedMotion()) { cur.classList.add('out'); setTimeout(() => this.render(i, dir), 170); }
+    else this.render(i, dir);
+  }
+  advance() { const S = this.S; if (S.busy) return; if (this.mode === 'scroll') return this.go(S.i + 1); if (S.p < S.end) { S.p++; this.applyP(); } else if (S.i < S.slides.length - 1) this.go(S.i + 1, 1); else if (S.playing) { if (this.o.loop) this.go(0); else this.stop(); } }
+  retreat() { const S = this.S; if (S.busy) return; if (this.mode === 'scroll') return this.go(S.i - 1); if (S.p > S.minP) { S.p--; this.applyP(); } else if (S.i > 0) this.go(S.i - 1, -1); }
+  next() { this.advance(); } prev() { this.retreat(); }
+  first() { this.go(0); } last() { this.go(this.S.slides.length - 1); }
+  markScroll() { $$('.slide', this.el.stage).forEach(n => n.classList.toggle('cur', +n.dataset.i === this.S.i)); }
+  play(seconds) {
+    const S = this.S; if (S.playing) return this.stop();
+    const secs = +(seconds || S.deck?.autoplay || this.o.autoplay) || 4;
+    S.playing = setInterval(() => this.advance(), secs * 1000); this.toast(`Playing · ${secs}s per step`);
+  }
+  stop() { if (this.S.playing) { clearInterval(this.S.playing); this.S.playing = false; this.toast('Paused'); } }
+  cycleReveal() { const S = this.S; S.revealOverride = REVEAL_MODES[(REVEAL_MODES.indexOf(this.revealMode()) + 1) % REVEAL_MODES.length]; this.bounds(); S.p = clamp(S.p, S.minP, S.end); this.applyP(); this.toast(`Reveal: ${S.revealOverride}`); }
+  setReveal(m) { this.S.revealOverride = m; this.bounds(); this.S.p = clamp(this.S.p, this.S.minP, this.S.end); this.applyP(); }
+
+  /* ── chrome: progress, counter, hash, toast, overlays, notes, overview ── */
+  chrome() {
+    const S = this.S, n = S.slides.length;
+    this.el.prog.style.width = `${(S.i + 1) / n * 100}%`;
+    this.el.count.textContent = `${S.i + 1} / ${n}`;
+    if (this.o.hash) history.replaceState(null, '', `#${S.i + 1}`);
+    this.notes();
+  }
+  toggleChrome() { this.root.classList.toggle('chrome'); }
+  toast(msg, ms = 1800) { const t = this.el.toast; t.textContent = msg; t.classList.add('on'); clearTimeout(this.toastT); this.toastT = setTimeout(() => t.classList.remove('on'), ms); }
+  openOv(id) { if (!id && !this.S.slides.length && this.o.picker) id = 'picker';   // without a deck, the picker is the page
+    for (const [k, el] of Object.entries(this.ov)) el.classList.toggle('on', k === id); }
+  anyOv() { return Object.values(this.ov).some(el => el.classList.contains('on')); }
+  notes() {
+    const S = this.S, sl = S.slides[S.i], nxt = S.slides[S.i + 1], r = this.root;
+    $('.nPos', r).textContent = `Slide ${S.i + 1} of ${S.slides.length}`;
+    $('.nNext', r).textContent = nxt ? `Next: ${nxt.title || nxt.kind}` : 'Last slide';
+    $('.nBody', r).innerHTML = sl?.notes ? inline(sl.notes) : '<span style="opacity:.5">No notes for this slide.</span>'; this.typeset($('.nBody', r));
+  }
+  toggleNotes() { this.el.notes.classList.toggle('on'); }
+  overview() {
+    const S = this.S;
+    this.el.ovgrid.innerHTML = S.slides.map((s, i) => `<button class="ovc${i === S.i ? ' cur' : ''}" data-i="${i}"><small>${i + 1}${s.kind !== 'content' ? ' · ' + s.kind : ''}</small>${esc(s.title || (s.items[0]?.text || s.items[0]?.type || '').slice(0, 60))}</button>`).join('');
+    this.openOv('ov'); $('.ovc.cur', this.el.ovgrid)?.focus();
+  }
+  gotoPrompt() { this.openOv('goto'); const i = this.el.gotoIn; i.value = ''; i.max = this.S.slides.length; setTimeout(() => i.focus(), 30); }
+  setTheme(t, persist = true) { this.root.dataset.theme = t; if (persist && this.o.persist) store.set('theme', t); this.emit('theme', t); }
+  toggleTheme() { this.setTheme(this.root.dataset.theme === 'dark' ? 'light' : 'dark'); }
+  fullscreen() { const t = this.isBody ? document.documentElement : this.root; document.fullscreenElement ? document.exitFullscreen() : t.requestFullscreen?.().catch(() => { }); }
+
+  /* ── math: KaTeX is fetched lazily, only if the deck contains TeX; every viewer typesets once it arrives ── */
+  loadMath() {
+    const b = this.S.deck?.katex ? this.resolve(this.S.deck.katex.replace(/\/?$/, '/')) : this.o.katex;
+    const add = (tag, attrs) => new Promise((ok, no) => { const el = Object.assign(document.createElement(tag), attrs); el.onload = ok; el.onerror = no; document.head.appendChild(el); });
+    return (Viewer.mathP ||= (async () => {
+      try { add('link', { rel: 'stylesheet', href: b + 'katex.min.css' }).catch(() => { }); await add('script', { src: b + 'katex.min.js' }); Viewer.mathOK = true; }
+      catch { this.toast('Math renderer unavailable offline — showing raw TeX', 3000); }
+    })()).then(() => this.typeset(this.el.stage));
+  }
+  typeset(root) {                  // renders exactly what inline() marked as math (.tex), so other dollars stay text
+    if (!Viewer.mathOK) return;
+    const S = this.S;
+    if (!S.macros) {                // @macros: one definition per line, so a bad line cannot cost the others
+      S.macros = {};
+      for (const l of String(S.deck?.macros || '').split('\n')) try { if (/katex-error/.test(katex.renderToString(l, { macros: S.macros, globalGroup: true, throwOnError: false }))) this.toast(`@macros: KaTeX cannot read ${l}`, 4000); } catch { }
+    }
+    const macros = S.macros;
+    for (const el of root.querySelectorAll('.tex')) {
+      if (el._k || el.closest('.code,.algo')) continue;
+      const t = el.textContent, d = /^(\$\$|\\\[)/.test(t), n = d || t[0] === '\\' ? 2 : 1;
+      try { katex.render(t.slice(n, -n), el, { displayMode: d, throwOnError: false, macros }); el._k = 1; } catch { }
+    }
+  }
+
+  /* ── teardown ───────────────────────────────────────────── */
+  destroy() {
+    this.stop(); clearInterval(this.clock); (this.cleanups || []).forEach(f => f());
+    this.root.innerHTML = ''; this.root.classList.remove('sv', 'sv-body', 'sv-box', 'sv-scroll', 'sv-present', 'chrome', 'marker', 'idle', 'narrating', 'captions', 'editing', 'presenter', 'split');
+    delete this.root.dataset.theme;
+  }
+}
+
+
+/* ── index.js ── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Public API.
+     Slides.mount(el, options)          → Viewer     (el: element or selector; document.body for full-screen)
+     Slides.register(type, def)         add a block type
+     Slides.defaults                    global option defaults (mutable)
+     Slides.parse(text) / parseMarkdown / parseJSON / parseDiagram / renderDiagram
+   Slides.highlight = fn              plug in an external highlighter (null restores the built-in)
+   Slides.shell                       HTML of the page the engine lives in; v.bundle() writes the deck into it
+   <div data-slides="lecture.md" data-mode="scroll"></div> is mounted automatically on DOMContentLoaded. */
+const instances = [];
+const Slides = {
+  version: '2.7.0',
+  defaults: DEFAULTS, REVEAL_MODES, Blocks, Viewer, instances,
+  register, inline, stampCue, clearCues, parseCues, parseVTT, parseQuiz, mediaOf, embedMedia, bundleHTML,
+  parse: parseDeck, parseMarkdown, parseJSON, parseDiagram, renderDiagram, parseChart, renderChart,
+  mount(el, opts) { const v = new Viewer(el, opts); instances.push(v); return v; },
+  autoMount(scope = document) {
+    scope.querySelectorAll('[data-slides]').forEach(el => {
+      if (el.dataset.mounted) return; el.dataset.mounted = '1';
+      const opts = {}; for (const [k, val] of Object.entries(el.dataset)) if (k !== 'slides' && k !== 'mounted') opts[k] = val === 'true' ? true : val === 'false' ? false : isNaN(val) || val === '' ? val : +val;
+      if (el.dataset.slides) opts.src = el.dataset.slides;
+      const inlineText = el.querySelector('script[type="text/slides"],script[type="text/markdown"]')?.textContent; if (inlineText) opts.text = inlineText;
+      opts.picker ??= false;
+      Slides.mount(el, opts);
+    });
+  }
+};
+Object.defineProperties(Slides, {              // getters, so that assignment installs and reading always returns something that works
+  highlight: { get: () => hlRun, set: fn => { hlHook.fn = typeof fn === 'function' ? fn : null; }, enumerable: true },
+  shell: { get: () => bundleEnv.shell, set: h => { bundleEnv.shell = h ? String(h) : null; }, enumerable: true }
+});
+if (typeof document !== 'undefined') { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', () => Slides.autoMount()) : Slides.autoMount(); }
+
+global.Slides = Slides;
+if (typeof module === 'object' && module.exports) module.exports = Slides;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(() => {
+  const q = new URLSearchParams(location.search), opt = {};
+  for (const [k, v] of q) if (k in Slides.defaults) opt[k] = v === 'true' ? true : v === 'false' ? false : isNaN(v) || v === '' ? v : +v;
+  if (q.has('handout')) opt.mode = 'scroll';
+  const text = id => document.getElementById(id)?.textContent.replace(/<\\\/script/g, '</script').trim();
+  const deck = document.getElementById('deck');                       // a single-file lesson made by v.bundle() carries its deck here
+  if (deck) { opt.text = text('deck'); opt.name = deck.dataset.name || 'deck.md'; } else opt.sample = text('sample');
+  Slides.shell = document.documentElement.outerHTML;                 // this page, before the viewer builds its markup: what v.bundle() writes into
+  window.viewer = Slides.mount(document.body, opt);
+})();
+</script>
+</body>
+</html>
