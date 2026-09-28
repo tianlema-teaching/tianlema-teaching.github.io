@@ -1,0 +1,513 @@
+[
+  {
+    "deck": "csi3620/2026-fall/slides/L01-what-are-dsa.html",
+    "viewport": "projector",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L02-complexity-and-asymptotics.html",
+    "viewport": "projector",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L03-linear-and-binary-search.html",
+    "viewport": "projector",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L04-divide-and-conquer-sorting.html",
+    "viewport": "projector",
+    "slides": 47,
+    "problems": [],
+    "overflow": [
+      [
+        13,
+        "Merge sort in one picture",
+        27
+      ],
+      [
+        34,
+        "Every level costs n",
+        8
+      ]
+    ],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L05-simple-and-digit-sorting.html",
+    "viewport": "projector",
+    "slides": 44,
+    "problems": [],
+    "overflow": [
+      [
+        8,
+        "Bubble first pass, step by step",
+        27
+      ],
+      [
+        9,
+        "Bubble second pass, step by step",
+        27
+      ]
+    ],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L06-linked-lists.html",
+    "viewport": "projector",
+    "slides": 55,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L07-stacks-and-queues.html",
+    "viewport": "projector",
+    "slides": 49,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L08-trees-and-bsts.html",
+    "viewport": "projector",
+    "slides": 56,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L09-tree-traversals.html",
+    "viewport": "projector",
+    "slides": 55,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L10-balanced-trees-avl.html",
+    "viewport": "projector",
+    "slides": 49,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L11-red-black-trees.html",
+    "viewport": "projector",
+    "slides": 41,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L12-hash-tables.html",
+    "viewport": "projector",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L13-b-trees.html",
+    "viewport": "projector",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L14-heaps-and-priority-queues.html",
+    "viewport": "projector",
+    "slides": 53,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L15-graphs-bfs-dfs.html",
+    "viewport": "projector",
+    "slides": 52,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L16-topological-sort-cycles.html",
+    "viewport": "projector",
+    "slides": 56,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L17-shortest-paths.html",
+    "viewport": "projector",
+    "slides": 58,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L18-minimum-spanning-trees.html",
+    "viewport": "projector",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L19-greedy-algorithms.html",
+    "viewport": "projector",
+    "slides": 54,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L20-dynamic-programming.html",
+    "viewport": "projector",
+    "slides": 58,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L21-backtracking.html",
+    "viewport": "projector",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L01-what-are-dsa.html",
+    "viewport": "phone",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L02-complexity-and-asymptotics.html",
+    "viewport": "phone",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L03-linear-and-binary-search.html",
+    "viewport": "phone",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L04-divide-and-conquer-sorting.html",
+    "viewport": "phone",
+    "slides": 47,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L05-simple-and-digit-sorting.html",
+    "viewport": "phone",
+    "slides": 44,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L06-linked-lists.html",
+    "viewport": "phone",
+    "slides": 55,
+    "problems": [],
+    "overflow": [],
+    "wide": [
+      [
+        50,
+        "Costs: reading and adding",
+        30
+      ],
+      [
+        51,
+        "Costs: removing and memory",
+        50
+      ]
+    ],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L07-stacks-and-queues.html",
+    "viewport": "phone",
+    "slides": 49,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L08-trees-and-bsts.html",
+    "viewport": "phone",
+    "slides": 56,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L09-tree-traversals.html",
+    "viewport": "phone",
+    "slides": 55,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L10-balanced-trees-avl.html",
+    "viewport": "phone",
+    "slides": 49,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L11-red-black-trees.html",
+    "viewport": "phone",
+    "slides": 41,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L12-hash-tables.html",
+    "viewport": "phone",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L13-b-trees.html",
+    "viewport": "phone",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L14-heaps-and-priority-queues.html",
+    "viewport": "phone",
+    "slides": 53,
+    "problems": [],
+    "overflow": [],
+    "wide": [
+      [
+        7,
+        "Cost table",
+        99
+      ],
+      [
+        36,
+        "Why the build is $O(n)$",
+        43
+      ],
+      [
+        40,
+        "`java.util.PriorityQueue`",
+        22
+      ]
+    ],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L15-graphs-bfs-dfs.html",
+    "viewport": "phone",
+    "slides": 52,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L16-topological-sort-cycles.html",
+    "viewport": "phone",
+    "slides": 56,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L17-shortest-paths.html",
+    "viewport": "phone",
+    "slides": 58,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L18-minimum-spanning-trees.html",
+    "viewport": "phone",
+    "slides": 51,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L19-greedy-algorithms.html",
+    "viewport": "phone",
+    "slides": 54,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L20-dynamic-programming.html",
+    "viewport": "phone",
+    "slides": 58,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  },
+  {
+    "deck": "csi3620/2026-fall/slides/L21-backtracking.html",
+    "viewport": "phone",
+    "slides": 50,
+    "problems": [],
+    "overflow": [],
+    "wide": [],
+    "spill": [],
+    "small": [],
+    "errors": []
+  }
+]
