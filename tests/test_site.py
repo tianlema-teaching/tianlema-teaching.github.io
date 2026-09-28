@@ -84,7 +84,7 @@ class PrivacyTests(unittest.TestCase):
     def test_repository_text_is_clean(self):
         skip = {".git", ".venv", "__pycache__"}
         files = [p for p in ROOT.rglob("*") if p.is_file() and not skip & set(p.relative_to(ROOT).parts)
-                 and p.suffix not in {".woff2", ".pyc"} and p.name != "test_site.py"]
+                 and p.suffix not in {".woff2", ".pyc", ".ico"} and p.name != "test_site.py"]
         problems = [f"{p.relative_to(ROOT)}: {findings(p.read_text(encoding='utf-8'))}" for p in files
                     if findings(p.read_text(encoding="utf-8"))]
         self.assertEqual(problems, [])
